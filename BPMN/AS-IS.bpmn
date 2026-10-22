@@ -1,0 +1,178 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Design" exporterVersion="2026.1.3" design:palette="flowable-work-process-palette">
+  <collaboration id="Collaboration">
+    <participant id="Pool_7" name="Peluditos Pet Chile" processRef="peluditosPetChileASIS"></participant>
+  </collaboration>
+  <process id="peluditosPetChileASIS" name="Peluditos Pet Chile - AS-IS" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
+    <documentation>Modelo BPMN AS-IS que representa el proceso actual de gestión de consultas de Peluditos Pet Chile.
+
+Las consultas se reciben principalmente a través de redes sociales y WhatsApp, siendo atendidas manualmente por una persona responsable del emprendimiento.
+
+El seguimiento de los potenciales clientes se realiza de manera irregular y no existe un registro centralizado de los resultados comerciales, lo que dificulta el control y la trazabilidad de las oportunidades de venta.</documentation>
+    <extensionElements>
+      <flowable:candidates-type><![CDATA[all]]></flowable:candidates-type>
+      <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
+      <design:creationdate><![CDATA[2026-10-22T00:13:12.817Z]]></design:creationdate>
+      <design:description><![CDATA[Modelo BPMN AS-IS que representa el proceso actual de gestión de consultas de Peluditos Pet Chile.
+
+Las consultas se reciben principalmente a través de redes sociales y WhatsApp, siendo atendidas manualmente por una persona responsable del emprendimiento.
+
+El seguimiento de los potenciales clientes se realiza de manera irregular y no existe un registro centralizado de los resultados comerciales, lo que dificulta el control y la trazabilidad de las oportunidades de venta.]]></design:description>
+      <design:modificationdate><![CDATA[2026-10-22T01:11:32.312Z]]></design:modificationdate>
+    </extensionElements>
+    <laneSet id="laneSet_peluditosPetChileASIS">
+      <lane id="Lane_8" name="Responsable del emprendimiento">
+        <flowNodeRef>ExpandedSubProcess_14</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_11</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_9</flowNodeRef>
+        <flowNodeRef>Exclusive_Databased_Gateway_13</flowNodeRef>
+        <flowNodeRef>StartNoneEvent_6</flowNodeRef>
+        <flowNodeRef>EndNoneEvent_17</flowNodeRef>
+        <flowNodeRef>SequenceFlow_19</flowNodeRef>
+        <flowNodeRef>SequenceFlow_15</flowNodeRef>
+        <flowNodeRef>SequenceFlow_12</flowNodeRef>
+        <flowNodeRef>SequenceFlow_18</flowNodeRef>
+        <flowNodeRef>SequenceFlow_17</flowNodeRef>
+        <flowNodeRef>SequenceFlow_10</flowNodeRef>
+      </lane>
+    </laneSet>
+    <subProcess id="ExpandedSubProcess_14" name="Realizar seguimiento">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
+      </extensionElements>
+    </subProcess>
+    <subProcess id="ExpandedSubProcess_11" name="Responder consulta manualmente">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
+      </extensionElements>
+    </subProcess>
+    <subProcess id="ExpandedSubProcess_9" name="Revisar consulta recibida">
+      <extensionElements>
+        <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
+      </extensionElements>
+    </subProcess>
+    <exclusiveGateway id="Exclusive_Databased_Gateway_13" name="¿Se realiza seguimiento?" default="SequenceFlow_18">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <startEvent id="StartNoneEvent_6" name="Consulta recibida" flowable:initiator="initiator" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+        <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="EndNoneEvent_17" name="Atencion finalizada">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="SequenceFlow_19" sourceRef="ExpandedSubProcess_14" targetRef="EndNoneEvent_17">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_15" sourceRef="ExpandedSubProcess_11" targetRef="Exclusive_Databased_Gateway_13">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_12" sourceRef="ExpandedSubProcess_9" targetRef="ExpandedSubProcess_11">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_18" name="No" sourceRef="Exclusive_Databased_Gateway_13" targetRef="EndNoneEvent_17">
+      <extensionElements>
+        <flowable:is-default-flow><![CDATA[true]]></flowable:is-default-flow>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_17" name="Si" sourceRef="Exclusive_Databased_Gateway_13" targetRef="ExpandedSubProcess_14">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${realizarSeguimiento == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_10" sourceRef="StartNoneEvent_6" targetRef="ExpandedSubProcess_9">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="Pool_7" id="BPMNShape_Pool_7">
+        <omgdc:Bounds height="407.0" width="1117.0" x="310.0" y="165.40625"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Lane_8" id="BPMNShape_Lane_8">
+        <omgdc:Bounds height="407.0" width="1087.0" x="340.0" y="165.40625"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_14" id="BPMNShape_ExpandedSubProcess_14">
+        <omgdc:Bounds height="100.0" width="114.0" x="877.0" y="179.40625"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_11" id="BPMNShape_ExpandedSubProcess_11">
+        <omgdc:Bounds height="90.0" width="103.0" x="619.0" y="299.40625"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_9" id="BPMNShape_ExpandedSubProcess_9">
+        <omgdc:Bounds height="90.0" width="100.0" x="465.0" y="299.40625"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Exclusive_Databased_Gateway_13" id="BPMNShape_Exclusive_Databased_Gateway_13">
+        <omgdc:Bounds height="40.0" width="40.0" x="783.0" y="324.40625"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="137.0" x="742.0" y="283.40625"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="StartNoneEvent_6" id="BPMNShape_StartNoneEvent_6">
+        <omgdc:Bounds height="30.0" width="30.0" x="391.0" y="329.40625"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="95.0" x="364.2" y="371.40625"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="EndNoneEvent_17" id="BPMNShape_EndNoneEvent_17">
+        <omgdc:Bounds height="28.0" width="28.0" x="920.0" y="399.40625"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="105.0" x="891.1" y="442.40625"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_15" id="BPMNEdge_SequenceFlow_15" flowable:sourceDockerX="52.0" flowable:sourceDockerY="45.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="722.0" y="344.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="783.0" y="344.40625"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_17" id="BPMNEdge_SequenceFlow_17" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="57.0" flowable:targetDockerY="50.0">
+        <omgdi:waypoint x="803.0" y="324.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="803.0" y="229.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="877.0" y="229.40625"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="10.0" x="832.0" y="207.20625"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_18" id="BPMNEdge_SequenceFlow_18" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="803.0" y="364.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="803.0" y="413.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="920.0" y="413.40625"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="16.0" x="832.0" y="392.40625"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_12" id="BPMNEdge_SequenceFlow_12" flowable:sourceDockerX="50.0" flowable:sourceDockerY="45.0" flowable:targetDockerX="52.0" flowable:targetDockerY="45.0">
+        <omgdi:waypoint x="565.0" y="344.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="619.0" y="344.40625"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_10" id="BPMNEdge_SequenceFlow_10" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="45.0">
+        <omgdi:waypoint x="421.0" y="344.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="465.0" y="344.40625"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_19" id="BPMNEdge_SequenceFlow_19" flowable:sourceDockerX="57.0" flowable:sourceDockerY="50.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="934.0" y="279.40625"></omgdi:waypoint>
+        <omgdi:waypoint x="934.0" y="399.40625"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
