@@ -118,6 +118,3 @@ Para inspeccionar las tablas y registros en tiempo de ejecución:
 3. Usa la JDBC URL `jdbc:h2:mem:testdb` para conectar.
 
 ---
-
-## 👥 Integrante Responsable
-* **Integrante 2:** Servicios Web Java y Persistencia
