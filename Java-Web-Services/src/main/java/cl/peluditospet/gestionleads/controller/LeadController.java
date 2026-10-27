@@ -45,4 +45,14 @@ public class LeadController {
             throw new RuntimeException("Lead no encontrado con el id: " + id);
         }
     }
+
+    // 4. DELETE: Eliminar un lead por su ID
+    @DeleteMapping("/{id}")
+    public void eliminarLead(@PathVariable Long id) {
+        if (leadRepository.existsById(id)) {
+            leadRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Lead no encontrado con el id: " + id);
+        }
+    }
 }
