@@ -1,0 +1,38 @@
+{
+  "fecha": "2026-10-26T20:53:54.2289174-03:00",
+  "entorno": "Local, Java 21, puerto 8096, datos ficticios",
+  "registro": {
+    "nombreCliente": "Cliente de prueba Marcelo",
+    "correo": "prueba@example.invalid",
+    "telefono": "CONTACTO-DE-PRUEBA",
+    "canalOrigen": "WhatsApp",
+    "consulta": "Consulta ficticia para probar la conexion del servicio",
+    "estado": "NUEVO",
+    "id": 1
+  },
+  "actualizacion": {
+    "nombreCliente": "Cliente de prueba Marcelo",
+    "correo": "prueba@example.invalid",
+    "telefono": "CONTACTO-DE-PRUEBA",
+    "canalOrigen": "WhatsApp",
+    "consulta": "Consulta ficticia para probar la conexion del servicio",
+    "estado": "EN_SEGUIMIENTO",
+    "id": 1
+  },
+  "listadoConfirmado": {
+    "nombreCliente": "Cliente de prueba Marcelo",
+    "correo": "prueba@example.invalid",
+    "telefono": "CONTACTO-DE-PRUEBA",
+    "canalOrigen": "WhatsApp",
+    "consulta": "Consulta ficticia para probar la conexion del servicio",
+    "estado": "EN_SEGUIMIENTO",
+    "id": 1
+  },
+  "comprobaciones": [
+    "POST: consulta creada con estado NUEVO",
+    "GET: consulta encontrada",
+    "PUT: cambio a EN_SEGUIMIENTO",
+    "GET: nuevo estado confirmado"
+  ],
+  "pendiente": "Todavia no se ha probado el recorrido desde Flowable Enterprise ni el external worker."
+}

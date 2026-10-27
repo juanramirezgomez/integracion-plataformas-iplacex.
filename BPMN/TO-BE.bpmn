@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Design" exporterVersion="2026.1.3" design:palette="flowable-work-process-palette">
-  <colaboración id="Colaboración">
-    <participante id="Pool_1" nombre="Peluditos Pet Chile" procesoRef="peluditosPetChileTOBEGrupo5"></participante>
-  </colaboración>
+  <collaboration id="Collaboration">
+    <participant id="Pool_1" name="Peluditos Pet Chile" processRef="peluditosPetChileTOBEGrupo5"></participant>
+  </collaboration>
   <process id="peluditosPetChileTOBEGrupo5" name="Peluditos Pet Chile - TO-BE" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
     <documentation>Modelo BPMN del proceso propuesto para mejorar la gestión de leads, seguimiento de clientes y fidelización de Peluditos Pet Chile.</documentation>
     <extensionElements>
@@ -14,55 +14,55 @@
     </extensionElements>
     <laneSet id="laneSet_peluditosPetChileTOBEGrupo5">
       <lane id="Lane_3" name="Sistema de gestión">
-        <flowNodeRef>SubprocesoExpandido_24</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_69</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_6</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_18</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_10</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_4</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_24</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_69</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_6</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_18</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_10</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_4</flowNodeRef>
         <flowNodeRef>Exclusive_Databased_Gateway_15</flowNodeRef>
         <flowNodeRef>Exclusive_Databased_Gateway_66</flowNodeRef>
         <flowNodeRef>startnoneevent1</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_26</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_71</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_67</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_25</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_72</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_7</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_19</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_68</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_70</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_5</flowNodeRef>
-      </carril>
+
+
+
+
+
+
+
+
+
+
+      </lane>
       <lane id="Lane_2" name="Responsable del emprendimiento">
-        <flowNodeRef>SubprocesoExpandido_99</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_22</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_104</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_100</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_103</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_20</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_29</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_30</flowNodeRef>
-        <flowNodeRef>SubprocesoExpandido_101</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_99</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_22</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_104</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_100</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_103</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_20</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_29</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_30</flowNodeRef>
+        <flowNodeRef>ExpandedSubProcess_101</flowNodeRef>
         <flowNodeRef>Exclusive_Databased_Gateway_27</flowNodeRef>
         <flowNodeRef>IntermediateTimerEvent_82</flowNodeRef>
         <flowNodeRef>IntermediateTimerEvent_83</flowNodeRef>
         <flowNodeRef>EndNoneEvent_102</flowNodeRef>
         <flowNodeRef>EndNoneEvent_105</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_111</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_28</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_109</flowNodeRef>
-        <flowNodeRef>SequenceFlow_113</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_108</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_23</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_110</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_106</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_114</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_31</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_32</flowNodeRef>
-        <flowNodeRef>SequenceFlow_112</flowNodeRef>
-        <flowNodeRef>Flujo de secuencia_107</flowNodeRef>
-      </carril>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </lane>
     </laneSet>
     <subProcess id="ExpandedSubProcess_24">
       <extensionElements>
@@ -70,32 +70,32 @@
 notificar</flowable:element-name>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_69" name="Actualizar datos cliente">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_6" name="Verificar cliente existente">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_18" name="Clasificar consulta (tipo de producto)">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_10" name="Crear registro cliente">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_4" name="Registrador consulta de cliente">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <exclusiveGateway id="Exclusive_Databased_Gateway_15">
       <extensionElements>
         <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
@@ -120,97 +120,97 @@ notificar</flowable:element-name>
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_71" sourceRef="ExpandedSubProcess_69" targetRef="Exclusive_Databased_Gateway_15">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_67" sourceRef="ExpandedSubProcess_6" targetRef="Exclusive_Databased_Gateway_66">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_25" sourceRef="ExpandedSubProcess_18" targetRef="ExpandedSubProcess_24">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_72" sourceRef="ExpandedSubProcess_10" targetRef="Exclusive_Databased_Gateway_15">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_7" sourceRef="ExpandedSubProcess_4" targetRef="ExpandedSubProcess_6">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_19" sourceRef="Exclusive_Databased_Gateway_15" targetRef="ExpandedSubProcess_18">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_5" sourceRef="startnoneevent1" targetRef="ExpandedSubProcess_4">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <subProcess id="ExpandedSubProcess_99">
       <extensionElements>
         <flowable:element-name>Programar contacto 
 de fidelización</flowable:element-name>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_22" name="Registrador resultado de atención">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_104">
       <extensionElements>
         <flowable:element-name>Resultado del registrador
 de seguimiento</flowable:element-name>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_100">
       <extensionElements>
         <flowable:element-name>Contactar con el cliente
 de fidelización</flowable:element-name>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_103">
       <extensionElements>
         <flowable:element-name>Contactar con el cliente 
 de seguimiento</flowable:element-name>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_20" name="Revisar y responder consulta ">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_29" name="Registrar compra">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_30" name="Programar seguimiento (fecha)">
       <extensionElements>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <subProcess id="ExpandedSubProcess_101">
       <extensionElements>
         <flowable:element-name>Registrar el resultado 
 de fidelizlacion</flowable:element-name>
         <design:stencilid><![CDATA[ExpandedSubProcess]]></design:stencilid>
       </extensionElements>
-    </subProceso>
+    </subProcess>
     <exclusiveGateway id="Exclusive_Databased_Gateway_27" name="¿Compra realizada?" default="SequenceFlow_31">
       <extensionElements>
         <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
@@ -224,7 +224,7 @@ de fidelización</flowable:element-name>
         <design:stencilid><![CDATA[IntermediateTimerEvent]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
-      <definición de evento del temporizador>
+      <timerEventDefinition>
         <timeDuration>P0Y0M7DT0H0M0S</timeDuration>
       </timerEventDefinition>
     </intermediateCatchEvent>
@@ -235,7 +235,7 @@ de seguimiento</flowable:element-name>
         <design:stencilid><![CDATA[IntermediateTimerEvent]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
-      <definición de evento del temporizador>
+      <timerEventDefinition>
         <timeDuration>P0Y0M2DT0H0M0S</timeDuration>
       </timerEventDefinition>
     </intermediateCatchEvent>
@@ -259,86 +259,86 @@ de seguimiento</flowable:element-name>
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_28" sourceRef="ExpandedSubProcess_22" targetRef="Exclusive_Databased_Gateway_27">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_109" sourceRef="ExpandedSubProcess_104" targetRef="EndNoneEvent_105">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_113" sourceRef="ExpandedSubProcess_100" targetRef="ExpandedSubProcess_101">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_108" sourceRef="ExpandedSubProcess_103" targetRef="ExpandedSubProcess_104">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_23" sourceRef="ExpandedSubProcess_20" targetRef="ExpandedSubProcess_22">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_110" sourceRef="ExpandedSubProcess_29" targetRef="ExpandedSubProcess_99">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_106" sourceRef="ExpandedSubProcess_30" targetRef="IntermediateTimerEvent_83">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_114" sourceRef="ExpandedSubProcess_101" targetRef="EndNoneEvent_102">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_31" name="No" sourceRef="Exclusive_Databased_Gateway_27" targetRef="ExpandedSubProcess_30">
       <extensionElements>
         <flowable:is-default-flow><![CDATA[true]]></flowable:is-default-flow>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_32" name="SI" sourceRef="Exclusive_Databased_Gateway_27" targetRef="ExpandedSubProcess_29">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${compraRealizada == true}]]></conditionExpression>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_112" sourceRef="IntermediateTimerEvent_82" targetRef="ExpandedSubProcess_100">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_107" sourceRef="IntermediateTimerEvent_83" targetRef="ExpandedSubProcess_103">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_68" name="No" sourceRef="Exclusive_Databased_Gateway_66" targetRef="ExpandedSubProcess_10">
       <extensionElements>
         <flowable:is-default-flow><![CDATA[true]]></flowable:is-default-flow>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
-    </flujo de secuencia>
+    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_70" name="Si" sourceRef="Exclusive_Databased_Gateway_66" targetRef="ExpandedSubProcess_69">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${clienteRegistrado == true}]]></conditionExpression>
-    </flujo de secuencia>
-  </proceso>
+    </sequenceFlow>
+  </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
     <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
       <bpmndi:BPMNShape bpmnElement="Pool_1" id="BPMNShape_Pool_1">
@@ -568,4 +568,4 @@ de seguimiento</flowable:element-name>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-</definiciones>
+</definitions>
