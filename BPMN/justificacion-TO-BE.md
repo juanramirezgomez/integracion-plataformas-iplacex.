@@ -16,3 +16,12 @@ Con la solución propuesta se busca:
 La principal mejora es que la encargada del emprendimiento no tendrá que administrar manualmente cada consulta o recordar cuándo contactar nuevamente a un cliente. El sistema podrá encargarse de las actividades repetitivas, mientras ella se concentra en atender a los clientes y gestionar las ventas.
 
 Esta propuesta representa el funcionamiento esperado de la plataforma. Su implementación se realizará progresivamente mediante Flowable y los servicios web definidos por el equipo.
+
+
+## Alcance ejecutado al 2 de noviembre de 2026
+
+El TO-BE se preparó para Flowable OSS 8 con tareas de usuario y de worker externo. El evento inicial recibe el mensaje ConsultaClienteRecibida. Esto permite iniciar el proceso desde una aplicación o prueba mediante la API; no conecta automáticamente las redes sociales.
+
+La clasificación, la asignación y los contactos siguen siendo acciones humanas en esta versión. La automatización comprobada verifica el cliente, crea su registro y actualiza su estado cuando compra. Los temporizadores están acortados a 10 segundos para la demostración. La interfaz propia y las fechas comerciales definitivas aún deben integrarse.
+
+Se conserva un solo proceso con espera para el prototipo, como aceptó el docente en su retroalimentación. Una separación futura del contacto posterior en otro proceso sigue siendo una mejora posible, no una funcionalidad implementada.

@@ -1,0 +1,9 @@
+{
+  "id": 2,
+  "nombreCliente": "Prueba Jakarta Grupo 5",
+  "correo": "jakarta@example.invalid",
+  "telefono": "JAKARTA-e512286521",
+  "canalOrigen": "WhatsApp",
+  "consulta": "Consulta ficticia por torta para mascota",
+  "estado": "NUEVO"
+}

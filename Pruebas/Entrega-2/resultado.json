@@ -1,0 +1,22 @@
+{
+  "versionFlowable": "8.0.0",
+  "servicio": "Jakarta REST con Jersey 4",
+  "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+  "completado": true,
+  "fin": "2026-11-02T14:37:58.455Z",
+  "cliente": {
+    "id": 2,
+    "nombreCliente": "Prueba Jakarta Grupo 5",
+    "correo": "jakarta@example.invalid",
+    "telefono": "JAKARTA-e512286521",
+    "canalOrigen": "WhatsApp",
+    "consulta": "Consulta ficticia por torta para mascota",
+    "estado": "CONVERTIDO"
+  },
+  "persistenciaMotorComprobada": true,
+  "persistenciaNegocioComprobada": true,
+  "inicio": "Mensaje ConsultaClienteRecibida",
+  "temporizadorDemo": "PT10S",
+  "interaccion": "Tareas humanas completadas por API; interfaz propia pendiente",
+  "alcance": "Recorrido con compra. La interfaz y las demás funciones de la Entrega 2 siguen pendientes."
+}

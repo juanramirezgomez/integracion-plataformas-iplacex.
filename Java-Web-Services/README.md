@@ -1,120 +1,36 @@
-# Peluditos Pet Chile — Backend de Gestión de Leads 🐾
+# Servicio de consultas y clientes
 
-Este repositorio contiene la implementación del servicio web backend desarrollado en **Java** y **Spring Boot** para la solución del **Problema 1: Gestión de Leads (Potenciales Clientes)** del emprendimiento *Peluditos Pet Chile*.
+El servicio conserva la entidad Lead y el repositorio JPA del equipo. Los endpoints se implementan con Jakarta REST (`jakarta.ws.rs`) mediante Jersey 4. Spring Boot 4.1.2 se utiliza para el arranque y Spring Data JPA para la persistencia; los endpoints ya no usan Spring MVC.
 
-El objetivo principal de esta API REST es registrar, consultar y actualizar el estado de las interacciones con clientes que contactan al emprendimiento desde redes sociales (Instagram, WhatsApp, TikTok, etc.), permitiendo el seguimiento de su ciclo de vida y la integración con flujos BPMN en **Flowable** y el **Dashboard** de gestión.
+## Operaciones
 
----
+| Método | Ruta | Resultado |
+|---|---|---|
+| GET | `/api/leads` | Lista los clientes, HTTP 200. |
+| POST | `/api/leads` | Crea un cliente y devuelve su ID, HTTP 200. |
+| PUT | `/api/leads/{id}/estado` | Cambia el estado de un cliente, HTTP 200. |
+| DELETE | `/api/leads/{id}` | Elimina un cliente existente, HTTP 204. |
 
-## 🛠️ Tecnologías Utilizadas
+El POST requiere `nombreCliente`, `telefono` y `consulta`; también admite `correo` y `canalOrigen`. El estado inicial es NUEVO. Los estados admitidos son NUEVO, EN_SEGUIMIENTO, COTIZADO, CONVERTIDO y DESCARTADO. Datos incompletos o estados no admitidos producen HTTP 400. Un ID inexistente en PUT o DELETE produce HTTP 404. Un ID recibido en el POST no permite sobrescribir otro registro.
 
-* **Lenguaje:** Java 21 (LTS)
-* **Framework:** Spring Boot 4.1.2
-* **Gestión de Dependencias:** Apache Maven
-* **Capa de Persistencia:** Spring Data JPA / Hibernate
-* **Base de Datos:** H2 Database (en memoria para desarrollo y pruebas rápidas)
-* **Herramienta de Pruebas API:** Postman
+Los datos se ingresan manualmente o mediante el worker. Indicar WhatsApp o Instagram en `canalOrigen` no conecta la aplicación con esas redes.
 
----
+## Ejecutar
 
-## 📁 Arquitectura del Proyecto
+Usar Java 21. Desde esta carpeta ejecutar `.\mvnw.cmd clean verify` y después `java -jar target/gestion-leads-backend-0.0.1-SNAPSHOT.jar`. Por defecto escucha solo en este equipo, puerto 8096, y guarda los clientes en `datos/clientes.mv.db` dentro del directorio de trabajo.
 
-El proyecto sigue una arquitectura por capas (*Layered Architecture*) limpia dentro del paquete base `cl.peluditospet.gestionleads`:
+El arranque integrado desde `Flowable/Entrega-2/iniciar-local.ps1` usa bases independientes bajo `.local` en la raíz del repo. Se puede configurar la base de negocio con BUSINESS_DB_URL, BUSINESS_DB_DRIVER, BUSINESS_DB_USER y BUSINESS_DB_PASSWORD. Si se elige otro motor, también hay que agregar su controlador JDBC al POM y repetir las pruebas.
 
-```text
-src/main/java/cl/peluditospet/gestionleads/
-├── controller/
-│   └── LeadController.java       # Expone los endpoints REST (HTTP GET, POST, PUT)
-├── model/
-│   └── Lead.java                 # Entidad JPA que representa la tabla 'leads'
-├── repository/
-│   └── LeadRepository.java       # Interfaz Spring Data JPA para operaciones CRUD
-└── GestionLeadsBackendApplication.java # Clase principal de arranque
-```
+Para una pantalla alojada en otro puerto, FRONTEND_ORIGINS contiene la lista de orígenes permitidos, separados por comas. Los valores locales iniciales son localhost y 127.0.0.1 en los puertos 5173 y 3000. No se expone la consola H2 del prototipo anterior.
 
----
+Ejemplo de POST:
 
-## 🚀 Endpoints de la API REST
-
-Todos los endpoints están mapeados bajo la ruta base `/api/leads` y soportan peticiones origen cruzado (`@CrossOrigin`):
-
-| Método HTTP | Endpoint | Descripción | Body Requerido (JSON) |
-| :--- | :--- | :--- | :--- |
-| **POST** | `/api/leads` | Registra un nuevo lead. Asigna estado `"NUEVO"` por defecto. | **Sí** (datos del cliente) |
-| **GET** | `/api/leads` | Retorna la lista completa de leads registrados. | *Ninguno* |
-| **PUT** | `/api/leads/{id}/estado` | Actualiza el estado de seguimiento del lead. | **Sí** (`{"estado": "..."}`) |
-
-### 📝 Ejemplos de Peticiones
-
-#### 1. Registrar un nuevo Lead (`POST /api/leads`)
-**Body:**
 ```json
-{
-  "nombreCliente": "Camila Pérez",
-  "correo": "camila@correo.com",
-  "telefono": "+56912345678",
-  "canalOrigen": "Instagram",
-  "consulta": "Pastel de cumpleaños para perrito raza Poodle"
-}
+{"nombreCliente":"Cliente de prueba","correo":"prueba@example.invalid","telefono":"CONTACTO-DE-PRUEBA","canalOrigen":"WhatsApp","consulta":"Consulta ficticia por una torta"}
 ```
 
-**Respuesta (`200 OK`):**
-```json
-{
-  "id": 1,
-  "nombreCliente": "Camila Pérez",
-  "correo": "camila@correo.com",
-  "telefono": "+56912345678",
-  "canalOrigen": "Instagram",
-  "consulta": "Pastel de cumpleaños para perrito raza Poodle",
-  "estado": "NUEVO"
-}
-```
+## Pruebas
 
-#### 2. Actualizar Estado de un Lead (`PUT /api/leads/1/estado`)
-**Body:**
-```json
-{
-  "estado": "EN_SEGUIMIENTO"
-}
-```
+La prueba de arranque del proyecto usa una base aislada en memoria exclusivamente para tests. Las comprobaciones HTTP y de persistencia reales están en `Pruebas/Entrega-2`, incluyendo lectura, registro, cambio de estado, eliminación, respuestas 400/404, CORS y los recorridos con Flowable.
 
----
-
-## ⚙️ Ejecución del Proyecto Localmente
-
-### Prerrequisitos
-* Java Development Kit (JDK) 21 instalado y configurado en la variable de entorno `JAVA_HOME`.
-* Apache Maven (incluido mediante el ejecutable wrapper `./mvnw`).
-
-### Pasos para Ejecutar
-1. Clonar este repositorio:
-   ```bash
-   git clone https://github.com/TU_USUARIO/gestion-leads-backend.git
-   cd gestion-leads-backend
-   ```
-2. Compilar e iniciar la aplicación desde la terminal:
-   ```bash
-   # En Windows
-   mvnw.cmd spring-boot:run
-
-   # En Linux/macOS
-   ./mvnw spring-boot:run
-   ```
-3. El servidor se iniciará en el puerto `8080`:
-   `http://localhost:8080/api/leads`
-
----
-
-## 🗄️ Acceso a la Consola de Base de Datos H2
-
-Para inspeccionar las tablas y registros en tiempo de ejecución:
-1. Asegúrate de incluir estas propiedades en `application.properties`:
-   ```properties
-   spring.h2.console.enabled=true
-   spring.datasource.url=jdbc:h2:mem:testdb
-   ```
-2. Accede en el navegador a: `http://localhost:8080/h2-console`
-3. Usa la JDBC URL `jdbc:h2:mem:testdb` para conectar.
-
----
+La configuración de Jersey sigue la integración JAX-RS documentada por Spring Boot: https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.jersey

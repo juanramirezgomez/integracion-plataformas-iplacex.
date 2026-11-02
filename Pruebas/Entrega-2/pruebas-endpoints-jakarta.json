@@ -1,0 +1,110 @@
+[
+  {
+    "metodo": "GET",
+    "ruta": "/api/leads",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": []
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/leads",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 1,
+      "nombreCliente": "Prueba de contrato",
+      "correo": "contrato@example.invalid",
+      "telefono": "TEST-f22bcaaf9b9c",
+      "canalOrigen": "WhatsApp",
+      "consulta": "Consulta ficticia de contrato REST",
+      "estado": "NUEVO"
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/leads/1/estado",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 1,
+      "nombreCliente": "Prueba de contrato",
+      "correo": "contrato@example.invalid",
+      "telefono": "TEST-f22bcaaf9b9c",
+      "canalOrigen": "WhatsApp",
+      "consulta": "Consulta ficticia de contrato REST",
+      "estado": "EN_SEGUIMIENTO"
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/leads/1/estado",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "estado": 400,
+      "mensaje": "Indica el estado del cliente."
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/leads/99999999/estado",
+    "esperado": 404,
+    "obtenido": 404,
+    "respuesta": {
+      "estado": 404,
+      "mensaje": "No existe un cliente con ese ID."
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/leads",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "estado": 400,
+      "mensaje": "Nombre, teléfono y consulta son obligatorios."
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/leads",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "estado": 400,
+      "mensaje": "Estado no válido."
+    }
+  },
+  {
+    "metodo": "OPTIONS",
+    "ruta": "/api/leads",
+    "esperado": 204,
+    "obtenido": 204,
+    "respuesta": null
+  },
+  {
+    "metodo": "OPTIONS",
+    "ruta": "/api/leads",
+    "esperado": 403,
+    "obtenido": 403,
+    "respuesta": "<!doctype html><html lang=\"en\"><head><title>HTTP Status 403 – Forbidden</title><style type=\"text/css\">body {font-family:Tahoma,Arial,sans-serif;} h1, h2, h3, b {color:white;background-color:#525D76;} h1 {font-size:22px;} h2 {font-size:16px;} h3 {font-size:14px;} p {font-size:12px;} a {color:black;} .line {height:1px;background-color:#525D76;border:none;}</style></head><body><h1>HTTP Status 403 – F"
+  },
+  {
+    "metodo": "DELETE",
+    "ruta": "/api/leads/1",
+    "esperado": 204,
+    "obtenido": 204,
+    "respuesta": null
+  },
+  {
+    "metodo": "DELETE",
+    "ruta": "/api/leads/1",
+    "esperado": 404,
+    "obtenido": 404,
+    "respuesta": {
+      "estado": 404,
+      "mensaje": "No existe un cliente con ese ID."
+    }
+  }
+]

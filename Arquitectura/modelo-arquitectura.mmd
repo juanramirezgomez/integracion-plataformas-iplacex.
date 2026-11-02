@@ -1,0 +1,11 @@
+flowchart LR
+    U[Responsable del emprendimiento] -. pendiente .-> UI[Interfaz web propia]
+    UI -. REST pendiente .-> F[Flowable OSS 8.0.0]
+    UI -. REST pendiente .-> J[Servicio Java Jakarta REST - Jersey]
+    T[Prueba técnica por API] -->|Inicia mensaje y completa tareas| F
+    W[External worker PowerShell] -->|Adquiere trabajos y devuelve variables| F
+    W -->|GET POST PUT| J
+    F --> M[(H2 en archivo - motor)]
+    J --> D[(H2 en archivo - negocio)]
+    classDef pendiente stroke-dasharray:5 5,fill:#fff4db,stroke:#9e721c
+    class UI pendiente

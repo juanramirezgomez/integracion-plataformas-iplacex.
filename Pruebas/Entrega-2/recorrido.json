@@ -1,0 +1,179 @@
+[
+  {
+    "fecha": "2026-11-02T11:37:22-0300",
+    "paso": "Motor comprobado",
+    "version": "8.0.0",
+    "servicio": "Jakarta REST con Jersey"
+  },
+  {
+    "fecha": "2026-11-02T11:37:22-0300",
+    "paso": "Contrato REST comprobado",
+    "pruebas": 11
+  },
+  {
+    "fecha": "2026-11-02T11:37:23-0300",
+    "paso": "TO-BE desplegado en Flowable 8"
+  },
+  {
+    "fecha": "2026-11-02T11:37:23-0300",
+    "paso": "Instancia iniciada por mensaje",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013"
+  },
+  {
+    "fecha": "2026-11-02T11:37:23-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Registrar consulta de cliente",
+    "clave": "ExpandedSubProcess_4"
+  },
+  {
+    "fecha": "2026-11-02T11:37:24-0300",
+    "paso": "Verificar cliente superado y cliente creado",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "cliente": {
+      "id": 2,
+      "nombreCliente": "Prueba Jakarta Grupo 5",
+      "correo": "jakarta@example.invalid",
+      "telefono": "JAKARTA-e512286521",
+      "canalOrigen": "WhatsApp",
+      "consulta": "Consulta ficticia por torta para mascota",
+      "estado": "NUEVO"
+    }
+  },
+  {
+    "fecha": "2026-11-02T11:37:25-0300",
+    "paso": "Motor y Java detenidos para comprobar persistencia"
+  },
+  {
+    "fecha": "2026-11-02T11:37:37-0300",
+    "paso": "Reinicio comprobado: cliente y tarea conservados",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013"
+  },
+  {
+    "fecha": "2026-11-02T11:37:37-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Clasificar consulta (tipo de producto)",
+    "clave": "ExpandedSubProcess_18"
+  },
+  {
+    "fecha": "2026-11-02T11:37:37-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Asignar responsable y \nnotificar",
+    "clave": "ExpandedSubProcess_24"
+  },
+  {
+    "fecha": "2026-11-02T11:37:37-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Revisar y responder consulta ",
+    "clave": "ExpandedSubProcess_20"
+  },
+  {
+    "fecha": "2026-11-02T11:37:37-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Registrar resultado de atencion",
+    "clave": "ExpandedSubProcess_22"
+  },
+  {
+    "fecha": "2026-11-02T11:37:38-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Programar contacto \nde fidelizacion",
+    "clave": "ExpandedSubProcess_99"
+  },
+  {
+    "fecha": "2026-11-02T11:37:56-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Contactar cliente\nde fidelizacion",
+    "clave": "ExpandedSubProcess_100"
+  },
+  {
+    "fecha": "2026-11-02T11:37:58-0300",
+    "paso": "Tarea completada",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013",
+    "tarea": "Registrar el resultado \nde fidelizlacion",
+    "clave": "ExpandedSubProcess_101"
+  },
+  {
+    "fecha": "2026-11-02T11:37:58-0300",
+    "paso": "Recorrido con compra completado",
+    "instancia": "eab9d0c0-d6ca-11f1-a714-0a0027000013"
+  },
+  {
+    "fecha": "2026-11-02T11:37:58-0300",
+    "paso": "Instancia iniciada por mensaje",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013"
+  },
+  {
+    "fecha": "2026-11-02T11:37:58-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Registrar consulta de cliente",
+    "clave": "ExpandedSubProcess_4"
+  },
+  {
+    "fecha": "2026-11-02T11:37:59-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Actualizar datos cliente",
+    "clave": "ExpandedSubProcess_69"
+  },
+  {
+    "fecha": "2026-11-02T11:37:59-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Clasificar consulta (tipo de producto)",
+    "clave": "ExpandedSubProcess_18"
+  },
+  {
+    "fecha": "2026-11-02T11:37:59-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Asignar responsable y \nnotificar",
+    "clave": "ExpandedSubProcess_24"
+  },
+  {
+    "fecha": "2026-11-02T11:37:59-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Revisar y responder consulta ",
+    "clave": "ExpandedSubProcess_20"
+  },
+  {
+    "fecha": "2026-11-02T11:37:59-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Registrar resultado de atencion",
+    "clave": "ExpandedSubProcess_22"
+  },
+  {
+    "fecha": "2026-11-02T11:37:59-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Programar seguimiento (fecha)",
+    "clave": "ExpandedSubProcess_30"
+  },
+  {
+    "fecha": "2026-11-02T11:38:16-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Contactar cliente \nde seguimiento",
+    "clave": "ExpandedSubProcess_103"
+  },
+  {
+    "fecha": "2026-11-02T11:38:16-0300",
+    "paso": "Tarea completada",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013",
+    "tarea": "Registrar resultado\nde seguimiento",
+    "clave": "ExpandedSubProcess_104"
+  },
+  {
+    "fecha": "2026-11-02T11:38:16-0300",
+    "paso": "Cliente existente y seguimiento sin compra completados",
+    "instancia": "ff9be311-d6ca-11f1-94f3-0a0027000013"
+  }
+]

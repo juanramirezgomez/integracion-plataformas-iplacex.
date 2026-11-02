@@ -1,0 +1,17 @@
+{
+  "category": "http://flowable.org/test",
+  "deploymentId": "ea54f46a-d6ca-11f1-a714-0a0027000013",
+  "deploymentUrl": "http://127.0.0.1:8098/flowable-rest/service/repository/deployments/ea54f46a-d6ca-11f1-a714-0a0027000013",
+  "description": "Modelo BPMN del proceso propuesto para mejorar la gestión de leads, seguimiento de clientes y fidelización de Peluditos Pet Chile.",
+  "diagramResource": "http://127.0.0.1:8098/flowable-rest/service/repository/deployments/ea54f46a-d6ca-11f1-a714-0a0027000013/resources/TO-BE.peluditosPetChileTOBEGrupo5.png",
+  "graphicalNotationDefined": true,
+  "id": "eaa75a2d-d6ca-11f1-a714-0a0027000013",
+  "key": "peluditosPetChileTOBEGrupo5",
+  "name": "Peluditos Pet Chile - TO-BE",
+  "resource": "http://127.0.0.1:8098/flowable-rest/service/repository/deployments/ea54f46a-d6ca-11f1-a714-0a0027000013/resources/TO-BE.bpmn",
+  "startFormDefined": false,
+  "suspended": false,
+  "tenantId": "",
+  "url": "http://127.0.0.1:8098/flowable-rest/service/repository/process-definitions/eaa75a2d-d6ca-11f1-a714-0a0027000013",
+  "version": 1
+}

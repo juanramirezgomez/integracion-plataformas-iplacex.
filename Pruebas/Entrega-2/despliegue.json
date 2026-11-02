@@ -1,0 +1,9 @@
+{
+  "url": "http://127.0.0.1:8098/flowable-rest/service/repository/deployments/ea54f46a-d6ca-11f1-a714-0a0027000013",
+  "category": null,
+  "deploymentTime": "2026-11-02T14:37:22.837Z",
+  "id": "ea54f46a-d6ca-11f1-a714-0a0027000013",
+  "name": "TO-BE",
+  "parentDeploymentId": "ea54f46a-d6ca-11f1-a714-0a0027000013",
+  "tenantId": ""
+}
