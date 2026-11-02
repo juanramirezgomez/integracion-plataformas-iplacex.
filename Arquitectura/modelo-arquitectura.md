@@ -1,37 +1,38 @@
-# Arquitectura de la solución
+# Cómo conecté las partes
 
-El dibujo representa lo implementado y lo que aún falta conectar. La interfaz propia aparece con borde discontinuo porque sigue pendiente.
+Dejé este dibujo para mostrar cómo está funcionando la prueba local. Las líneas punteadas son las conexiones que faltan desde nuestra pantalla.
 
 ```mermaid
 flowchart LR
-    U[Responsable del emprendimiento] -. pendiente .-> UI[Interfaz web propia]
-    UI -. REST pendiente .-> F[Flowable OSS 8.0.0]
-    UI -. REST pendiente .-> J[Servicio Java Jakarta REST - Jersey]
-    T[Prueba técnica por API] -->|Inicia mensaje y completa tareas| F
-    W[External worker PowerShell] -->|Adquiere trabajos y devuelve variables| F
-    W -->|GET POST PUT| J
-    F --> M[(H2 en archivo - motor)]
-    J --> D[(H2 en archivo - negocio)]
-    classDef pendiente stroke-dasharray:5 5,fill:#fff4db,stroke:#9e721c
-    class UI pendiente
+    U["Responsable del emprendimiento"] -.-> UI["Nuestra pantalla - pendiente"]
+    UI -.-> F["Flowable OSS 8.0.0"]
+    UI -.-> J["Servicio Java - Jakarta REST con Jersey"]
+    T["Pruebas por API"] -->|Iniciar proceso y completar tareas| F
+    W["Worker en PowerShell"] -->|Pedir trabajos y devolver resultados| F
+    W -->|Consultar y actualizar clientes| J
+    F --> M[("H2 en archivo - datos de Flowable")]
+    J --> D[("H2 en archivo - clientes")]
+
 ```
 
-## Comunicaciones comprobadas
+## Cómo funciona
 
-Flowable coordina el proceso. El worker adquiere sus trabajos externos, invoca las operaciones Jakarta y devuelve variables que permiten seguir el flujo. El servicio usa JPA para leer y escribir los clientes. El motor mantiene por separado instancias, tareas, variables e historial.
+Flowable lleva el orden de los pasos del proceso. Cuando llega a una tarea automática, el worker la toma y le pide al servicio Java que consulte o actualice al cliente. Después devuelve el resultado a Flowable para que pueda seguir.
 
-El responsable se asigna a las tareas de usuario. Durante la prueba técnica se completaron por API. Este mecanismo de prueba no sustituye la interfaz propia de la aplicación.
+Java guarda los clientes en su base. Flowable guarda aparte las tareas, las variables y el historial de cada proceso.
 
-## Despliegue local
+Como todavía falta nuestra pantalla, completé las tareas de usuario enviando las peticiones directamente a la API de Flowable.
 
-| Componente | Dirección o ubicación |
+## Dónde quedó cada parte en local
+
+| Parte | Dirección o archivo |
 |---|---|
-| Flowable OSS | 127.0.0.1:8098/flowable-rest |
-| Servicio Jakarta | 127.0.0.1:8096/api/leads |
-| Worker | Proceso local PowerShell, sin puerto de entrada |
-| Base del motor | .local/datos-motor/flowable.mv.db |
-| Base de negocio | .local/datos-negocio/clientes.mv.db |
+| Flowable 8 | `http://127.0.0.1:8098/flowable-rest` |
+| Servicio Java | `http://127.0.0.1:8096/api/leads` |
+| Worker | `Flowable/Entrega-2/worker.ps1` |
+| Datos de Flowable | `.local/datos-motor/flowable.mv.db` |
+| Datos de los clientes | `.local/datos-negocio/clientes.mv.db` |
 
-El arranque integrado usa dos bases relacionales H2 persistentes. El grupo puede optar por PostgreSQL, MySQL u otra alternativa compatible y volver a verificar el almacenamiento. Las contraseñas se generan por entorno y quedan en archivos locales excluidos del repo.
+Para estas pruebas usé H2 guardando los datos en archivos. Nos falta definir qué base de datos vamos a usar. Las claves y la configuración de cada computador quedan en `.local`, que está excluida del repo.
 
-No hay integración con APIs de WhatsApp o Instagram. Esos nombres identifican el canal de origen que se registra en la consulta. No se publicaron los servicios en Internet.
+WhatsApp e Instagram se anotan como canal de origen de la consulta; todavía no conecté sus APIs.

@@ -1,36 +1,54 @@
-# Servicio de consultas y clientes
+# Servicio Java de clientes
 
-El servicio conserva la entidad Lead y el repositorio JPA del equipo. Los endpoints se implementan con Jakarta REST (`jakarta.ws.rs`) mediante Jersey 4. Spring Boot 4.1.2 se utiliza para el arranque y Spring Data JPA para la persistencia; los endpoints ya no usan Spring MVC.
+Aquí dejé el servicio que veníamos trabajando, ajustado a lo que pidió el profesor: los endpoints ahora usan Jakarta REST con Jersey. Mantuve la entidad `Lead`, el repositorio JPA y las operaciones que ya estaban, incluida la opción de borrar clientes.
 
-## Operaciones
+Spring Boot 4.1.2 sigue iniciando la aplicación y Spring Data JPA se encarga de guardar los datos. Para los endpoints usé las anotaciones de `jakarta.ws.rs`, como `@GET`, `@POST` y `@Path`.
 
-| Método | Ruta | Resultado |
+## Operaciones que probé
+
+| Método | Ruta | Qué hace |
 |---|---|---|
-| GET | `/api/leads` | Lista los clientes, HTTP 200. |
-| POST | `/api/leads` | Crea un cliente y devuelve su ID, HTTP 200. |
-| PUT | `/api/leads/{id}/estado` | Cambia el estado de un cliente, HTTP 200. |
-| DELETE | `/api/leads/{id}` | Elimina un cliente existente, HTTP 204. |
+| GET | `/api/leads` | Lista los clientes. Devuelve 200. |
+| POST | `/api/leads` | Registra un cliente y devuelve sus datos con el ID. Devuelve 200. |
+| PUT | `/api/leads/{id}/estado` | Cambia el estado del cliente. Devuelve 200. |
+| DELETE | `/api/leads/{id}` | Borra el cliente. Devuelve 204. |
 
-El POST requiere `nombreCliente`, `telefono` y `consulta`; también admite `correo` y `canalOrigen`. El estado inicial es NUEVO. Los estados admitidos son NUEVO, EN_SEGUIMIENTO, COTIZADO, CONVERTIDO y DESCARTADO. Datos incompletos o estados no admitidos producen HTTP 400. Un ID inexistente en PUT o DELETE produce HTTP 404. Un ID recibido en el POST no permite sobrescribir otro registro.
+Para crear un cliente dejé como obligatorios el nombre, el teléfono y la consulta. El correo y el canal de origen también se pueden guardar. Si no se indica un estado, queda como NUEVO.
 
-Los datos se ingresan manualmente o mediante el worker. Indicar WhatsApp o Instagram en `canalOrigen` no conecta la aplicación con esas redes.
+Los estados que admite son NUEVO, EN_SEGUIMIENTO, COTIZADO, CONVERTIDO y DESCARTADO. Si faltan datos o el estado no es válido, responde con 400. Si el ID no existe al cambiar el estado o borrar, responde con 404. Dejé que el POST cree siempre un registro nuevo, aunque alguien envíe un ID en los datos.
 
-## Ejecutar
+## Cómo lo ejecuté
 
-Usar Java 21. Desde esta carpeta ejecutar `.\mvnw.cmd clean verify` y después `java -jar target/gestion-leads-backend-0.0.1-SNAPSHOT.jar`. Por defecto escucha solo en este equipo, puerto 8096, y guarda los clientes en `datos/clientes.mv.db` dentro del directorio de trabajo.
+Usé Java 21. Primero compilé desde esta carpeta:
 
-El arranque integrado desde `Flowable/Entrega-2/iniciar-local.ps1` usa bases independientes bajo `.local` en la raíz del repo. Se puede configurar la base de negocio con BUSINESS_DB_URL, BUSINESS_DB_DRIVER, BUSINESS_DB_USER y BUSINESS_DB_PASSWORD. Si se elige otro motor, también hay que agregar su controlador JDBC al POM y repetir las pruebas.
+```powershell
+.\mvnw.cmd clean verify
+```
 
-Para una pantalla alojada en otro puerto, FRONTEND_ORIGINS contiene la lista de orígenes permitidos, separados por comas. Los valores locales iniciales son localhost y 127.0.0.1 en los puertos 5173 y 3000. No se expone la consola H2 del prototipo anterior.
+Después inicié el JAR:
 
-Ejemplo de POST:
+```powershell
+java -jar target/gestion-leads-backend-0.0.1-SNAPSHOT.jar
+```
+
+Así queda en `http://127.0.0.1:8096/api/leads` y guarda los datos en `datos/clientes.mv.db`, dentro de la carpeta desde la que se inicia.
+
+Para probarlo junto con Flowable usé el script `Flowable/Entrega-2/iniciar-local.ps1`, desde la carpeta principal. Ese inicio guarda los clientes y los datos del motor en archivos separados dentro de `.local`.
+
+## Datos que usé para el registro
 
 ```json
 {"nombreCliente":"Cliente de prueba","correo":"prueba@example.invalid","telefono":"CONTACTO-DE-PRUEBA","canalOrigen":"WhatsApp","consulta":"Consulta ficticia por una torta"}
 ```
 
-## Pruebas
+El canal lo anoté en el registro; eso no conecta el servicio con la cuenta de WhatsApp.
 
-La prueba de arranque del proyecto usa una base aislada en memoria exclusivamente para tests. Las comprobaciones HTTP y de persistencia reales están en `Pruebas/Entrega-2`, incluyendo lectura, registro, cambio de estado, eliminación, respuestas 400/404, CORS y los recorridos con Flowable.
+## Configuración para seguir conectando las partes
 
-La configuración de Jersey sigue la integración JAX-RS documentada por Spring Boot: https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.jersey
+Dejé estas variables por si cambiamos la base: `BUSINESS_DB_URL`, `BUSINESS_DB_DRIVER`, `BUSINESS_DB_USER` y `BUSINESS_DB_PASSWORD`. Si usamos otro motor, también falta agregar su controlador JDBC en el POM y volver a probarlo.
+
+Para conectar una pantalla que esté en otro puerto, dejé `FRONTEND_ORIGINS` con la lista de direcciones permitidas, separadas por comas. Por ahora acepta localhost y 127.0.0.1 en los puertos 5173 y 3000. Esta es la configuración CORS: permite que el navegador haga las peticiones desde esas direcciones.
+
+Los resultados quedaron en `Pruebas/Entrega-2`. La prueba de arranque de Maven usa una base temporal solo para ese test; las pruebas con Flowable sí guardan los datos en archivos y comprueban el reinicio.
+
+Para configurar Jersey me basé en la documentación de Spring Boot: https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.jersey

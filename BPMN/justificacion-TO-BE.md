@@ -17,11 +17,10 @@ La principal mejora es que la encargada del emprendimiento no tendrá que admini
 
 Esta propuesta representa el funcionamiento esperado de la plataforma. Su implementación se realizará progresivamente mediante Flowable y los servicios web definidos por el equipo.
 
+## Lo que pude probar al 2 de noviembre
 
-## Alcance ejecutado al 2 de noviembre de 2026
+Preparé este TO-BE para ejecutarlo en Flowable 8. Dejé identificadas las tareas que hace una persona y las que toma el worker. También cambié el inicio para que reciba el mensaje ConsultaClienteRecibida desde la API.
 
-El TO-BE se preparó para Flowable OSS 8 con tareas de usuario y de worker externo. El evento inicial recibe el mensaje ConsultaClienteRecibida. Esto permite iniciar el proceso desde una aplicación o prueba mediante la API; no conecta automáticamente las redes sociales.
+El worker pudo buscar al cliente, crear su registro y cambiar su estado cuando compró. La clasificación, la asignación y los contactos quedaron como tareas de usuario. Por ahora las completé desde la API; falta hacerlo desde nuestra pantalla.
 
-La clasificación, la asignación y los contactos siguen siendo acciones humanas en esta versión. La automatización comprobada verifica el cliente, crea su registro y actualiza su estado cuando compra. Los temporizadores están acortados a 10 segundos para la demostración. La interfaz propia y las fechas comerciales definitivas aún deben integrarse.
-
-Se conserva un solo proceso con espera para el prototipo, como aceptó el docente en su retroalimentación. Una separación futura del contacto posterior en otro proceso sigue siendo una mejora posible, no una funcionalidad implementada.
+Para revisar el proceso completo usé esperas de 10 segundos. Nos falta configurar las fechas que correspondan al uso real. Mantuve la espera dentro del mismo proceso, que el profesor aceptó para este prototipo.

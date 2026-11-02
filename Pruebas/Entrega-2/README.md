@@ -1,31 +1,42 @@
-# Pruebas de Jakarta REST y Flowable OSS 8
+# Pruebas de la Entrega 2
 
-Estas evidencias provienen de llamadas reales al servicio Java y al motor local. No usan un motor simulado ni un panel propio para ejecutar el proceso.
+Aquí dejé los resultados de las pruebas que hice con Flowable 8 y el servicio Java actualizado a Jakarta REST.
 
-## Qué comprueban
+## Qué probé
 
-- La API del motor devuelve la versión 8.0.0.
-- El servicio utiliza Jakarta REST mediante Jersey. El proyecto compila y supera su prueba de arranque.
-- GET, POST, PUT y DELETE responden como se documenta; se comprueban también 400, 404 y CORS.
-- El TO-BE se despliega y arranca por el mensaje ConsultaClienteRecibida.
-- Un cliente nuevo recorre la ruta con compra hasta el fin.
-- Una consulta del mismo cliente recorre la ruta sin compra, sin crear un duplicado.
-- Se detuvieron y reiniciaron Flowable y Java durante la prueba; la tarea y el cliente se recuperaron antes de continuar.
+Primero comprobé que Flowable respondiera con la versión 8.0.0 y que Java pudiera consultar, registrar, cambiar el estado y borrar clientes. También probé qué pasaba al enviar datos incompletos o un ID que no existía.
 
-## Archivos
+Después cargué el TO-BE e inicié el proceso con un cliente ficticio. El worker lo buscó, creó su registro y cambió su estado cuando se completó la compra. El proceso llegó al final.
 
-`resultado.json` resume el recorrido con compra. `historial-instancia-completa.json` y `actividades-ejecutadas.json` son respuestas de Flowable. `cliente-existente-sin-compra.json` contiene la segunda instancia terminada. `worker-ejecucion.jsonl` documenta las llamadas del worker y los HTTP 204 de aceptación. `cliente-antes-reinicio.json` y `cliente-despues-reinicio.json` contienen el mismo cliente. `pruebas-endpoints-jakarta.json` registra los códigos HTTP obtenidos. `recorrido.json` registra los pasos de la prueba.
+Volví a iniciar el proceso con el mismo cliente y seguí la ruta sin compra. También llegó al final y no creó un cliente duplicado.
 
-## Repetir
+Durante la prueba apagué y volví a iniciar Flowable y Java. Pude recuperar al mismo cliente y continuar desde la tarea que había quedado pendiente.
 
-Iniciar el entorno como indica el README principal. Después ejecutar con Python 3:
+## Dónde se ve cada resultado
+
+| Archivo | Qué dejé guardado |
+|---|---|
+| `resultado.json` | Resumen del recorrido con compra. |
+| `historial-instancia-completa.json` | Respuesta de Flowable con la fecha de término del proceso. |
+| `actividades-ejecutadas.json` | Pasos por los que pasó esa instancia. |
+| `cliente-existente-sin-compra.json` | Resultado del segundo recorrido. |
+| `worker-ejecucion.jsonl` | Consultas a Java y respuestas que el worker envió a Flowable. |
+| `cliente-antes-reinicio.json` y `cliente-despues-reinicio.json` | El cliente antes y después de apagar los servicios. |
+| `pruebas-endpoints-jakarta.json` | Códigos HTTP que devolvió el servicio en las pruebas. |
+| `recorrido.json` | Registro de los pasos que fui completando. |
+
+## Cómo repetí la prueba
+
+Primero inicié el entorno con `Flowable/Entrega-2/iniciar-local.ps1`, como expliqué en el README principal. Después corrí:
 
 ```powershell
 python .\Pruebas\Entrega-2\verificar-integracion.py --war "C:\ruta\flowable-rest.war"
 ```
 
-Se requiere que el entorno se haya iniciado con `Flowable/Entrega-2/iniciar-local.ps1` para que la prueba de reinicio pueda identificar sus procesos. Sin --war se prueban los recorridos, pero no se verifica un nuevo reinicio.
+La ruta del WAR cambia según dónde lo tenga cada uno. El script usa Python 3 y PowerShell. Con `--war` también comprueba el reinicio; sin ese argumento prueba los recorridos sin apagar los servicios. Al volver a ejecutarlo, actualiza los archivos de resultados con la prueba nueva.
 
-## Límites
+## Lo que falta probar desde la pantalla
 
-Las tareas de usuario se completan por API durante esta prueba, porque la interfaz propia del grupo sigue pendiente. El temporizador es de 10 segundos. No se envían mensajes reales a clientes ni se registran detalles de productos y montos. Estas pruebas no determinan la causa del bloqueo que hubo en Enterprise.
+En estas pruebas completé las tareas directamente por API. Falta hacerlo desde nuestra pantalla. Acorté las esperas a 10 segundos para poder revisar el recorrido completo.
+
+Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué causó el bloqueo anterior en Enterprise.

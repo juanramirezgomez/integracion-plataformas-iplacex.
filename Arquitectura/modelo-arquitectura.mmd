@@ -1,11 +1,9 @@
 flowchart LR
-    U[Responsable del emprendimiento] -. pendiente .-> UI[Interfaz web propia]
-    UI -. REST pendiente .-> F[Flowable OSS 8.0.0]
-    UI -. REST pendiente .-> J[Servicio Java Jakarta REST - Jersey]
-    T[Prueba técnica por API] -->|Inicia mensaje y completa tareas| F
-    W[External worker PowerShell] -->|Adquiere trabajos y devuelve variables| F
-    W -->|GET POST PUT| J
-    F --> M[(H2 en archivo - motor)]
-    J --> D[(H2 en archivo - negocio)]
-    classDef pendiente stroke-dasharray:5 5,fill:#fff4db,stroke:#9e721c
-    class UI pendiente
+    U["Responsable del emprendimiento"] -.-> UI["Nuestra pantalla - pendiente"]
+    UI -.-> F["Flowable OSS 8.0.0"]
+    UI -.-> J["Servicio Java - Jakarta REST con Jersey"]
+    T["Pruebas por API"] -->|Iniciar proceso y completar tareas| F
+    W["Worker en PowerShell"] -->|Pedir trabajos y devolver resultados| F
+    W -->|Consultar y actualizar clientes| J
+    F --> M[("H2 en archivo - datos de Flowable")]
+    J --> D[("H2 en archivo - clientes")]

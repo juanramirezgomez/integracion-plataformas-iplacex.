@@ -14,7 +14,7 @@ Hola compañeros, les dejo actualizado lo que pude avanzar y comprobar en local 
 
 Ajusté el servicio para que use Jakarta REST con Jersey, siguiendo lo que comentó el profe. Mantuve las operaciones que ya tenía, incluida la opción de borrar clientes. Después lo conecté con el worker y probé el TO-BE en Flowable OSS 8.0.0.
 
-Pude completar el recorrido de un cliente nuevo que compra y el de un cliente existente que no compra, sin duplicar su registro. Para estas pruebas completé las tareas por API; todavía falta conectar nuestra pantalla.
+Pude completar el recorrido de un cliente nuevo que compra y el de un cliente existente que no compra, sin duplicar su registro. Para estas pruebas envié los datos y completé las tareas directamente por la API de Flowable; todavía falta conectar nuestra pantalla.
 
 Por ahora usé H2 guardando los datos en archivos separados: uno para Flowable y otro para los clientes. Apagué y volví a iniciar los dos servicios para comprobar que los datos siguieran ahí, y el proceso pudo continuar. Nos falta definir qué base de datos vamos a usar.
 
