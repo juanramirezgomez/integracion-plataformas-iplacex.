@@ -49,4 +49,7 @@ La consola REST incluida en Flowable está en `http://127.0.0.1:8098/flowable-re
 
 ## Pendientes para la Entrega 2
 
-Conectar la interfaz propia del equipo, revisar los formularios y la experiencia de uso, acordar el almacenamiento definitivo, preparar ambos videos e incorporar sus enlaces. El equipo debe registrar las reuniones reales de cada semana. Esta actualización técnica no sustituye esas reuniones ni da por terminada toda la entrega.
+- Conectar la pantalla propia con Flowable y el servicio Java.
+- Probar los formularios y el recorrido desde esa pantalla.
+- Definir con el grupo la base de datos que se usará.
+- Grabar los dos videos y agregar sus enlaces al repo.
