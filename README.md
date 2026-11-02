@@ -1,55 +1,68 @@
 # Peluditos Pet Chile
 
-Proyecto del Grupo 05 para registrar consultas, organizar su atención y preparar contactos posteriores con los clientes.
+Proyecto del Grupo 05 para registrar las consultas de los clientes y llevar su seguimiento.
 
-## Integrantes y áreas de trabajo
+## Integrantes
 
 - Juan Andrés Ramírez Gómez: análisis y modelos BPMN.
 - Jorge Alberto Cerda Rodríguez: servicios web Java.
 - Marcelo Daniel Valenzuela Valenzuela: Flowable e integración.
 
-## Estado del avance al 2 de noviembre de 2026
+## Avance del 2 de noviembre
 
-Se adaptó el servicio a Jakarta REST mediante Jersey y se ejecutó el TO-BE en Flowable OSS 8.0.0. Se comprobaron el recorrido de cliente nuevo con compra y el de cliente existente sin compra, sin duplicar el registro. Las tareas humanas se completaron por API durante estas pruebas. La interfaz propia sigue pendiente.
+Hola compañeros, les dejo actualizado lo que pude avanzar y comprobar en local con Flowable 8.
 
-Se usan bases H2 relacionales guardadas en archivos independientes para el motor y los clientes. Se comprobó que el proceso y el cliente se conservan al detener y reiniciar ambos componentes. Es una configuración local de desarrollo que el equipo puede sustituir por otra compatible, documentando y repitiendo las pruebas.
+Ajusté el servicio para que use Jakarta REST con Jersey, siguiendo lo que comentó el profe. Mantuve las operaciones que ya tenía, incluida la opción de borrar clientes. Después lo conecté con el worker y probé el TO-BE en Flowable OSS 8.0.0.
 
-## Estructura
+Pude completar el recorrido de un cliente nuevo que compra y el de un cliente existente que no compra, sin duplicar su registro. Para estas pruebas completé las tareas por API; todavía falta conectar nuestra pantalla.
 
-- `Actas`: acuerdos e historial de avances. El avance del 2 de noviembre está registrado en `Acta-2026-11-02.md`; las actas anteriores conservan su contenido histórico.
-- `BPMN`: AS-IS, TO-BE ejecutable y justificación.
-- `Java-Web-Services`: servicio Jakarta REST, JPA y base de clientes.
-- `Flowable/Entrega-2`: arranque local y worker que invoca Java.
-- `Pruebas/Entrega-1`: evidencias históricas de la primera entrega.
-- `Pruebas/Entrega-2`: pruebas actuales, respuestas reales del motor y del servicio.
-- `Arquitectura`: diagrama de la solución y estado de sus componentes.
-- `Proyecto-2`: alcance, instrucciones y pendientes de la segunda entrega.
-- `Videos`: referencias a las presentaciones; los enlaces aún deben incorporarse.
+Por ahora usé H2 guardando los datos en archivos separados: uno para Flowable y otro para los clientes. Apagué y volví a iniciar los dos servicios para comprobar que los datos siguieran ahí, y el proceso pudo continuar. Nos falta definir qué base de datos vamos a usar.
+
+## Dónde dejé las cosas
+
+- `Actas`: dejé el avance de hoy en `Acta-2026-11-02.md` y conservé las actas anteriores.
+- `BPMN`: están el AS-IS, el TO-BE ejecutable y la explicación de los cambios.
+- `Java-Web-Services`: está el servicio Java actualizado a Jakarta REST.
+- `Flowable/Entrega-2`: dejé el inicio del entorno local y el worker.
+- `Pruebas/Entrega-1`: siguen las pruebas de la primera entrega.
+- `Pruebas/Entrega-2`: dejé los resultados y el script para repetir las pruebas de ahora.
+- `Arquitectura`: actualicé el dibujo con lo que está funcionando y lo que falta conectar.
+- `Proyecto-2`: dejé explicado el avance y lo pendiente de esta entrega.
+- `Videos`: falta agregar los enlaces a las presentaciones.
 
 ## Cómo ejecutar
 
-Requiere Java 21, PowerShell y el WAR de Flowable OSS 8.0.0 que se distribuye en el ZIP indicado por el profesor. No se necesita la versión trial de Enterprise para estas pruebas OSS.
+Hola chicos, para ejecutar esta prueba usé Java 21, PowerShell y el archivo `flowable-rest.war` de Flowable OSS 8.0.0, que fue el que mandó el profesor. No descargué la versión trial de Enterprise para esta prueba. También usé Python 3 para ejecutar el script de pruebas. Les dejo los pasos que seguí.
 
-1. Compilar desde `Java-Web-Services` con `.\mvnw.cmd clean verify` en Windows o `./mvnw clean verify` en Linux. Configurar `JAVA_HOME` con el JDK 21 si Maven no lo detecta.
-2. Desde la raíz del repo, ejecutar en PowerShell:
+Lo primero que hice fue compilar el servicio desde la carpeta `Java-Web-Services` con este comando:
+
+```powershell
+.\mvnw.cmd clean verify
+```
+
+Para que Maven usara Java 21, dejé `JAVA_HOME` apuntando al JDK 21. Después volví a la carpeta principal del repo e inicié Flowable y Java con este comando:
 
 ```powershell
 .\Flowable\Entrega-2\iniciar-local.ps1 -FlowableWar "C:\ruta\flowable-8.0.0\wars\flowable-rest.war"
 ```
 
-3. Para repetir la prueba integrada con Python 3, sin paquetes adicionales:
+Donde dice `C:\ruta\...` va la ubicación del archivo WAR en el computador de cada uno.
+
+Con los dos servicios iniciados, corrí esta prueba desde la carpeta principal:
 
 ```powershell
 python .\Pruebas\Entrega-2\verificar-integracion.py --war "C:\ruta\flowable-8.0.0\wars\flowable-rest.war"
 ```
 
-Ese comando comprueba los endpoints, despliega el modelo, inicia instancias por mensaje, ejecuta el worker, reinicia los componentes y guarda los resultados. Usa datos ficticios; reemplaza los archivos de resultados de esta prueba. Las capturas guardadas corresponden a la ejecución identificada en ellas.
+La prueba usa datos ficticios, carga el TO-BE, ejecuta el worker y recorre los dos casos. Al incluir `--war`, también reinicia Flowable y Java para comprobar que los datos se conserven. Los resultados quedan en `Pruebas/Entrega-2`; si la vuelven a ejecutar, esos archivos se actualizan con la prueba nueva.
 
-La consola REST incluida en Flowable está en `http://127.0.0.1:8098/flowable-rest/docs/`. El servicio Jakarta responde en `http://127.0.0.1:8096/api/leads`. La configuración privada, las bases y los logs de arranque se crean en `.local` y no se suben a GitHub.
+La consola REST que viene con Flowable queda en `http://127.0.0.1:8098/flowable-rest/docs/` y el listado de clientes en `http://127.0.0.1:8096/api/leads`.
 
-## Pendientes para la Entrega 2
+Los archivos de configuración local y las bases quedan en `.local`. Esa carpeta está excluida del repo para no subir las contraseñas ni los datos de cada computador.
 
-- Conectar la pantalla propia con Flowable y el servicio Java.
+## Lo que nos falta para la Entrega 2
+
+- Conectar nuestra pantalla con Flowable y el servicio Java.
 - Probar los formularios y el recorrido desde esa pantalla.
-- Definir con el grupo la base de datos que se usará.
-- Grabar los dos videos y agregar sus enlaces al repo.
+- Definir qué base de datos vamos a usar.
+- Grabar los dos videos y agregar los enlaces al repo.
