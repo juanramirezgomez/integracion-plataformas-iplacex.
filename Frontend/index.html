@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peluditos Pet Chile | Gestión de Clientes</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+
+<body>
+
+  <header>
+    <h1>🐾 Peluditos Pet Chile</h1>
+    <p>Sistema de gestión de consultas y clientes</p>
+  </header>
+
+  <main>
+
+    <!-- Formulario para registrar consultas -->
+    <section>
+      <h2>Registrar nueva consulta</h2>
+
+      <form id="consultaForm">
+
+        <label for="nombre">Nombre del cliente</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          required
+        >
+
+        <label for="contacto">Teléfono o contacto</label>
+        <input
+          type="text"
+          id="contacto"
+          name="contacto"
+          required
+        >
+
+        <label for="canal">Canal de origen</label>
+        <select id="canal" name="canal" required>
+          <option value="">Seleccionar canal</option>
+          <option value="WhatsApp">WhatsApp</option>
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="TikTok">TikTok</option>
+        </select>
+
+        <label for="descripcion">Descripción de la consulta</label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          rows="4"
+          required
+        ></textarea>
+
+        <button type="submit">
+          Registrar consulta
+        </button>
+
+      </form>
+
+      <p id="mensaje" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- Tabla de consultas -->
+    <section>
+      <h2>Consultas registradas</h2>
+
+      <button id="actualizar" type="button">
+        Actualizar listado
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Contacto</th>
+            <th>Canal</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+
+        <tbody id="tablaConsultas">
+          <tr>
+            <td colspan="4">Sin datos cargados</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
