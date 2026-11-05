@@ -1,16 +1,31 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+  <!-- Configuración general del documento -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Título que aparece en la pestaña del navegador -->
   <title>Peluditos Pet Chile | Gestión de Clientes</title>
+
+  <!-- Hoja de estilos de la aplicación -->
   <link rel="stylesheet" href="styles.css">
+
+  <!--
+    Archivo JavaScript principal.
+    defer permite cargar el HTML antes de ejecutar el script.
+  -->
   <script src="app.js" defer></script>
 </head>
 
 <body>
 
+  <!-- =====================================================
+       ENCABEZADO PRINCIPAL
+       Identifica la aplicación Peluditos Pet Chile.
+       ===================================================== -->
   <header>
     <h1>🐾 Peluditos Pet Chile</h1>
     <p>Sistema de gestión de consultas y clientes</p>
@@ -18,12 +33,29 @@
 
   <main>
 
-    <!-- Formulario para registrar consultas -->
-    <section>
+    <!-- =====================================================
+         SECCIÓN 1: REGISTRO DE CONSULTAS
+         Permite ingresar los datos de un cliente y su consulta.
+
+         En la integración BPMN, este formulario se adaptará
+         para iniciar un proceso en Flowable OSS.
+         ===================================================== -->
+    <section id="seccionConsultas">
+
       <h2>Registrar nueva consulta</h2>
 
+      <p>
+        Ingresa los datos del cliente para registrar
+        una nueva solicitud.
+      </p>
+
+      <!--
+        El identificador consultaForm permite que
+        app.js capture el envío del formulario.
+      -->
       <form id="consultaForm">
 
+        <!-- Nombre del cliente -->
         <label for="nombre">Nombre del cliente</label>
         <input
           type="text"
@@ -32,6 +64,7 @@
           required
         >
 
+        <!-- Teléfono o medio de contacto -->
         <label for="contacto">Teléfono o contacto</label>
         <input
           type="text"
@@ -40,6 +73,7 @@
           required
         >
 
+        <!-- Canal desde el cual llegó la consulta -->
         <label for="canal">Canal de origen</label>
         <select id="canal" name="canal" required>
           <option value="">Seleccionar canal</option>
@@ -49,7 +83,10 @@
           <option value="TikTok">TikTok</option>
         </select>
 
-        <label for="descripcion">Descripción de la consulta</label>
+        <!-- Descripción de la solicitud -->
+        <label for="descripcion">
+          Descripción de la consulta
+        </label>
         <textarea
           id="descripcion"
           name="descripcion"
@@ -57,23 +94,44 @@
           required
         ></textarea>
 
+        <!-- Botón para enviar la información -->
         <button type="submit">
           Registrar consulta
         </button>
 
       </form>
 
-      <p id="mensaje" role="status" aria-live="polite"></p>
+      <!-- Mensaje de éxito o error del formulario -->
+      <p
+        id="mensaje"
+        role="status"
+        aria-live="polite"
+      ></p>
+
     </section>
 
-    <!-- Tabla de consultas -->
-    <section>
+    <!-- =====================================================
+         SECCIÓN 2: CONSULTAS REGISTRADAS
+         Muestra los clientes almacenados en el backend Java.
+
+         Servicio REST:
+         GET http://127.0.0.1:8096/api/leads
+         ===================================================== -->
+    <section id="seccionClientes">
+
       <h2>Consultas registradas</h2>
 
+      <p>
+        Listado de clientes y consultas almacenadas
+        en el sistema.
+      </p>
+
+      <!-- Actualiza el listado consultando el backend -->
       <button id="actualizar" type="button">
         Actualizar listado
       </button>
 
+      <!-- Tabla de clientes -->
       <table>
         <thead>
           <tr>
@@ -84,16 +142,171 @@
           </tr>
         </thead>
 
+        <!--
+          app.js inserta aquí los registros
+          obtenidos desde el servicio REST.
+        -->
         <tbody id="tablaConsultas">
           <tr>
-            <td colspan="4">Sin datos cargados</td>
+            <td colspan="4">
+              Sin datos cargados
+            </td>
           </tr>
         </tbody>
       </table>
 
     </section>
 
+    <!-- =====================================================
+         SECCIÓN 3: BANDEJA DE TAREAS BPMN
+         NUEVA FUNCIONALIDAD PARA LA ENTREGA 2
+
+         Permite visualizar las tareas humanas pendientes
+         del proceso TO-BE ejecutado en Flowable OSS.
+
+         Arquitectura:
+         Frontend HTML/JavaScript
+                  |
+                  v
+         Backend Java - API REST
+                  |
+                  v
+         Motor BPMN Flowable OSS
+
+         Servicio REST:
+         GET http://127.0.0.1:8096/api/tareas
+
+         Las tareas se cargarán desde app.js.
+         ===================================================== -->
+    <section id="seccionTareas">
+
+      <h2>📋 Bandeja de tareas pendientes</h2>
+
+      <p>
+        Consulta y gestiona las actividades humanas
+        generadas por el proceso BPMN de Peluditos Pet Chile.
+      </p>
+
+      <!--
+        Botón que permitirá consultar las tareas
+        pendientes en Flowable OSS.
+      -->
+      <button id="actualizarTareas" type="button">
+        Actualizar tareas
+      </button>
+
+      <!--
+        Aquí se mostrarán mensajes de carga,
+        errores o confirmaciones.
+      -->
+      <p
+        id="mensajeTareas"
+        role="status"
+        aria-live="polite"
+      >
+        Las tareas todavía no se han cargado.
+      </p>
+
+      <!-- Tabla de tareas humanas pendientes -->
+      <table>
+        <thead>
+          <tr>
+            <th>Actividad</th>
+            <th>Responsable</th>
+            <th>Fecha de creación</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+
+        <!--
+          app.js insertará las tareas recibidas
+          desde el endpoint /api/tareas.
+
+          Ejemplos de tareas BPMN:
+          - Registrar consulta de cliente
+          - Clasificar consulta
+          - Asignar responsable
+          - Revisar y responder consulta
+          - Registrar resultado de atención
+        -->
+        <tbody id="tablaTareas">
+          <tr>
+            <td colspan="4">
+              Presiona "Actualizar tareas" para
+              consultar las actividades pendientes.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- =================================================
+           PANEL DE GESTIÓN DE TAREA
+           Se utilizará para mostrar los campos de una
+           tarea seleccionada y permitir completarla.
+
+           Inicialmente permanece oculto.
+
+           Servicio REST previsto:
+           POST /api/tareas/{id}/completar
+           ================================================= -->
+      <div id="panelTarea" hidden>
+
+        <h3 id="tituloTarea">
+          Gestionar tarea
+        </h3>
+
+        <p id="descripcionTarea">
+          Completa la información solicitada.
+        </p>
+
+        <!--
+          Los campos específicos se generarán desde
+          JavaScript según el tipo de tarea BPMN.
+        -->
+        <form id="formTarea">
+
+          <div id="camposTarea">
+            <!-- Campos dinámicos -->
+          </div>
+
+          <!-- Envía la finalización de la tarea -->
+          <button type="submit">
+            Completar tarea
+          </button>
+
+          <!-- Cierra el panel sin completar la tarea -->
+          <button
+            id="cancelarTarea"
+            type="button"
+          >
+            Cancelar
+          </button>
+
+        </form>
+
+        <!-- Resultado de la operación -->
+        <p
+          id="resultadoTarea"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+      </div>
+
+    </section>
+
   </main>
+
+  <!-- =====================================================
+       PIE DE PÁGINA
+       Información general del proyecto académico.
+       ===================================================== -->
+  <footer>
+    <p>
+      Peluditos Pet Chile |
+      Proyecto Integración de Plataformas
+    </p>
+  </footer>
 
 </body>
 </html>

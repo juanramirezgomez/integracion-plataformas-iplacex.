@@ -1,2 +1,12 @@
 
 /Java-Web-Services/datos/
+
+# Credenciales y configuraciones locales
+.local/
+
+# Registros temporales del Worker
+Flowable/Entrega-2/worker-ejecucion.jsonl
+
+# Bases de datos H2
+*.mv.db
+*.trace.db

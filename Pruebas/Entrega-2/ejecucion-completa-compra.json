@@ -1,0 +1,30 @@
+﻿{
+    "businessKey":  null,
+    "businessStatus":  null,
+    "callbackId":  null,
+    "callbackType":  null,
+    "deleteReason":  null,
+    "durationInMillis":  1991826,
+    "endActivityId":  "EndNoneEvent_102",
+    "endTime":  "2026-11-05T12:22:20.682Z",
+    "endUserId":  "peluditos-local",
+    "id":  "e916efbf-d90e-11f1-afe8-088fc3d89820",
+    "name":  null,
+    "processDefinitionDescription":  "Modelo BPMN del proceso propuesto para mejorar la gestiÃ³n de leads, seguimiento de clientes y fidelizaciÃ³n de Peluditos Pet Chile.",
+    "processDefinitionId":  "3246f7ec-d90d-11f1-afe8-088fc3d89820",
+    "processDefinitionName":  "Peluditos Pet Chile - TO-BE",
+    "processDefinitionUrl":  "http://127.0.0.1:8098/flowable-rest/service/repository/process-definitions/3246f7ec-d90d-11f1-afe8-088fc3d89820",
+    "propagatedStageInstanceId":  null,
+    "referenceId":  null,
+    "referenceType":  null,
+    "startActivityId":  "startnoneevent1",
+    "startTime":  "2026-11-05T11:49:08.856Z",
+    "startUserId":  "peluditos-local",
+    "state":  "completed",
+    "superProcessInstanceId":  null,
+    "tenantId":  "",
+    "url":  "http://127.0.0.1:8098/flowable-rest/service/history/historic-process-instances/e916efbf-d90e-11f1-afe8-088fc3d89820",
+    "variables":  [
+
+                  ]
+}

@@ -1,12 +1,42 @@
 
+/* =========================================================
+   PELUDITOS PET CHILE
+   Hoja de estilos principal
+
+   Proyecto: Integración de Plataformas
+   Funcionalidades visuales:
+   - Registro de consultas
+   - Listado de clientes
+   - Bandeja de tareas BPMN
+   - Panel de gestión de tareas Flowable
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1. COLORES Y VARIABLES GENERALES
+   --------------------------------------------------------- */
+
 :root {
   --primary: #7554a3;
   --primary-dark: #5d3d88;
+  --primary-light: #f3eff8;
+
   --background: #f6f5fa;
   --surface: #ffffff;
+
   --text: #29243a;
+  --text-secondary: #6b6477;
+
   --border: #e5e0ec;
+
+  --success: #18794e;
+  --error: #b42318;
+
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
+
+/* ---------------------------------------------------------
+   2. CONFIGURACIÓN GENERAL
+   --------------------------------------------------------- */
 
 * {
   box-sizing: border-box;
@@ -17,43 +47,81 @@ body {
   font-family: "Segoe UI", Arial, sans-serif;
   background: var(--background);
   color: var(--text);
+  line-height: 1.5;
 }
 
+/* Evita que elementos ocultos aparezcan por estilos flex */
+[hidden] {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------
+   3. ENCABEZADO PRINCIPAL
+   --------------------------------------------------------- */
+
 header {
-  background: var(--primary);
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--primary-dark)
+  );
+
   color: white;
-  padding: 30px 8%;
+  padding: 34px 8%;
 }
 
 header h1 {
   margin: 0;
   font-size: 30px;
+  font-weight: 700;
 }
 
 header p {
   margin: 10px 0 0;
+  opacity: 0.92;
 }
+
+/* ---------------------------------------------------------
+   4. CONTENEDOR PRINCIPAL
+   --------------------------------------------------------- */
 
 main {
   max-width: 1100px;
   margin: 35px auto;
   padding: 0 20px;
+
   display: grid;
   gap: 25px;
 }
+
+/* ---------------------------------------------------------
+   5. TARJETAS DE CADA SECCIÓN
+   --------------------------------------------------------- */
 
 section {
   background: var(--surface);
   padding: 30px;
   border-radius: 14px;
   border: 1px solid var(--border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow);
+  min-width: 0;
 }
 
-h2 {
+section h2 {
   margin-top: 0;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
+  font-size: 23px;
+  color: var(--primary-dark);
 }
+
+section > p {
+  color: var(--text-secondary);
+  margin-bottom: 22px;
+}
+
+/* ---------------------------------------------------------
+   6. FORMULARIOS
+   --------------------------------------------------------- */
 
 form {
   display: flex;
@@ -64,23 +132,38 @@ form {
 label {
   font-weight: 600;
   margin-top: 8px;
+  color: var(--text);
 }
 
 input,
 select,
 textarea {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: 8px;
   font: inherit;
+  background: white;
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  outline: 2px solid #b9a1d9;
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(117, 84, 163, 0.15);
 }
+
+/* ---------------------------------------------------------
+   7. BOTONES
+   --------------------------------------------------------- */
 
 button {
   background: var(--primary);
@@ -92,19 +175,40 @@ button {
   font-weight: 600;
   cursor: pointer;
   width: fit-content;
+
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+button:focus-visible {
+  outline: 3px solid #b9a1d9;
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 form button {
-  margin-top: 15px;
+  margin-top: 12px;
 }
 
-#actualizar {
+/* Botones de actualización */
+#actualizar,
+#actualizarTareas {
   margin-bottom: 20px;
 }
+
+/* ---------------------------------------------------------
+   8. TABLAS DE CLIENTES Y TAREAS
+   --------------------------------------------------------- */
 
 table {
   width: 100%;
@@ -116,24 +220,138 @@ th,
 td {
   padding: 14px;
   border-bottom: 1px solid var(--border);
+  vertical-align: middle;
 }
 
 th {
-  background: #f3eff8;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 14px;
 }
 
-#mensaje {
+td {
+  font-size: 14px;
+}
+
+tbody tr:hover {
+  background: #faf8fd;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Botones de gestión dentro de las tablas */
+#tablaTareas button {
+  padding: 9px 14px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   9. MENSAJES INFORMATIVOS
+   --------------------------------------------------------- */
+
+#mensaje,
+#mensajeTareas,
+#resultadoTarea {
   font-weight: 600;
+  font-size: 14px;
   color: var(--primary-dark);
 }
+
+#mensaje:empty,
+#mensajeTareas:empty,
+#resultadoTarea:empty {
+  display: none;
+}
+
+/* ---------------------------------------------------------
+   10. BANDEJA DE TAREAS BPMN
+   --------------------------------------------------------- */
+
+#seccionTareas {
+  border-top: 4px solid var(--primary);
+}
+
+#seccionTareas h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ---------------------------------------------------------
+   11. PANEL PARA GESTIONAR TAREAS
+   --------------------------------------------------------- */
+
+#panelTarea {
+  margin-top: 28px;
+  padding: 24px;
+
+  border: 1px solid #d7c9e8;
+  border-radius: 12px;
+  background: #faf8fd;
+}
+
+#panelTarea h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 20px;
+  color: var(--primary-dark);
+}
+
+#descripcionTarea {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* Contenedor de campos dinámicos */
+#camposTarea {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Botón para cancelar una tarea */
+#cancelarTarea {
+  background: #e9e4ef;
+  color: var(--text);
+}
+
+#cancelarTarea:hover:not(:disabled) {
+  background: #dcd3e8;
+}
+
+/* ---------------------------------------------------------
+   12. PIE DE PÁGINA
+   --------------------------------------------------------- */
+
+footer {
+  text-align: center;
+  padding: 25px 20px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------
+   13. DISEÑO RESPONSIVO
+   Adaptación a tablets y celulares.
+   --------------------------------------------------------- */
 
 @media (max-width: 650px) {
   header {
     padding: 24px;
   }
 
+  header h1 {
+    font-size: 25px;
+  }
+
   main {
     margin: 20px auto;
+    padding: 0 12px;
+    gap: 18px;
   }
 
   section {
@@ -141,7 +359,19 @@ th {
     overflow-x: auto;
   }
 
+  section h2 {
+    font-size: 20px;
+  }
+
   table {
     min-width: 480px;
+  }
+
+  #panelTarea {
+    padding: 16px;
+  }
+
+  button {
+    max-width: 100%;
   }
 }
