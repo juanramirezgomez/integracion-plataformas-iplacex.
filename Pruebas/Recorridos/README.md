@@ -27,10 +27,10 @@ Durante la prueba apagué y volví a iniciar Flowable y Java. Pude recuperar al 
 
 ## Cómo repetí la prueba
 
-Primero inicié el entorno con `Flowable/Entrega-2/iniciar-local.ps1`, como expliqué en el README principal. Después corrí:
+Primero inicié el entorno con `Flowable/iniciar-local.ps1`, como expliqué en el README principal. Después corrí:
 
 ```powershell
-python .\Pruebas\Entrega-2\verificar-integracion.py --war "C:\ruta\flowable-rest.war"
+python .\Pruebas\Recorridos\verificar-integracion.py --war "C:\ruta\flowable-rest.war"
 ```
 
 La ruta del WAR cambia según dónde lo tenga cada uno. El script usa Python 3 y PowerShell. Con `--war` también comprueba el reinicio; sin ese argumento prueba los recorridos sin apagar los servicios. Al volver a ejecutarlo, actualiza los archivos de resultados con la prueba nueva.

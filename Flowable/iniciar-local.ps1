@@ -4,7 +4,7 @@ param(
     [int]$PuertoJava=8096
 )
 $ErrorActionPreference='Stop'
-$repo=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
+$repo=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $local=Join-Path $repo '.local'
 New-Item -ItemType Directory -Path $local -Force | Out-Null
 $java=(Get-Command java.exe -ErrorAction Stop).Source

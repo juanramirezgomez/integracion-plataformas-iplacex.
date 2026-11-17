@@ -5,7 +5,7 @@
 .local/
 
 # Registros temporales del Worker
-Flowable/Entrega-2/worker-ejecucion.jsonl
+External-Workers/worker-ejecucion.jsonl
 flowable-8.0.0
 # Bases de datos H2
 *.mv.db

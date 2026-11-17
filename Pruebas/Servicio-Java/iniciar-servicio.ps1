@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$repo=Split-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) -Parent
+$repo=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $project=Join-Path $repo 'Java-Web-Services'
 $javaHome=$env:JAVA_HOME
 if(!$javaHome){$javaHome=[Environment]::GetEnvironmentVariable('JAVA_HOME','Machine')}

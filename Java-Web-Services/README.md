@@ -33,7 +33,7 @@ java -jar target/gestion-leads-backend-0.0.1-SNAPSHOT.jar
 
 Así queda en `http://127.0.0.1:8096/api/leads` y guarda los datos en `datos/clientes.mv.db`, dentro de la carpeta desde la que se inicia.
 
-Para probarlo junto con Flowable usé el script `Flowable/Entrega-2/iniciar-local.ps1`, desde la carpeta principal. Ese inicio guarda los clientes y los datos del motor en archivos separados dentro de `.local`.
+Para probarlo junto con Flowable usé el script `Flowable/iniciar-local.ps1`, desde la carpeta principal. Ese inicio guarda los clientes y los datos del motor en archivos separados dentro de `.local`.
 
 ## Datos que usé para el registro
 
@@ -49,6 +49,6 @@ Dejé estas variables por si cambiamos la base: `BUSINESS_DB_URL`, `BUSINESS_DB_
 
 Para conectar una pantalla que esté en otro puerto, dejé `FRONTEND_ORIGINS` con la lista de direcciones permitidas, separadas por comas. Por ahora acepta localhost y 127.0.0.1 en los puertos 5173 y 3000. Esta es la configuración CORS: permite que el navegador haga las peticiones desde esas direcciones.
 
-Los resultados quedaron en `Pruebas/Entrega-2`. La prueba de arranque de Maven usa una base temporal solo para ese test; las pruebas con Flowable sí guardan los datos en archivos y comprueban el reinicio.
+Los resultados quedaron en `Pruebas/Recorridos`. La prueba de arranque de Maven usa una base temporal solo para ese test; las pruebas con Flowable sí guardan los datos en archivos y comprueban el reinicio.
 
 Para configurar Jersey me basé en la documentación de Spring Boot: https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.jersey

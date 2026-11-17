@@ -1,9 +1,8 @@
 flowchart LR
-    U["Responsable del emprendimiento"] -.-> UI["Nuestra pantalla - pendiente"]
-    UI -.-> F["Flowable OSS 8.0.0"]
-    UI -.-> J["Servicio Java - Jakarta REST con Jersey"]
-    T["Pruebas por API"] -->|Iniciar proceso y completar tareas| F
-    W["Worker en PowerShell"] -->|Pedir trabajos y devolver resultados| F
+    U["Responsable del emprendimiento"] --> UI["Interfaz web"]
+    UI -->|Registrar consultas y completar tareas| J["Servicio Java - Jakarta REST con Jersey"]
+    J -->|Iniciar procesos y gestionar tareas humanas| F["Flowable OSS 8"]
+    W["External worker en PowerShell"] -->|Tomar tareas y devolver resultados| F
     W -->|Consultar y actualizar clientes| J
-    F --> M[("H2 en archivo - datos de Flowable")]
-    J --> D[("H2 en archivo - clientes")]
+    F --> M[("H2 en archivo - datos del motor")]
+    J --> D[("H2 en archivo - datos de clientes")]

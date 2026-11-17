@@ -31,7 +31,7 @@ def complete(pid,key,values=None):
 def worker():
     shell=shutil.which('pwsh') or shutil.which('powershell')
     assert shell,'Se necesita PowerShell para ejecutar el worker.'
-    result=subprocess.run([shell,'-NoProfile','-File',str(ROOT/'Flowable/Entrega-2/worker.ps1'),'-TokenPath',str(args.auth_file),'-AuthScheme','Basic','-FlowableBase',args.flowable,'-JavaBase',args.java,'-Cycles','1','-LogPath',str(out/'worker-ejecucion.jsonl')],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+    result=subprocess.run([shell,'-NoProfile','-File',str(ROOT/'External-Workers/worker.ps1'),'-TokenPath',str(args.auth_file),'-AuthScheme','Basic','-FlowableBase',args.flowable,'-JavaBase',args.java,'-Cycles','1','-LogPath',str(out/'worker-ejecucion.jsonl')],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
     assert result.returncode==0,result.stderr+'\n'+result.stdout
 def deploy():
     file=ROOT/'BPMN/TO-BE.bpmn';boundary='----test'+secrets.token_hex(8)
@@ -59,7 +59,7 @@ def restart():
         subprocess.run([args.powershell,'-NoProfile','-Command',cmd],check=True,capture_output=True)
     event('Motor y Java detenidos para comprobar persistencia')
     time.sleep(2)
-    subprocess.run([args.powershell,'-NoProfile','-File',str(ROOT/'Flowable/Entrega-2/iniciar-local.ps1'),'-FlowableWar',str(args.war)],check=True,timeout=130)
+    subprocess.run([args.powershell,'-NoProfile','-File',str(ROOT/'Flowable/iniciar-local.ps1'),'-FlowableWar',str(args.war)],check=True,timeout=130)
 def run():
     engine=request('/management/engine');assert engine['version']=='8.0.0';write('version-motor.json',engine)
     event('Motor comprobado',version=engine['version'],servicio='Jakarta REST con Jersey')
@@ -95,7 +95,7 @@ def run():
     lead=next(x for x in request('/api/leads',java=True) if x['id']==lead['id']);assert lead['estado']=='CONVERTIDO'
     write('historial-instancia-completa.json',hist);write('cliente-final.json',lead)
     write('actividades-ejecutadas.json',request('/history/historic-activity-instances?processInstanceId='+pid+'&size=100'))
-    write('resultado.json',dict(versionFlowable=engine['version'],servicio='Jakarta REST con Jersey 4',instancia=pid,completado=True,fin=hist['endTime'],cliente=lead,persistenciaMotorComprobada=bool(args.war),persistenciaNegocioComprobada=bool(args.war),inicio='Mensaje ConsultaClienteRecibida',temporizadorDemo='PT10S',interaccion='Tareas humanas completadas por API; interfaz propia pendiente',alcance='Recorrido con compra. La interfaz y las demás funciones de la Entrega 2 siguen pendientes.'))
+    write('resultado.json',dict(versionFlowable=engine['version'],servicio='Jakarta REST con Jersey 4',instancia=pid,completado=True,fin=hist['endTime'],cliente=lead,persistenciaMotorComprobada=bool(args.war),persistenciaNegocioComprobada=bool(args.war),inicio='Mensaje ConsultaClienteRecibida',temporizadorDemo='PT10S',interaccion='Tareas humanas completadas por API en esta prueba',alcance='Recorrido con compra probado directamente por API.'))
     event('Recorrido con compra completado',instancia=pid)
     pid2=start(values);complete(pid2,'ExpandedSubProcess_4',values);worker();complete(pid2,'ExpandedSubProcess_69')
     assert len([x for x in request('/api/leads',java=True) if x['telefono']==values['telefono']])==1
@@ -114,6 +114,6 @@ if __name__=='__main__':
     parser.add_argument('--war',type=Path,help='Activa además la prueba de reinicio del entorno iniciado con iniciar-local.ps1')
     parser.add_argument('--powershell',default=shutil.which('pwsh') or shutil.which('powershell'))
     args=parser.parse_args();args.flowable=args.flowable.rstrip('/');args.java=args.java.rstrip('/')
-    out=ROOT/'Pruebas/Entrega-2';out.mkdir(parents=True,exist_ok=True)
+    out=ROOT/'Pruebas/Recorridos';out.mkdir(parents=True,exist_ok=True)
     try:run()
     except Exception as exc:write('error-validacion.json',{'error':str(exc)});raise
