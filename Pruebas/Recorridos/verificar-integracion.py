@@ -33,15 +33,40 @@ def worker():
     assert shell,'Se necesita PowerShell para ejecutar el worker.'
     result=subprocess.run([shell,'-NoProfile','-File',str(ROOT/'External-Workers/worker.ps1'),'-TokenPath',str(args.auth_file),'-AuthScheme','Basic','-FlowableBase',args.flowable,'-JavaBase',args.java,'-Cycles','1','-LogPath',str(out/'worker-ejecucion.jsonl')],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
     assert result.returncode==0,result.stderr+'\n'+result.stdout
-def deploy():
-    file=ROOT/'BPMN/TO-BE.bpmn';boundary='----test'+secrets.token_hex(8)
-    data=(f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="TO-BE.bpmn"\r\nContent-Type: application/xml\r\n\r\n').encode()+file.read_bytes()+f'\r\n--{boundary}--\r\n'.encode()
+def deploy(filename, evidence):
+    file=ROOT/'BPMN'/filename;boundary='----test'+secrets.token_hex(8)
+    data=(f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{filename}"\r\nContent-Type: application/xml\r\n\r\n').encode()+file.read_bytes()+f'\r\n--{boundary}--\r\n'.encode()
     req=urllib.request.Request(args.flowable+'/service/repository/deployments',data=data,headers={'Authorization':'Basic '+args.auth_file.read_text().strip(),'Content-Type':'multipart/form-data; boundary='+boundary},method='POST')
-    with urllib.request.urlopen(req,timeout=30) as r:write('despliegue.json',json.load(r))
-    event('TO-BE desplegado en Flowable 8')
+    with urllib.request.urlopen(req,timeout=30) as r:write(evidence,json.load(r))
+    event('Modelo desplegado en Flowable 8',archivo=filename)
 def start(values):
     p=request('/runtime/process-instances','POST',dict(message='ConsultaClienteRecibida',variables=variables({'initiator':'peluditos-local',**values})))
     event('Instancia iniciada por mensaje',instancia=p['id']);return p['id']
+def probar_recompra():
+    deploy('Oportunidades-Recompra.bpmn','despliegue-recompra.json')
+    cliente=request('/api/leads','POST',dict(
+        nombreCliente='Cliente existente de prueba',correo='recompra@example.invalid',
+        telefono='RECOMPRA-'+secrets.token_hex(5),canalOrigen='Local',
+        consulta='Compra previa registrada',estado='CONVERTIDO',
+    ),java=True,expected=200)
+    assert cliente['estado']=='CONVERTIDO'
+    cierres=[]
+    for motivo,contactar,final in [
+        ('Cumpleaños de la mascota',True,'oportunidadAtendida'),
+        ('Campaña de Navidad',False,'oportunidadCerrada'),
+    ]:
+        payload=dict(initiator='peluditos-local',clienteId=cliente['id'],motivo=motivo,fechaOportunidad='2026-12-20')
+        p=request('/runtime/process-instances','POST',dict(
+            message='OportunidadComercialDetectada',variables=variables(payload)))
+        pid=p['id']
+        complete(pid,'revisarOportunidad',{'contactarCliente':contactar})
+        if contactar:
+            complete(pid,'contactarCliente',{'canalContacto':'WhatsApp'})
+            complete(pid,'registrarResultado',{'resultadoContacto':'Seguimiento registrado'})
+        hist=wait_finished(pid,final)
+        cierres.append(dict(clienteId=cliente['id'],motivo=motivo,contactar=contactar,historial=hist))
+    write('resultados-recompra.json',cierres)
+    event('Oportunidades por fecha y campaña completadas sin consulta previa',clienteId=cliente['id'])
 def wait_task(pid,key):
     deadline=time.time()+90
     while time.time()<deadline:
@@ -49,6 +74,16 @@ def wait_task(pid,key):
         if ts:assert ts[0]['taskDefinitionKey']==key,ts;return
         time.sleep(1)
     raise AssertionError('No apareció la tarea después del temporizador: '+key)
+def wait_finished(pid,final):
+    deadline=time.monotonic()+30
+    while time.monotonic()<deadline:
+        hist=request('/history/historic-process-instances/'+pid)
+        if hist.get('endTime'):
+            assert not hist.get('deleteReason') and hist.get('endActivityId')==final,hist
+            return hist
+        time.sleep(0.25)
+    raise AssertionError('Flowable no cerró la instancia '+pid)
+
 def restart():
     local=ROOT/'.local'
     # El script solo puede detener los PID cuyos comandos apuntan a esta copia del repo.
@@ -77,7 +112,7 @@ def run():
     request('/api/leads/'+str(lead['id']),'DELETE',None,True,404)
     assert not any(x['id']==lead['id'] for x in request('/api/leads',java=True))
     event('Contrato REST comprobado',pruebas=len(contracts))
-    deploy()
+    deploy('TO-BE.bpmn','despliegue.json')
     values=dict(nombreCliente='Prueba Jakarta Grupo 5',correo='jakarta@example.invalid',telefono='JAKARTA-'+secrets.token_hex(5),canalOrigen='WhatsApp',consulta='Consulta ficticia por torta para mascota')
     pid=start(values);complete(pid,'ExpandedSubProcess_4',values);worker();worker()
     assert tasks(pid)[0]['taskDefinitionKey']=='ExpandedSubProcess_18'
@@ -90,8 +125,9 @@ def run():
         write('cliente-despues-reinicio.json',recovered);event('Reinicio comprobado: cliente y tarea conservados',instancia=pid)
     for key in ['ExpandedSubProcess_18','ExpandedSubProcess_24','ExpandedSubProcess_20','ExpandedSubProcess_22']:
         complete(pid,key,{'compraRealizada':True} if key.endswith('_22') else {})
-    worker();complete(pid,'ExpandedSubProcess_99');wait_task(pid,'ExpandedSubProcess_100');complete(pid,'ExpandedSubProcess_100');complete(pid,'ExpandedSubProcess_101')
-    hist=request('/history/historic-process-instances/'+pid);assert hist.get('endTime') and not hist.get('deleteReason')
+    worker()
+    assert not tasks(pid), 'Registrar la compra debe cerrar la consulta sin iniciar una recompra.'
+    hist=wait_finished(pid,'EndNoneEvent_102')
     lead=next(x for x in request('/api/leads',java=True) if x['id']==lead['id']);assert lead['estado']=='CONVERTIDO'
     write('historial-instancia-completa.json',hist);write('cliente-final.json',lead)
     write('actividades-ejecutadas.json',request('/history/historic-activity-instances?processInstanceId='+pid+'&size=100'))
@@ -102,9 +138,10 @@ def run():
     for key in ['ExpandedSubProcess_18','ExpandedSubProcess_24','ExpandedSubProcess_20','ExpandedSubProcess_22','ExpandedSubProcess_30']:
         complete(pid2,key,{'compraRealizada':False} if key.endswith('_22') else {})
     wait_task(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_104')
-    hist2=request('/history/historic-process-instances/'+pid2);assert hist2.get('endTime') and not hist2.get('deleteReason')
+    hist2=wait_finished(pid2,'EndNoneEvent_105')
     write('cliente-existente-sin-compra.json',dict(instancia=pid2,completado=True,sinDuplicados=True,historial=hist2))
     event('Cliente existente y seguimiento sin compra completados',instancia=pid2)
+    probar_recompra()
     print('Prueba integrada correcta. Evidencias:',out,flush=True)
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)

@@ -10,7 +10,7 @@
 
 ## Objetivo
 
-Registrar las consultas de Peluditos Pet Chile, identificar por qué canal llegaron y darles seguimiento. Si el cliente compra, el proceso deja registrado el cambio de estado y permite organizar un próximo contacto.
+Registrar las consultas de Peluditos Pet Chile, identificar por qué canal llegaron y darles seguimiento. Si un prospecto compra, el proceso registra su cambio a cliente. Las [oportunidades de recompra](BPMN/Oportunidades-Recompra.bpmn) se modelan como un proceso aparte que puede empezar por una fecha o campaña.
 
 ## Componentes y arquitectura
 
@@ -52,14 +52,15 @@ Desde la raíz del repo, cambia la ruta de ejemplo por la ubicación del WAR en 
 
 Cuando los servicios respondan, puedes abrir la [consola de Flowable](http://127.0.0.1:8098/flowable-rest/docs/).
 
-### 3. Cargar el TO-BE
+### 3. Cargar los modelos BPMN
 
-Si el motor local todavía no tiene el modelo cargado, ejecuta esto desde la raíz del repo.
+Para cargar las definiciones actualizadas en el motor local, ejecuta esto desde la raíz del repo.
 
 ```powershell
 $auth = 'Authorization: Basic ' + (Get-Content .\.local\auth.txt -Raw).Trim()
 $flow = 'http://127.0.0.1:8098/flowable-rest/service'
 curl.exe -fsS -H $auth -F "file=@BPMN/TO-BE.bpmn" "$flow/repository/deployments"
+curl.exe -fsS -H $auth -F "file=@BPMN/Oportunidades-Recompra.bpmn" "$flow/repository/deployments"
 ```
 
 ### 4. Arrancar el worker
@@ -81,5 +82,7 @@ npx.cmd --yes http-server .\Interfaz -p 5173 -a 127.0.0.1
 Abre [Peluditos en local](http://127.0.0.1:5173/). Registra una consulta con datos de prueba y completa su primera tarea desde la bandeja. Usa **Actualizar tareas** para ver el siguiente paso cuando avance el proceso.
 
 ## Conclusión
+
+El proceso de recompra se puede iniciar por API. Queda por conectar la detección de fechas y campañas y la pantalla para gestionarlas.
 
 El prototipo ya permite probar en local el recorrido de una consulta con y sin compra. El [diagrama de arquitectura](Arquitectura/modelo-arquitectura.md) muestra cómo se conectan los componentes en local. Los [videos del avance anterior](Videos/Entrega-2/) están en la carpeta de videos.

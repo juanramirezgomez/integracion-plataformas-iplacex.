@@ -1,4 +1,4 @@
-# Pruebas de la Entrega 2
+# Pruebas de los recorridos
 
 Aquí dejé los resultados de las pruebas que hice con Flowable 8 y el servicio Java actualizado a Jakarta REST.
 
@@ -25,7 +25,11 @@ Durante la prueba apagué y volví a iniciar Flowable y Java. Pude recuperar al 
 | `pruebas-endpoints-jakarta.json` | Códigos HTTP que devolvió el servicio en las pruebas. |
 | `recorrido.json` | Registro de los pasos que fui completando. |
 
-## Cómo repetí la prueba
+## Prueba del BPMN de recompra
+
+El script también registra directamente en Java a un cliente de prueba que ya hizo una compra y abre dos oportunidades por mensaje en Flowable. Comprueba el recorrido con contacto por cumpleaños y el cierre sin contacto de una campaña. Guarda las respuestas en `resultados-recompra.json`. Estas pruebas envían el mensaje por API.
+
+## Cómo repetir las pruebas
 
 Primero inicié el entorno con `Flowable/iniciar-local.ps1`, como expliqué en el README principal. Después corrí:
 
@@ -37,6 +41,6 @@ La ruta del WAR cambia según dónde lo tenga cada uno. El script usa Python 3 y
 
 ## Lo que falta probar desde la pantalla
 
-En estas pruebas completé las tareas directamente por API. Falta hacerlo desde nuestra pantalla. Acorté las esperas a 10 segundos para poder revisar el recorrido completo.
+Este script completa las tareas directamente por API. Falta volver a comprobar los recorridos desde la pantalla después de integrar la recompra. En el flujo de consultas, la espera de seguimiento se mantiene en 10 segundos para la prueba.
 
 Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué causó el bloqueo anterior en Enterprise.

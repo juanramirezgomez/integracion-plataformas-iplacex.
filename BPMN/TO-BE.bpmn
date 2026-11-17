@@ -4,43 +4,35 @@
     <participant id="Pool_1" name="Peluditos Pet Chile" processRef="peluditosPetChileTOBEGrupo5"></participant>
   </collaboration>
   <message id="consultaClienteRecibida" name="ConsultaClienteRecibida"/>
-  <process id="peluditosPetChileTOBEGrupo5" name="Peluditos Pet Chile - TO-BE" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
-    <documentation>Modelo BPMN del proceso propuesto para mejorar la gestión de leads, seguimiento de clientes y fidelización de Peluditos Pet Chile.</documentation>
+  <process id="peluditosPetChileTOBEGrupo5" name="Peluditos Pet Chile - Consultas y prospectos" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
+    <documentation>Seguimiento de consultas y prospectos hasta registrar la compra o cerrar el seguimiento. Las oportunidades de recompra tienen su propio proceso.</documentation>
     <extensionElements>
       <flowable:candidates-type><![CDATA[all]]></flowable:candidates-type>
       <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
       <design:creationdate><![CDATA[2026-10-22T18:20:36.245Z]]></design:creationdate>
       <design:modificationdate><![CDATA[2026-10-28T03:46:39.123Z]]></design:modificationdate>
-      <design:description><![CDATA[Modelo BPMN del proceso propuesto para mejorar la gestión de leads, seguimiento de clientes y fidelización de Peluditos Pet Chile.]]></design:description>
+      <design:description><![CDATA[Seguimiento de consultas y prospectos hasta registrar la compra o cerrar el seguimiento. Las oportunidades de recompra tienen su propio proceso.]]></design:description>
     </extensionElements>
     <laneSet id="laneSet_peluditosPetChileTOBEGrupo5">
       <lane id="Lane_2" name="Responsable del emprendimiento">
-        <flowNodeRef>ExpandedSubProcess_99</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_22</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_104</flowNodeRef>
-        <flowNodeRef>ExpandedSubProcess_100</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_103</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_20</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_29</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_30</flowNodeRef>
-        <flowNodeRef>ExpandedSubProcess_101</flowNodeRef>
         <flowNodeRef>Exclusive_Databased_Gateway_27</flowNodeRef>
-        <flowNodeRef>IntermediateTimerEvent_82</flowNodeRef>
         <flowNodeRef>IntermediateTimerEvent_83</flowNodeRef>
         <flowNodeRef>EndNoneEvent_102</flowNodeRef>
         <flowNodeRef>EndNoneEvent_105</flowNodeRef>
-        <flowNodeRef>SequenceFlow_111</flowNodeRef>
         <flowNodeRef>SequenceFlow_28</flowNodeRef>
         <flowNodeRef>SequenceFlow_109</flowNodeRef>
-        <flowNodeRef>SequenceFlow_113</flowNodeRef>
         <flowNodeRef>SequenceFlow_108</flowNodeRef>
         <flowNodeRef>SequenceFlow_23</flowNodeRef>
         <flowNodeRef>SequenceFlow_110</flowNodeRef>
         <flowNodeRef>SequenceFlow_106</flowNodeRef>
-        <flowNodeRef>SequenceFlow_114</flowNodeRef>
         <flowNodeRef>SequenceFlow_31</flowNodeRef>
         <flowNodeRef>SequenceFlow_32</flowNodeRef>
-        <flowNodeRef>SequenceFlow_112</flowNodeRef>
         <flowNodeRef>SequenceFlow_107</flowNodeRef>
       </lane>
       <lane id="Lane_3" name="Sistema de gestión">
@@ -65,16 +57,7 @@
         <flowNodeRef>SequenceFlow_5</flowNodeRef>
       </lane>
     </laneSet>
-    <userTask id="ExpandedSubProcess_99" name="Programar próximo contacto" flowable:assignee="${initiator}" flowable:formKey="seguimientoConsultaGrupo5" flowable:formFieldValidation="false">
-      <extensionElements>
-        <flowable:element-name>Programar contacto 
-de fidelizacion</flowable:element-name>
-        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
-        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </userTask>
-    <userTask id="ExpandedSubProcess_22" name="Registrar resultado de atencion" flowable:assignee="${initiator}" flowable:formKey="resultadoAtencionGrupo5" flowable:formFieldValidation="false">
+    <userTask id="ExpandedSubProcess_22" name="Indicar si hubo compra" flowable:assignee="${initiator}" flowable:formKey="resultadoAtencionGrupo5" flowable:formFieldValidation="false">
       <extensionElements>
         <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
         <design:stencilid><![CDATA[FormTask]]></design:stencilid>
@@ -85,15 +68,6 @@ de fidelizacion</flowable:element-name>
       <extensionElements>
         <flowable:element-name>Registrar resultado
 de seguimiento</flowable:element-name>
-        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
-        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </userTask>
-    <userTask id="ExpandedSubProcess_100" name="Contactar cliente para nueva compra" flowable:assignee="${initiator}" flowable:formKey="seguimientoConsultaGrupo5" flowable:formFieldValidation="false">
-      <extensionElements>
-        <flowable:element-name>Contactar cliente
-de fidelizacion</flowable:element-name>
         <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
         <design:stencilid><![CDATA[FormTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
@@ -129,33 +103,12 @@ de seguimiento</flowable:element-name>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </userTask>
-    <userTask id="ExpandedSubProcess_101" name="Registrar resultado del contacto" flowable:assignee="${initiator}" flowable:formKey="resultadoContactoGrupo5" flowable:formFieldValidation="false">
-      <extensionElements>
-        <flowable:element-name>Registrar el resultado 
-de fidelizlacion</flowable:element-name>
-        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
-        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
-        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
-      </extensionElements>
-    </userTask>
     <exclusiveGateway id="Exclusive_Databased_Gateway_27" name="¿Compra realizada?" default="SequenceFlow_31">
       <extensionElements>
         <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
     </exclusiveGateway>
-    <intermediateCatchEvent id="IntermediateTimerEvent_82">
-      <documentation>Prueba de Entrega 1: espera de 10 segundos para demostrar el recorrido. Espera original del modelo: P0Y0M7DT0H0M0S. No representa el plazo definitivo del negocio.</documentation>
-      <extensionElements>
-        <flowable:element-name>Esperar fecha
-de fidelizacion</flowable:element-name>
-        <design:stencilid><![CDATA[IntermediateTimerEvent]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-      <timerEventDefinition>
-        <timeDuration>PT10S</timeDuration>
-      </timerEventDefinition>
-    </intermediateCatchEvent>
     <intermediateCatchEvent id="IntermediateTimerEvent_83">
       <documentation>Prueba de Entrega 1: espera de 10 segundos para demostrar el recorrido. Espera original del modelo: P0Y0M2DT0H0M0S. No representa el plazo definitivo del negocio.</documentation>
       <extensionElements>
@@ -168,38 +121,26 @@ de seguimiento</flowable:element-name>
         <timeDuration>PT10S</timeDuration>
       </timerEventDefinition>
     </intermediateCatchEvent>
-    <endEvent id="EndNoneEvent_102">
+    <endEvent id="EndNoneEvent_102" name="Compra registrada">
       <extensionElements>
-        <flowable:element-name>Fin 
-(cliente fidelizacion)</flowable:element-name>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <incoming>SequenceFlow_110</incoming>
+    </endEvent>
+    <endEvent id="EndNoneEvent_105" name="Seguimiento cerrado">
+      <extensionElements>
+        <flowable:element-name>Seguimiento cerrado</flowable:element-name>
         <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
     </endEvent>
-    <endEvent id="EndNoneEvent_105">
-      <extensionElements>
-        <flowable:element-name>Fin 
-(seguimiento completado)</flowable:element-name>
-        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
-        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
-      </extensionElements>
-    </endEvent>
-    <sequenceFlow id="SequenceFlow_111" sourceRef="ExpandedSubProcess_99" targetRef="IntermediateTimerEvent_82">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_28" sourceRef="ExpandedSubProcess_22" targetRef="Exclusive_Databased_Gateway_27">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
     <sequenceFlow id="SequenceFlow_109" sourceRef="ExpandedSubProcess_104" targetRef="EndNoneEvent_105">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_113" sourceRef="ExpandedSubProcess_100" targetRef="ExpandedSubProcess_101">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -214,17 +155,12 @@ de seguimiento</flowable:element-name>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_110" sourceRef="ExpandedSubProcess_29" targetRef="ExpandedSubProcess_99">
+    <sequenceFlow id="SequenceFlow_110" sourceRef="ExpandedSubProcess_29" targetRef="EndNoneEvent_102">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
     <sequenceFlow id="SequenceFlow_106" sourceRef="ExpandedSubProcess_30" targetRef="IntermediateTimerEvent_83">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_114" sourceRef="ExpandedSubProcess_101" targetRef="EndNoneEvent_102">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -243,11 +179,6 @@ de seguimiento</flowable:element-name>
       </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${compraRealizada == true}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_112" sourceRef="IntermediateTimerEvent_82" targetRef="ExpandedSubProcess_100">
-      <extensionElements>
-        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
-      </extensionElements>
-    </sequenceFlow>
     <sequenceFlow id="SequenceFlow_107" sourceRef="IntermediateTimerEvent_83" targetRef="ExpandedSubProcess_103">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
@@ -262,14 +193,14 @@ notificar</flowable:element-name>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </userTask>
-    <userTask id="ExpandedSubProcess_69" name="Actualizar datos cliente" flowable:assignee="${initiator}" flowable:formKey="seguimientoConsultaGrupo5" flowable:formFieldValidation="false">
+    <userTask id="ExpandedSubProcess_69" name="Revisar datos del contacto" flowable:assignee="${initiator}" flowable:formKey="seguimientoConsultaGrupo5" flowable:formFieldValidation="false">
       <extensionElements>
         <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
         <design:stencilid><![CDATA[FormTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </userTask>
-    <serviceTask id="ExpandedSubProcess_6" name="Verificar cliente existente" flowable:type="external-worker" flowable:topic="peluditos-verificar-cliente">
+    <serviceTask id="ExpandedSubProcess_6" name="Buscar registro por contacto" flowable:type="external-worker" flowable:topic="peluditos-verificar-cliente">
       <extensionElements>
         <flowable:candidateUsers><![CDATA[${initiator}]]></flowable:candidateUsers>
         <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
@@ -283,14 +214,14 @@ notificar</flowable:element-name>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </userTask>
-    <serviceTask id="ExpandedSubProcess_10" name="Crear registro cliente" flowable:type="external-worker" flowable:topic="peluditos-crear-cliente">
+    <serviceTask id="ExpandedSubProcess_10" name="Registrar prospecto" flowable:type="external-worker" flowable:topic="peluditos-crear-cliente">
       <extensionElements>
         <flowable:candidateUsers><![CDATA[${initiator}]]></flowable:candidateUsers>
         <design:stencilid><![CDATA[ExternalWorkerTask]]></design:stencilid>
         <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
       </extensionElements>
     </serviceTask>
-    <userTask id="ExpandedSubProcess_4" name="Registrar consulta de cliente" flowable:assignee="${initiator}" flowable:formKey="registroConsultaGrupo5" flowable:formFieldValidation="false">
+    <userTask id="ExpandedSubProcess_4" name="Registrar consulta" flowable:assignee="${initiator}" flowable:formKey="registroConsultaGrupo5" flowable:formFieldValidation="false">
       <extensionElements>
         <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
         <design:stencilid><![CDATA[FormTask]]></design:stencilid>
@@ -302,21 +233,21 @@ notificar</flowable:element-name>
         <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
       </extensionElements>
     </exclusiveGateway>
-    <exclusiveGateway id="Exclusive_Databased_Gateway_66" name="¿Cliente registrado?" default="SequenceFlow_68">
+    <exclusiveGateway id="Exclusive_Databased_Gateway_66" name="¿Ya existe un registro?" default="SequenceFlow_68">
       <extensionElements>
         <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
     </exclusiveGateway>
-    <startEvent id="startnoneevent1" flowable:initiator="initiator" flowable:formFieldValidation="false">
+    <startEvent id="startnoneevent1" flowable:initiator="initiator" flowable:formFieldValidation="false" name="Consulta recibida">
       <extensionElements>
-        <flowable:element-name>Consulta recibida
-(RRSS / WhatsApp)</flowable:element-name>
+        <flowable:element-name>Consulta recibida</flowable:element-name>
         <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
         <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
-    <messageEventDefinition messageRef="consultaClienteRecibida"/></startEvent>
+      <messageEventDefinition messageRef="consultaClienteRecibida"/>
+    </startEvent>
     <sequenceFlow id="SequenceFlow_26" sourceRef="ExpandedSubProcess_24" targetRef="ExpandedSubProcess_20">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
@@ -380,17 +311,11 @@ notificar</flowable:element-name>
       <bpmndi:BPMNShape bpmnElement="Lane_2" id="BPMNShape_Lane_2">
         <omgdc:Bounds height="429.0" width="1735.0" x="485.0" y="275.90620117187484"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_99" id="BPMNShape_ExpandedSubProcess_99">
-        <omgdc:Bounds height="103.0" width="139.0" x="1144.3769754545954" y="348.5383968567813"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_22" id="BPMNShape_ExpandedSubProcess_22">
         <omgdc:Bounds height="100.0" width="129.0" x="689.7869170096021" y="429.3755453478649"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_104" id="BPMNShape_ExpandedSubProcess_104">
         <omgdc:Bounds height="98.0" width="126.0" x="1487.7651354545958" y="567.0522857456701"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_100" id="BPMNShape_ExpandedSubProcess_100">
-        <omgdc:Bounds height="103.0" width="115.0" x="1472.8352154545955" y="348.5383968567813"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_103" id="BPMNShape_ExpandedSubProcess_103">
         <omgdc:Bounds height="95.0" width="121.0" x="1291.10512" y="569.5522857456701"></omgdc:Bounds>
@@ -404,19 +329,10 @@ notificar</flowable:element-name>
       <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_30" id="BPMNShape_ExpandedSubProcess_30">
         <omgdc:Bounds height="100.0" width="100.0" x="974.9408093278466" y="567.0522857456701"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="ExpandedSubProcess_101" id="BPMNShape_ExpandedSubProcess_101">
-        <omgdc:Bounds height="94.0" width="100.0" x="1670.6566554545952" y="353.0383968567813"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="Exclusive_Databased_Gateway_27" id="BPMNShape_Exclusive_Databased_Gateway_27">
         <omgdc:Bounds height="40.0" width="40.0" x="877.3893689986282" y="459.3755453478649"></omgdc:Bounds>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="18.0" width="109.0" x="908.0" y="516.0"></omgdc:Bounds>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="IntermediateTimerEvent_82" id="BPMNShape_IntermediateTimerEvent_82">
-        <omgdc:Bounds height="30.0" width="30.0" x="1363.58176" y="371.26844026498867"></omgdc:Bounds>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="36.0" width="80.0" x="1332.0" y="413.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="IntermediateTimerEvent_83" id="BPMNShape_IntermediateTimerEvent_83">
@@ -426,9 +342,9 @@ notificar</flowable:element-name>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="EndNoneEvent_102" id="BPMNShape_EndNoneEvent_102">
-        <omgdc:Bounds height="28.0" width="28.0" x="1904.9452954545952" y="372.26844026498867"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="1144" y="386"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="36.0" width="109.0" x="1867.0" y="411.0"></omgdc:Bounds>
+          <omgdc:Bounds height="36.0" width="109.0" x="1105" y="424"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="EndNoneEvent_105" id="BPMNShape_EndNoneEvent_105">
@@ -533,22 +449,6 @@ notificar</flowable:element-name>
         <omgdi:waypoint x="1250.0" y="617.0"></omgdi:waypoint>
         <omgdi:waypoint x="1291.0" y="617.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_113" id="BPMNEdge_SequenceFlow_113" flowable:sourceDockerX="58.0" flowable:sourceDockerY="52.0" flowable:targetDockerX="50.0" flowable:targetDockerY="47.0">
-        <omgdi:waypoint x="1587.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1670.0" y="400.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_112" id="BPMNEdge_SequenceFlow_112" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="58.0" flowable:targetDockerY="52.0">
-        <omgdi:waypoint x="1393.0" y="386.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1433.0" y="386.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1433.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1472.0" y="400.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_111" id="BPMNEdge_SequenceFlow_111" flowable:sourceDockerX="70.0" flowable:sourceDockerY="52.0" flowable:targetDockerX="15.0" flowable:targetDockerY="15.0">
-        <omgdi:waypoint x="1283.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1323.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1323.0" y="386.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1363.0" y="386.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_31" id="BPMNEdge_SequenceFlow_31" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="50.0">
         <omgdi:waypoint x="897.0" y="499.0"></omgdi:waypoint>
         <omgdi:waypoint x="897.0" y="617.0"></omgdi:waypoint>
@@ -557,7 +457,7 @@ notificar</flowable:element-name>
           <omgdc:Bounds height="18.0" width="16.0" x="937.0" y="594.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_110" id="BPMNEdge_SequenceFlow_110" flowable:sourceDockerX="53.0" flowable:sourceDockerY="50.0" flowable:targetDockerX="70.0" flowable:targetDockerY="52.0">
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_110" id="BPMNEdge_SequenceFlow_110" flowable:sourceDockerX="53.0" flowable:sourceDockerY="50.0">
         <omgdi:waypoint x="1077.0" y="400.0"></omgdi:waypoint>
         <omgdi:waypoint x="1144.0" y="400.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
@@ -587,12 +487,6 @@ notificar</flowable:element-name>
         <omgdi:waypoint x="1208.0" y="16.0"></omgdi:waypoint>
         <omgdi:waypoint x="1302.0" y="16.0"></omgdi:waypoint>
         <omgdi:waypoint x="1302.0" y="80.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_114" id="BPMNEdge_SequenceFlow_114" flowable:sourceDockerX="50.0" flowable:sourceDockerY="47.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
-        <omgdi:waypoint x="1770.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1837.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1837.0" y="386.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1904.0" y="386.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_72" id="BPMNEdge_SequenceFlow_72" flowable:sourceDockerX="50.0" flowable:sourceDockerY="47.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
         <omgdi:waypoint x="1208.0" y="209.0"></omgdi:waypoint>
