@@ -1,0 +1,22 @@
+[
+  {
+    "procesoId": "bf92ebf4-e3a2-11f1-84fb-0a0027000013",
+    "leadId": 66,
+    "nombreCliente": "Prueba Jakarta Grupo 5",
+    "telefono": "JAKARTA-2b86da7fbb",
+    "correo": "jakarta@example.invalid",
+    "canalOrigen": "WhatsApp",
+    "consulta": "Consulta ficticia por torta para mascota",
+    "resultado": "COMPRO"
+  },
+  {
+    "procesoId": "c9999a15-e3a2-11f1-a142-0a0027000013",
+    "leadId": 66,
+    "nombreCliente": "Prueba Jakarta Grupo 5",
+    "telefono": "JAKARTA-2b86da7fbb",
+    "correo": "jakarta@example.invalid",
+    "canalOrigen": "WhatsApp",
+    "consulta": "Consulta ficticia por torta para mascota",
+    "resultado": "NO_COMPRO"
+  }
+]

@@ -4,7 +4,17 @@
     "ruta": "/api/leads",
     "esperado": 200,
     "obtenido": 200,
-    "respuesta": []
+    "respuesta": [
+      {
+        "id": 35,
+        "nombreCliente": "Camila Soto",
+        "correo": "camila@example.com",
+        "telefono": "912345678",
+        "canalOrigen": "WhatsApp",
+        "consulta": "Torta para el cumpleaños de su mascota",
+        "estado": "CONVERTIDO"
+      }
+    ]
   },
   {
     "metodo": "POST",
@@ -12,10 +22,10 @@
     "esperado": 200,
     "obtenido": 200,
     "respuesta": {
-      "id": 1,
+      "id": 65,
       "nombreCliente": "Prueba de contrato",
       "correo": "contrato@example.invalid",
-      "telefono": "TEST-f22bcaaf9b9c",
+      "telefono": "TEST-cf802253d1cb",
       "canalOrigen": "WhatsApp",
       "consulta": "Consulta ficticia de contrato REST",
       "estado": "NUEVO"
@@ -23,14 +33,14 @@
   },
   {
     "metodo": "PUT",
-    "ruta": "/api/leads/1/estado",
+    "ruta": "/api/leads/65/estado",
     "esperado": 200,
     "obtenido": 200,
     "respuesta": {
-      "id": 1,
+      "id": 65,
       "nombreCliente": "Prueba de contrato",
       "correo": "contrato@example.invalid",
-      "telefono": "TEST-f22bcaaf9b9c",
+      "telefono": "TEST-cf802253d1cb",
       "canalOrigen": "WhatsApp",
       "consulta": "Consulta ficticia de contrato REST",
       "estado": "EN_SEGUIMIENTO"
@@ -38,12 +48,12 @@
   },
   {
     "metodo": "PUT",
-    "ruta": "/api/leads/1/estado",
+    "ruta": "/api/leads/65/estado",
     "esperado": 400,
     "obtenido": 400,
     "respuesta": {
-      "estado": 400,
-      "mensaje": "Indica el estado del cliente."
+      "mensaje": "Indica el estado del cliente.",
+      "estado": 400
     }
   },
   {
@@ -52,8 +62,8 @@
     "esperado": 404,
     "obtenido": 404,
     "respuesta": {
-      "estado": 404,
-      "mensaje": "No existe un cliente con ese ID."
+      "mensaje": "No existe un cliente con ese ID.",
+      "estado": 404
     }
   },
   {
@@ -62,8 +72,8 @@
     "esperado": 400,
     "obtenido": 400,
     "respuesta": {
-      "estado": 400,
-      "mensaje": "Nombre, teléfono y consulta son obligatorios."
+      "mensaje": "Nombre, teléfono y consulta son obligatorios.",
+      "estado": 400
     }
   },
   {
@@ -72,8 +82,8 @@
     "esperado": 400,
     "obtenido": 400,
     "respuesta": {
-      "estado": 400,
-      "mensaje": "Estado no válido."
+      "mensaje": "Estado no válido.",
+      "estado": 400
     }
   },
   {
@@ -92,19 +102,80 @@
   },
   {
     "metodo": "DELETE",
-    "ruta": "/api/leads/1",
+    "ruta": "/api/leads/65",
     "esperado": 204,
     "obtenido": 204,
     "respuesta": null
   },
   {
     "metodo": "DELETE",
-    "ruta": "/api/leads/1",
+    "ruta": "/api/leads/65",
     "esperado": 404,
     "obtenido": 404,
     "respuesta": {
-      "estado": 404,
-      "mensaje": "No existe un cliente con ese ID."
+      "mensaje": "No existe un cliente con ese ID.",
+      "estado": 404
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/consultas/bf92ebf4-e3a2-11f1-84fb-0a0027000013",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "procesoId": "bf92ebf4-e3a2-11f1-84fb-0a0027000013",
+      "leadId": 66,
+      "nombreCliente": "Prueba Jakarta Grupo 5",
+      "telefono": "JAKARTA-2b86da7fbb",
+      "correo": "jakarta@example.invalid",
+      "canalOrigen": "WhatsApp",
+      "consulta": "Consulta ficticia por torta para mascota",
+      "resultado": "COMPRO"
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/consultas/bf92ebf4-e3a2-11f1-84fb-0a0027000013",
+    "esperado": 409,
+    "obtenido": 409,
+    "respuesta": {
+      "estado": 409,
+      "mensaje": "La consulta ya tiene otro resultado registrado."
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/consultas/prueba-invalidos",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "estado": 400,
+      "mensaje": "Indica nombre, teléfono, correo válido, consulta y resultado."
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/consultas/prueba-invalidos",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "estado": 400,
+      "mensaje": "Indica nombre, teléfono, correo válido, consulta y resultado."
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/leads",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 97,
+      "nombreCliente": "Cliente existente de prueba",
+      "correo": "recompra@example.invalid",
+      "telefono": "RECOMPRA-01b1d31da6",
+      "canalOrigen": "Local",
+      "consulta": "Compra previa registrada",
+      "estado": "CONVERTIDO"
     }
   }
 ]

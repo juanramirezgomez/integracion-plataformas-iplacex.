@@ -2,6 +2,8 @@ package cl.peluditospet.gestionleads.controller;
 
 import cl.peluditospet.gestionleads.model.Lead;
 import cl.peluditospet.gestionleads.repository.LeadRepository;
+import cl.peluditospet.gestionleads.repository.ConsultaRepository;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -17,8 +19,11 @@ public class LeadController {
     private static final Set<String> ESTADOS = Set.of("NUEVO", "EN_SEGUIMIENTO", "COTIZADO", "CONVERTIDO", "DESCARTADO");
     private final LeadRepository leadRepository;
 
-    public LeadController(LeadRepository leadRepository) {
+    private final ConsultaRepository consultas;
+
+    public LeadController(LeadRepository leadRepository, ConsultaRepository consultas) {
         this.leadRepository = leadRepository;
+        this.consultas = consultas;
     }
 
     @GET
@@ -31,6 +36,10 @@ public class LeadController {
     public Lead crearLead(Lead lead) {
         if (lead == null || vacio(lead.getNombreCliente()) || vacio(lead.getTelefono()) || vacio(lead.getConsulta())) {
             throw new BadRequestException("Nombre, teléfono y consulta son obligatorios.");
+        }
+        if (!vacio(lead.getCorreo()) && (lead.getCorreo().length() > 254
+                || !lead.getCorreo().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))) {
+            throw new BadRequestException("El correo electrónico no es válido.");
         }
         // Un POST crea un registro nuevo; no puede sobrescribir otro mediante su ID.
         lead.setId(null);
@@ -52,8 +61,11 @@ public class LeadController {
 
     @DELETE
     @Path("/{id}")
+    @Transactional
     public Response eliminarLead(@PathParam("id") Long id) {
-        Lead lead = buscar(id);
+        Lead lead = leadRepository.bloquearPorId(id)
+                .orElseThrow(() -> new NotFoundException("No existe un cliente con ese ID."));
+        consultas.deleteByLeadId(id);
         leadRepository.delete(lead);
         return Response.noContent().build();
     }

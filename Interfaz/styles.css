@@ -221,6 +221,7 @@ td {
   padding: 14px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 
 th {
@@ -374,4 +375,20 @@ footer {
   button {
     max-width: 100%;
   }
+}
+
+#seccionClientes {
+  overflow-x: auto;
+}
+
+#seccionClientes table {
+  min-width: 800px;
+}
+
+
+#tablaConsultas td:nth-child(2),
+#tablaConsultas td:nth-child(3),
+#tablaConsultas td:nth-child(4),
+#tablaConsultas td:nth-child(6) {
+  white-space: nowrap;
 }

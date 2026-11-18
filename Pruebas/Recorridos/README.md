@@ -29,6 +29,19 @@ Durante la prueba apagué y volví a iniciar Flowable y Java. Pude recuperar al 
 
 El script también registra directamente en Java a un cliente de prueba que ya hizo una compra y abre dos oportunidades por mensaje en Flowable. Comprueba el recorrido con contacto por cumpleaños y el cierre sin contacto de una campaña. Guarda las respuestas en `resultados-recompra.json`. Estas pruebas envían el mensaje por API.
 
+## Registro con correo y resultado de cada consulta
+
+Se probó el registro desde la página usando datos ficticios de Camila Soto. Se completó una consulta con compra y una segunda consulta sin compra para el mismo teléfono. El listado mostró los dos resultados y conservó el correo de cada consulta. La primera tarea recuperó los datos ya escritos en el formulario.
+
+- `consultas-correo-resultados.png` muestra las dos consultas desde el navegador.
+- `formulario-con-correo.png` muestra el formulario actualizado.
+- `prueba-navegador-consultas.json` resume la comprobación desde el navegador y en tamaño de celular.
+- `consultas-por-contacto.json` contiene las respuestas guardadas por Java.
+- `error-recuperacion-motor.json` registra la respuesta 502 con Flowable detenido y la recuperación a 200 al reiniciarlo.
+- `migracion-base-anterior.json` comprueba la actualización de una copia de la base anterior.
+
+Las pruebas por API también comprobaron que un correo vacío o inválido devuelve 400, que un reintento conserva un único registro por proceso y que un resultado confirmado no se reemplaza por otro distinto. Se reiniciaron Java y Flowable y se recuperaron los resultados de las dos consultas.
+
 ## Cómo repetir las pruebas
 
 Primero inicié el entorno con `Flowable/iniciar-local.ps1`, como expliqué en el README principal. Después corrí:
@@ -39,8 +52,8 @@ python .\Pruebas\Recorridos\verificar-integracion.py --war "C:\ruta\flowable-res
 
 La ruta del WAR cambia según dónde lo tenga cada uno. El script usa Python 3 y PowerShell. Con `--war` también comprueba el reinicio; sin ese argumento prueba los recorridos sin apagar los servicios. Al volver a ejecutarlo, actualiza los archivos de resultados con la prueba nueva.
 
-## Lo que falta probar desde la pantalla
+## Pendiente en la pantalla de recompra
 
-Este script completa las tareas directamente por API. Falta volver a comprobar los recorridos desde la pantalla después de integrar la recompra. En el flujo de consultas, la espera de seguimiento se mantiene en 10 segundos para la prueba.
+El script completa las tareas por API; los recorridos de consulta con y sin compra también se probaron desde el navegador. Falta integrar y probar la gestión de recompra desde la pantalla. En el flujo de consultas, la espera de seguimiento se mantiene en 10 segundos para la prueba.
 
 Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué causó el bloqueo anterior en Enterprise.

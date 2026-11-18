@@ -1,0 +1,9 @@
+{
+  "respuesta": {
+    "error": "No se pudo comunicar con Flowable."
+  },
+  "consultasConservadas": true,
+  "motorDetenidoHttp": 502,
+  "motorReiniciadoHttp": 200,
+  "fecha": "2026-11-18T19:53:49.7379536-03:00"
+}

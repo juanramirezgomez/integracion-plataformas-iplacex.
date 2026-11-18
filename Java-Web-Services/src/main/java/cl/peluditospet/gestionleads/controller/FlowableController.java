@@ -90,6 +90,15 @@ public class FlowableController {
         return solicitar("GET", "/runtime/tasks", null);
     }
 
+    @GET
+    @Path("/tareas/{id}/variables")
+    public Response obtenerVariables(@PathParam("id") String id) {
+        if (!id.matches("[a-zA-Z0-9-]+")) {
+            throw new BadRequestException("ID de tarea no válido.");
+        }
+        return solicitar("GET", "/runtime/tasks/" + id + "/variables", null);
+    }
+
     @POST
     @Path("/tareas/{id}/completar")
     @Consumes(MediaType.APPLICATION_JSON)

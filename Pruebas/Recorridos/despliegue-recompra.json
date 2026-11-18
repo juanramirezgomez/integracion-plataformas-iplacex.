@@ -1,0 +1,9 @@
+{
+  "url": "http://127.0.0.1:18098/flowable-rest/service/repository/deployments/dabe7da3-e3a2-11f1-8983-0a0027000013",
+  "category": null,
+  "deploymentTime": "2026-11-18T22:53:21.932Z",
+  "id": "dabe7da3-e3a2-11f1-8983-0a0027000013",
+  "name": "Oportunidades-Recompra",
+  "parentDeploymentId": "dabe7da3-e3a2-11f1-8983-0a0027000013",
+  "tenantId": ""
+}

@@ -47,6 +47,8 @@ server.port=$PuertoJava
 spring.datasource.url=jdbc:h2:file:$javaDb;DB_CLOSE_ON_EXIT=FALSE
 spring.datasource.username=sa
 spring.datasource.password=$password
+app.flowable.base-url=http://127.0.0.1:$PuertoMotor/flowable-rest
+app.flowable.auth-file=$($authFile.Replace('\','/'))
 "@
     [IO.File]::WriteAllText((Join-Path $local 'java.properties'),$javaConfig,(New-Object Text.UTF8Encoding($false)))
 }

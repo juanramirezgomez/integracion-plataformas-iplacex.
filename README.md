@@ -19,7 +19,7 @@ Registrar las consultas de Peluditos Pet Chile, identificar por qué canal llega
 | [Pantalla web](Interfaz/) | Inicia consultas, muestra los clientes registrados y permite avanzar las tareas desde la bandeja. |
 | [Servicio Java](Java-Web-Services/) | Expone los servicios con Jakarta REST y Jersey. Guarda los clientes en una base H2 local. |
 | [Flowable OSS 8](Flowable/) | Ejecuta el [proceso BPMN](BPMN/TO-BE.bpmn) y guarda el historial. |
-| [External worker](External-Workers/worker.ps1) | Toma las tareas externas, llama a Java y devuelve el resultado a Flowable. El [registro de la prueba](Pruebas/Recorridos/worker-ejecucion.jsonl#L10-L12) muestra la llamada y la respuesta del motor. |
+| [External worker](External-Workers/worker.ps1) | Toma las tareas externas, llama a Java y devuelve el resultado a Flowable. El [registro de la prueba](Pruebas/Recorridos/worker-ejecucion.jsonl#L11-L14) muestra la llamada y la respuesta del motor. |
 
 La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flowable guarda las instancias y su historial en un archivo H2 separado de la base de clientes.
 
@@ -27,6 +27,8 @@ La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flo
 
 - **2 de noviembre.** Ajustamos el servicio a Jakarta REST y probamos por API el recorrido con compra y el de un cliente existente sin compra. También reiniciamos Flowable y Java y comprobamos que los datos siguieran guardados.
 - **5 de noviembre.** Se agregó la pantalla del grupo y su conexión con Flowable a través de Java. El historial del motor registra dos recorridos terminados, [con compra](Pruebas/Recorridos/ejecucion-completa-compra.json) y [sin compra](Pruebas/Recorridos/ejecucion-completa-sin-compra.json). En la prueba local del servicio, el cliente con compra quedó en `CONVERTIDO` y el cliente nuevo sin compra quedó en `NUEVO`.
+
+- **18 de noviembre.** Se agregó el correo electrónico al formulario y al listado. Cada consulta guarda sus datos y muestra si está pendiente, si hubo compra o si no hubo compra. Se probaron los dos recorridos desde la página, la conexión con el worker y el guardado después de reiniciar los servicios.
 
 ## Cómo probarlo en Windows
 

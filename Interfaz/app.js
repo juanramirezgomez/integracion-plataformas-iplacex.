@@ -24,6 +24,7 @@
 const API_BASE = "http://127.0.0.1:8096/api";
 
 const API_CLIENTES = `${API_BASE}/leads`;
+const API_CONSULTAS = API_BASE + "/consultas";
 const API_PROCESOS = `${API_BASE}/procesos`;
 const API_TAREAS = `${API_BASE}/tareas`;
 
@@ -117,32 +118,50 @@ async function cargarClientes() {
   try {
     botonActualizar.disabled = true;
 
-    const respuesta = await solicitarJSON(API_CLIENTES);
+    const [respuesta, consultas] = await Promise.all([
+      solicitarJSON(API_CLIENTES),
+      solicitarJSON(API_CONSULTAS)
+    ]);
 
     // El endpoint devuelve una lista de clientes.
     const clientes = Array.isArray(respuesta)
       ? respuesta
       : respuesta?.value ?? [];
 
+    const contactosConConsulta = new Set(consultas.map((consulta) => consulta.leadId));
+    const registros = [
+      ...consultas,
+      ...clientes.filter((cliente) => !contactosConConsulta.has(cliente.id))
+    ];
+
     tabla.replaceChildren();
 
-    if (clientes.length === 0) {
+    if (registros.length === 0) {
       mostrarFilaVacia(
         tabla,
-        4,
+        6,
         "No hay consultas registradas."
       );
       return;
     }
 
-    clientes.forEach((cliente) => {
+    const resultados = {
+      PENDIENTE: "Pendiente",
+      COMPRO: "Compró",
+      NO_COMPRO: "No compró"
+    };
+
+    registros.forEach((cliente) => {
       const fila = tabla.insertRow();
 
       [
         cliente.nombreCliente,
         cliente.telefono,
+        cliente.correo,
         cliente.canalOrigen,
-        cliente.estado
+        cliente.consulta,
+        resultados[cliente.resultado] ??
+          (cliente.estado === "CONVERTIDO" ? "Compró" : "Sin resultado registrado")
       ].forEach((valor) => {
         const celda = fila.insertCell();
         celda.textContent = valor ?? "—";
@@ -173,6 +192,8 @@ formulario.addEventListener("submit", async (event) => {
       document.getElementById("nombre").value.trim(),
     telefono:
       document.getElementById("contacto").value.trim(),
+    correo:
+      document.getElementById("correo").value.trim(),
     canalOrigen:
       document.getElementById("canal").value,
     consulta:
@@ -182,6 +203,7 @@ formulario.addEventListener("submit", async (event) => {
   if (
     !datos.nombreCliente ||
     !datos.telefono ||
+    !datos.correo ||
     !datos.canalOrigen ||
     !datos.consulta
   ) {
@@ -216,7 +238,7 @@ formulario.addEventListener("submit", async (event) => {
     mostrarMensaje(
       `Proceso BPMN iniciado correctamente. ` +
       `Instancia: ${resultado?.id ?? "creada"}. ` +
-      `Completa la tarea inicial desde la bandeja.`
+      `Confirma los datos desde la bandeja para guardar la consulta.`
     );
 
     // Consultamos las nuevas tareas humanas.
@@ -313,7 +335,7 @@ async function cargarTareas() {
 // Es una implementación inicial para el prototipo.
 const CAMPOS_POR_TAREA = {
   ExpandedSubProcess_4: [
-    ["nombreCliente", "Nombre del cliente"],
+    ["nombreCliente", "Nombre"],
     ["telefono", "Teléfono"],
     ["correo", "Correo electrónico"],
     ["canalOrigen", "Canal de origen"],
@@ -396,10 +418,14 @@ function agregarCampo(nombre, etiqueta, tipo = "string") {
   }
 
   const input = document.createElement("input");
-  input.type = "text";
+  input.type = nombre === "correo" ? "email" : "text";
   input.id = `campo_${nombre}`;
   input.name = nombre;
-  input.required = nombre !== "correo";
+  if (nombre === "correo") {
+    input.maxLength = 254;
+    input.pattern = document.getElementById("correo").pattern;
+  }
+  input.required = true;
   input.dataset.tipo = "string";
 
   camposTarea.appendChild(input);
@@ -409,7 +435,7 @@ function agregarCampo(nombre, etiqueta, tipo = "string") {
 // 8. SELECCIONAR UNA TAREA DE LA BANDEJA
 // ---------------------------------------------------------
 
-function seleccionarTarea(tarea) {
+async function seleccionarTarea(tarea) {
   tareaSeleccionada = tarea;
 
   tituloTarea.textContent = tarea.name ?? "Gestionar tarea";
@@ -437,6 +463,26 @@ function seleccionarTarea(tarea) {
 
   panelTarea.hidden = false;
   panelTarea.scrollIntoView({ behavior: "smooth" });
+
+  const botonCompletar = formTarea.querySelector('button[type="submit"]');
+  if (!campos) return;
+  botonCompletar.disabled = true;
+  try {
+    const variables = await solicitarJSON(
+      API_TAREAS + "/" + encodeURIComponent(tarea.id) + "/variables"
+    );
+    if (tareaSeleccionada?.id !== tarea.id) return;
+    const valores = new Map(variables.map((variable) => [variable.name, variable.value]));
+    camposTarea.querySelectorAll("input, select").forEach((campo) => {
+      const valor = valores.get(campo.name);
+      if (valor !== undefined && valor !== null) campo.value = String(valor);
+    });
+    botonCompletar.disabled = false;
+  } catch (error) {
+    if (tareaSeleccionada?.id === tarea.id) {
+      resultadoTarea.textContent = "No se pudieron recuperar los datos. Vuelve a abrir la tarea.";
+    }
+  }
 }
 
 // ---------------------------------------------------------

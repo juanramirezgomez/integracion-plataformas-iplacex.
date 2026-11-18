@@ -94,7 +94,7 @@ def restart():
         subprocess.run([args.powershell,'-NoProfile','-Command',cmd],check=True,capture_output=True)
     event('Motor y Java detenidos para comprobar persistencia')
     time.sleep(2)
-    subprocess.run([args.powershell,'-NoProfile','-File',str(ROOT/'Flowable/iniciar-local.ps1'),'-FlowableWar',str(args.war)],check=True,timeout=130)
+    subprocess.run([args.powershell,'-NoProfile','-File',str(ROOT/'Flowable/iniciar-local.ps1'),'-FlowableWar',str(args.war),'-PuertoMotor',str(urllib.parse.urlparse(args.flowable).port or 80),'-PuertoJava',str(urllib.parse.urlparse(args.java).port or 80)],check=True,timeout=130)
 def run():
     engine=request('/management/engine');assert engine['version']=='8.0.0';write('version-motor.json',engine)
     event('Motor comprobado',version=engine['version'],servicio='Jakarta REST con Jersey')
@@ -122,6 +122,8 @@ def run():
         restart()
         assert tasks(pid)[0]['taskDefinitionKey']=='ExpandedSubProcess_18'
         recovered=next(x for x in request('/api/leads',java=True) if x['id']==lead['id']);assert recovered==lead
+        consulta=next(c for c in request('/api/consultas',java=True) if c['procesoId']==pid)
+        assert consulta['correo']==values['correo'] and consulta['resultado']=='PENDIENTE'
         write('cliente-despues-reinicio.json',recovered);event('Reinicio comprobado: cliente y tarea conservados',instancia=pid)
     for key in ['ExpandedSubProcess_18','ExpandedSubProcess_24','ExpandedSubProcess_20','ExpandedSubProcess_22']:
         complete(pid,key,{'compraRealizada':True} if key.endswith('_22') else {})
@@ -137,9 +139,26 @@ def run():
     assert len([x for x in request('/api/leads',java=True) if x['telefono']==values['telefono']])==1
     for key in ['ExpandedSubProcess_18','ExpandedSubProcess_24','ExpandedSubProcess_20','ExpandedSubProcess_22','ExpandedSubProcess_30']:
         complete(pid2,key,{'compraRealizada':False} if key.endswith('_22') else {})
-    wait_task(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_104')
+    wait_task(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_104');worker()
     hist2=wait_finished(pid2,'EndNoneEvent_105')
     write('cliente-existente-sin-compra.json',dict(instancia=pid2,completado=True,sinDuplicados=True,historial=hist2))
+    consultas=[c for c in request('/api/consultas',java=True) if c['leadId']==lead['id']]
+    assert len(consultas)==2
+    assert {c['resultado'] for c in consultas}=={'COMPRO','NO_COMPRO'}
+    assert all(c['correo']==values['correo'] and c['consulta']==values['consulta'] for c in consultas)
+    assert next(x for x in request('/api/leads',java=True) if x['id']==lead['id'])['estado']=='CONVERTIDO'
+    primera=next(c for c in consultas if c['procesoId']==pid)
+    repetida=request('/api/consultas/'+pid,'PUT',primera,java=True,expected=200)
+    assert repetida==primera
+    request('/api/consultas/'+pid,'PUT',{**primera,'resultado':'NO_COMPRO'},java=True,expected=409)
+    request('/api/consultas/prueba-invalidos','PUT',{**primera,'correo':'correo sin arroba'},java=True,expected=400)
+    request('/api/consultas/prueba-invalidos','PUT',{**primera,'correo':''},java=True,expected=400)
+    assert len([c for c in request('/api/consultas',java=True) if c['leadId']==lead['id']])==2
+    if args.war:
+        restart()
+        recuperadas=[c for c in request('/api/consultas',java=True) if c['leadId']==lead['id']]
+        assert sorted(recuperadas,key=lambda c:c['procesoId'])==sorted(consultas,key=lambda c:c['procesoId'])
+    write('consultas-por-contacto.json',consultas)
     event('Cliente existente y seguimiento sin compra completados',instancia=pid2)
     probar_recompra()
     print('Prueba integrada correcta. Evidencias:',out,flush=True)

@@ -11,7 +11,10 @@ Spring Boot 4.1.2 sigue iniciando la aplicación y Spring Data JPA se encarga de
 | GET | `/api/leads` | Lista los clientes. Devuelve 200. |
 | POST | `/api/leads` | Registra un cliente y devuelve sus datos con el ID. Devuelve 200. |
 | PUT | `/api/leads/{id}/estado` | Cambia el estado del cliente. Devuelve 200. |
-| DELETE | `/api/leads/{id}` | Borra el cliente. Devuelve 204. |
+| DELETE | `/api/leads/{id}` | Borra el contacto y sus consultas. Devuelve 204. |
+| GET | `/api/consultas` | Lista las consultas con sus datos y resultado. |
+| PUT | `/api/consultas/{procesoId}` | Guarda una consulta o su resultado. Requiere correo válido y el ID del contacto. Los reintentos del mismo proceso conservan un único registro. |
+| GET | `/api/tareas/{id}/variables` | Recupera los datos ingresados para completar la tarea sin volver a escribirlos. |
 
 Para crear un cliente dejé como obligatorios el nombre, el teléfono y la consulta. El correo y el canal de origen también se pueden guardar. Si no se indica un estado, queda como NUEVO.
 
@@ -52,3 +55,5 @@ Para conectar una pantalla que esté en otro puerto, dejé `FRONTEND_ORIGINS` co
 Los resultados quedaron en `Pruebas/Recorridos`. La prueba de arranque de Maven usa una base temporal solo para ese test; las pruebas con Flowable sí guardan los datos en archivos y comprueban el reinicio.
 
 Para configurar Jersey me basé en la documentación de Spring Boot: https://docs.spring.io/spring-boot/reference/web/servlet.html#web.servlet.jersey
+
+La tabla `consultas` se crea mediante JPA al iniciar la aplicación. Conserva un registro por instancia de consulta. Sus resultados son `PENDIENTE`, `COMPRO` y `NO_COMPRO`; la pantalla los muestra como Pendiente, Compró y No compró. Los estados de contacto anteriores se conservan para que sigan funcionando los servicios existentes.

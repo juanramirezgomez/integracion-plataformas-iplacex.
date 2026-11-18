@@ -10,7 +10,7 @@ $ErrorActionPreference='Stop'
 if(!$TokenPath -or !(Test-Path -LiteralPath $TokenPath)){throw 'Indica -TokenPath con el archivo privado .local/auth.txt del entorno OSS.'}
 $auth=@{Authorization=$AuthScheme+' '+(Get-Content -Raw -LiteralPath $TokenPath).Trim()}
 $workerId='peluditos-grupo5-local'
-$topics=@('peluditos-verificar-cliente','peluditos-crear-cliente','peluditos-registrar-compra')
+$topics=@('peluditos-verificar-cliente','peluditos-crear-cliente','peluditos-registrar-compra','peluditos-cerrar-sin-compra')
 
 function Write-WorkerLog([string]$Event,[hashtable]$Data){
     $row=[ordered]@{fecha=(Get-Date).ToString('o');evento=$Event}
@@ -41,6 +41,16 @@ function Find-Lead([hashtable]$Values){
     return $null
 }
 
+function Save-Consulta([object]$Job,[hashtable]$Values,[long]$LeadId,[string]$Resultado){
+    if(!$Job.processInstanceId){throw 'El trabajo no indica la instancia de la consulta.'}
+    $body=@{leadId=$LeadId;resultado=$Resultado}
+    foreach($field in @('nombreCliente','telefono','correo','canalOrigen','consulta')){
+        $body[$field]=[string]$Values[$field]
+    }
+    $saved=Invoke-Java ('/api/consultas/'+$Job.processInstanceId) 'PUT' $body
+    Write-WorkerLog 'java-consulta' @{job=$Job.id;procesoId=$Job.processInstanceId;leadId=$LeadId;resultado=$saved.resultado}
+}
+
 Write-WorkerLog 'inicio' @{worker=$workerId;flowable=$FlowableBase;java=$JavaBase}
 $round=0
 while($Cycles -eq 0 -or $round -lt $Cycles){
@@ -58,11 +68,14 @@ while($Cycles -eq 0 -or $round -lt $Cycles){
                         if(!$values.telefono){throw 'Falta telefono en las variables del proceso.'}
                         $lead=Find-Lead $values
                         $result+=To-Variable 'clienteRegistrado' 'boolean' ($null -ne $lead)
-                        if($null -ne $lead){$result+=To-Variable 'leadId' 'long' ([long]$lead.id)}
+                        if($null -ne $lead){
+                            Save-Consulta $job $values ([long]$lead.id) 'PENDIENTE'
+                            $result+=To-Variable 'leadId' 'long' ([long]$lead.id)
+                        }
                         Write-WorkerLog 'java-verificar' @{job=$job.id;metodo='GET';ruta='/api/leads';encontrado=($null -ne $lead)}
                     }
                     'peluditos-crear-cliente' {
-                        foreach($required in @('nombreCliente','telefono','consulta')){if(!$values[$required]){throw "Falta $required en el formulario."}}
+                        foreach($required in @('nombreCliente','telefono','correo','consulta')){if(!$values[$required]){throw "Falta $required en el formulario."}}
                         # Evita duplicar el registro si se repite el trabajo tras un fallo de red.
                         $lead=Find-Lead $values
                         if($null -eq $lead){
@@ -70,14 +83,20 @@ while($Cycles -eq 0 -or $round -lt $Cycles){
                             foreach($field in @('nombreCliente','correo','telefono','canalOrigen','consulta')){$body[$field]=[string]$values[$field]}
                             $lead=Invoke-Java '/api/leads' 'POST' $body
                         }
+                        Save-Consulta $job $values ([long]$lead.id) 'PENDIENTE'
                         $result+=To-Variable 'leadId' 'long' ([long]$lead.id)
                         Write-WorkerLog 'java-registro' @{job=$job.id;leadId=$lead.id;estado=$lead.estado;ruta='/api/leads'}
                     }
                     'peluditos-registrar-compra' {
                         if(!$values.leadId){throw 'Falta leadId devuelto al crear o verificar el cliente.'}
+                        Save-Consulta $job $values ([long]$values.leadId) 'COMPRO'
                         $lead=Invoke-Java ('/api/leads/'+[long]$values.leadId+'/estado') 'PUT' @{estado='CONVERTIDO'}
                         $result+=To-Variable 'estadoLead' 'string' ([string]$lead.estado)
                         Write-WorkerLog 'java-compra' @{job=$job.id;leadId=$lead.id;estado=$lead.estado;metodo='PUT'}
+                    }
+                    'peluditos-cerrar-sin-compra' {
+                        if(!$values.leadId){throw 'Falta leadId para cerrar la consulta.'}
+                        Save-Consulta $job $values ([long]$values.leadId) 'NO_COMPRO'
                     }
                 }
                 $null=Invoke-Flowable ('/acquire/jobs/'+$job.id+'/complete') @{workerId=$workerId;variables=@($result)}

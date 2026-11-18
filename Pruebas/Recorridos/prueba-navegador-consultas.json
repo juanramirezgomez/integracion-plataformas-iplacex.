@@ -1,0 +1,14 @@
+{
+  "fecha": "2026-11-18T22:49:32.670Z",
+  "correoObligatorio": true,
+  "correoInvalidoRechazado": true,
+  "datosRecuperadosEnTarea": true,
+  "mismoContactoDosConsultas": true,
+  "resultados": [
+    "Compró",
+    "No compró"
+  ],
+  "recargaConservaDatos": true,
+  "anchoMovil": 390,
+  "sinErroresJavaScript": true
+}

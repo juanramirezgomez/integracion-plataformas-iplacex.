@@ -45,7 +45,7 @@
       <h2>Registrar nueva consulta</h2>
 
       <p>
-        Ingresa los datos del cliente para registrar
+        Ingresa los datos del contacto para registrar
         una nueva solicitud.
       </p>
 
@@ -56,7 +56,7 @@
       <form id="consultaForm">
 
         <!-- Nombre del cliente -->
-        <label for="nombre">Nombre del cliente</label>
+        <label for="nombre">Nombre</label>
         <input
           type="text"
           id="nombre"
@@ -65,13 +65,16 @@
         >
 
         <!-- Teléfono o medio de contacto -->
-        <label for="contacto">Teléfono o contacto</label>
+        <label for="contacto">Teléfono</label>
         <input
           type="text"
           id="contacto"
           name="contacto"
           required
         >
+
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" name="correo" autocomplete="email" maxlength="254" pattern="[^@\s]+@[^@\s]+[.][^@\s]+" required>
 
         <!-- Canal desde el cual llegó la consulta -->
         <label for="canal">Canal de origen</label>
@@ -122,8 +125,7 @@
       <h2>Consultas registradas</h2>
 
       <p>
-        Listado de clientes y consultas almacenadas
-        en el sistema.
+        Consultas registradas y resultado de cada atención.
       </p>
 
       <!-- Actualiza el listado consultando el backend -->
@@ -135,10 +137,12 @@
       <table>
         <thead>
           <tr>
-            <th>Cliente</th>
-            <th>Contacto</th>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
             <th>Canal</th>
-            <th>Estado</th>
+            <th>Consulta</th>
+            <th>Resultado de la consulta</th>
           </tr>
         </thead>
 
@@ -148,7 +152,7 @@
         -->
         <tbody id="tablaConsultas">
           <tr>
-            <td colspan="4">
+            <td colspan="6">
               Sin datos cargados
             </td>
           </tr>

@@ -17,6 +17,7 @@
       <lane id="Lane_2" name="Responsable del emprendimiento">
         <flowNodeRef>ExpandedSubProcess_22</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_104</flowNodeRef>
+        <flowNodeRef>guardarConsultaSinCompra</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_103</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_20</flowNodeRef>
         <flowNodeRef>ExpandedSubProcess_29</flowNodeRef>
@@ -140,7 +141,7 @@ de seguimiento</flowable:element-name>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
-    <sequenceFlow id="SequenceFlow_109" sourceRef="ExpandedSubProcess_104" targetRef="EndNoneEvent_105">
+    <sequenceFlow id="SequenceFlow_109" sourceRef="ExpandedSubProcess_104" targetRef="guardarConsultaSinCompra">
       <extensionElements>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
@@ -302,6 +303,8 @@ notificar</flowable:element-name>
         <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
       </extensionElements>
     </sequenceFlow>
+    <serviceTask id="guardarConsultaSinCompra" name="Guardar consulta sin compra" flowable:type="external-worker" flowable:topic="peluditos-cerrar-sin-compra"/>
+    <sequenceFlow id="finSinCompra" sourceRef="guardarConsultaSinCompra" targetRef="EndNoneEvent_105"/>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
     <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
@@ -348,9 +351,9 @@ notificar</flowable:element-name>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="EndNoneEvent_105" id="BPMNShape_EndNoneEvent_105">
-        <omgdc:Bounds height="28.0" width="28.0" x="1790.4825754545952" y="593.5374011718748"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="1920.4825754545952" y="593.5374011718748"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="36.0" width="142.0" x="1737.0" y="625.0"></omgdc:Bounds>
+          <omgdc:Bounds height="36.0" width="142.0" x="1867.0" y="625.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="Lane_3" id="BPMNShape_Lane_3">
@@ -432,10 +435,10 @@ notificar</flowable:element-name>
         <omgdi:waypoint x="1363.0" y="100.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_109" id="BPMNEdge_SequenceFlow_109" flowable:sourceDockerX="63.0" flowable:sourceDockerY="49.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
-        <omgdi:waypoint x="1613.0" y="616.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1702.0" y="616.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1702.0" y="607.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1790.0" y="607.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1613.7651354545958" y="616.0522857456701"/>
+        <omgdi:waypoint x="1745.4825754545952" y="616.0522857456701"/>
+        <omgdi:waypoint x="1745.4825754545952" y="608.5374011718748"/>
+        <omgdi:waypoint x="1770.4825754545952" y="608.5374011718748"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="SequenceFlow_108" id="BPMNEdge_SequenceFlow_108" flowable:sourceDockerX="61.0" flowable:sourceDockerY="48.0" flowable:targetDockerX="63.0" flowable:targetDockerY="49.0">
         <omgdi:waypoint x="1412.0" y="617.0"></omgdi:waypoint>
@@ -492,6 +495,13 @@ notificar</flowable:element-name>
         <omgdi:waypoint x="1208.0" y="209.0"></omgdi:waypoint>
         <omgdi:waypoint x="1302.0" y="209.0"></omgdi:waypoint>
         <omgdi:waypoint x="1302.0" y="120.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="FiguraGuardarSinCompra" bpmnElement="guardarConsultaSinCompra">
+        <omgdc:Bounds x="1770.4825754545952" y="568.5374011718748" width="110" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="FlechaFinSinCompra" bpmnElement="finSinCompra">
+        <omgdi:waypoint x="1880.4825754545952" y="608.5374011718748"/>
+        <omgdi:waypoint x="1920.4825754545952" y="608.5374011718748"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
