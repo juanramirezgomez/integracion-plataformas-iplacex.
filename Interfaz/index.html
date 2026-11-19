@@ -239,6 +239,26 @@
         </div>
       </section>
 
+      <section id="seccionRecompra">
+        <h2>Oportunidades de recompra</h2>
+        <form id="formRecompra">
+          <label for="clienteRecompra">Cliente con compra registrada</label>
+          <select id="clienteRecompra" name="clienteId" required disabled>
+            <option value="">Cargando clientes…</option>
+          </select>
+
+          <label for="motivoRecompra">Motivo</label>
+          <input id="motivoRecompra" name="motivo" maxlength="150"
+                 placeholder="Por ejemplo, cumpleaños o promoción de Navidad" required />
+
+          <label for="fechaRecompra">Fecha de la oportunidad</label>
+          <input id="fechaRecompra" type="date" name="fechaOportunidad" required />
+
+          <button type="submit" disabled>Crear oportunidad</button>
+        </form>
+        <p id="mensajeRecompra" role="status"></p>
+      </section>
+
       <!-- SECCIÓN 3: BANDEJA DE TAREAS BPMN -->
       <section id="seccionTareas">
         <h2>📋 Bandeja de tareas pendientes</h2>

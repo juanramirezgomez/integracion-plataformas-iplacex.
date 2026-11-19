@@ -52,8 +52,18 @@ python .\Pruebas\Recorridos\verificar-integracion.py --war "C:\ruta\flowable-res
 
 La ruta del WAR cambia según dónde lo tenga cada uno. El script usa Python 3 y PowerShell. Con `--war` también comprueba el reinicio; sin ese argumento prueba los recorridos sin apagar los servicios. Al volver a ejecutarlo, actualiza los archivos de resultados con la prueba nueva.
 
-## Pendiente en la pantalla de recompra
+## Recompra desde la pantalla
 
-El script completa las tareas por API; los recorridos de consulta con y sin compra también se probaron desde el navegador. Falta integrar y probar la gestión de recompra desde la pantalla. En el flujo de consultas, la espera de seguimiento se mantiene en 10 segundos para la prueba.
+En **Oportunidades de recompra**, elige un cliente con una compra registrada, escribe el motivo y selecciona la fecha. Después de crear la oportunidad, abre **Revisar oportunidad** en la bandeja. Si corresponde contactar, registra el canal usado y completa **Registrar resultado**. Si seleccionas **No**, Flowable cierra la oportunidad sin contacto.
+
+La oportunidad se abre manualmente. La fecha queda como dato de la oportunidad. El contacto se realiza por el canal elegido y la página permite registrar su resultado.
+
+Probamos con datos ficticios una oportunidad por cumpleaños que terminó con contacto y otra por campaña que cerró sin contacto. También verificamos el resultado desde otra sesión del navegador y recuperamos el historial después de reiniciar Flowable 8. El servicio rechazó una fecha inválida y una solicitud para un contacto sin compra.
+
+- [Resultado del contacto en pantalla](recompra-resultado-navegador.png)
+- [Confirmación del cierre sin contacto](recompra-cierre-sin-contacto.png)
+- [Historial de las dos instancias de Flowable](historial-recompra-navegador.json)
+
+En el flujo de consultas, la espera de seguimiento se mantiene en 10 segundos para la prueba.
 
 Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué causó el bloqueo anterior en Enterprise.

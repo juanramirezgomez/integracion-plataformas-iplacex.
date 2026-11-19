@@ -1,0 +1,80 @@
+{
+  "atendida": {
+    "historial": {
+      "businessKey": null,
+      "businessStatus": null,
+      "callbackId": null,
+      "callbackType": null,
+      "deleteReason": null,
+      "durationInMillis": 5568,
+      "endActivityId": "oportunidadAtendida",
+      "endTime": "2026-11-19T19:57:23.777Z",
+      "endUserId": "peluditos-local",
+      "id": "6cb00722-e453-11f1-b005-0a0027000013",
+      "name": null,
+      "processDefinitionDescription": "Se inicia al detectar una fecha relevante o una campaña para un cliente existente. El emisor del mensaje selecciona un cliente con compra previa y entrega clienteId, motivo y fechaOportunidad. La encargada revisa la oportunidad, decide si corresponde contactar y registra su resultado.",
+      "processDefinitionId": "6bb1a9ea-e453-11f1-b005-0a0027000013",
+      "processDefinitionName": "Peluditos Pet Chile - Oportunidades de recompra",
+      "processDefinitionUrl": "http://127.0.0.1:61855/flowable-rest/service/repository/process-definitions/6bb1a9ea-e453-11f1-b005-0a0027000013",
+      "propagatedStageInstanceId": null,
+      "referenceId": null,
+      "referenceType": null,
+      "startActivityId": "fechaOCampana",
+      "startTime": "2026-11-19T19:57:18.209Z",
+      "startUserId": "peluditos-local",
+      "state": "completed",
+      "superProcessInstanceId": null,
+      "tenantId": "",
+      "url": "http://127.0.0.1:61855/flowable-rest/service/history/historic-process-instances/6cb00722-e453-11f1-b005-0a0027000013",
+      "variables": []
+    },
+    "variables": {
+      "canalContacto": "WhatsApp",
+      "clienteId": 1,
+      "contactarCliente": true,
+      "fechaOportunidad": "2026-12-20",
+      "initiator": "peluditos-local",
+      "motivo": "Cumpleaños de la mascota",
+      "nombreCliente": "Camila Soto",
+      "resultadoContacto": "Respondió que quiere recibir detalles"
+    }
+  },
+  "sinContacto": {
+    "historial": {
+      "businessKey": null,
+      "businessStatus": null,
+      "callbackId": null,
+      "callbackType": null,
+      "deleteReason": null,
+      "durationInMillis": 536,
+      "endActivityId": "oportunidadCerrada",
+      "endTime": "2026-11-19T19:57:25.819Z",
+      "endUserId": "peluditos-local",
+      "id": "70e76f6b-e453-11f1-b005-0a0027000013",
+      "name": null,
+      "processDefinitionDescription": "Se inicia al detectar una fecha relevante o una campaña para un cliente existente. El emisor del mensaje selecciona un cliente con compra previa y entrega clienteId, motivo y fechaOportunidad. La encargada revisa la oportunidad, decide si corresponde contactar y registra su resultado.",
+      "processDefinitionId": "6bb1a9ea-e453-11f1-b005-0a0027000013",
+      "processDefinitionName": "Peluditos Pet Chile - Oportunidades de recompra",
+      "processDefinitionUrl": "http://127.0.0.1:61855/flowable-rest/service/repository/process-definitions/6bb1a9ea-e453-11f1-b005-0a0027000013",
+      "propagatedStageInstanceId": null,
+      "referenceId": null,
+      "referenceType": null,
+      "startActivityId": "fechaOCampana",
+      "startTime": "2026-11-19T19:57:25.283Z",
+      "startUserId": "peluditos-local",
+      "state": "completed",
+      "superProcessInstanceId": null,
+      "tenantId": "",
+      "url": "http://127.0.0.1:61855/flowable-rest/service/history/historic-process-instances/70e76f6b-e453-11f1-b005-0a0027000013",
+      "variables": []
+    },
+    "variables": {
+      "clienteId": 1,
+      "contactarCliente": false,
+      "fechaOportunidad": "2026-12-22",
+      "initiator": "peluditos-local",
+      "motivo": "Promoción de Navidad",
+      "nombreCliente": "Camila Soto"
+    }
+  }
+}

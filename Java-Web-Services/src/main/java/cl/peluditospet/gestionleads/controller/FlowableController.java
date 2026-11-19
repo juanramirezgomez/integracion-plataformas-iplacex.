@@ -1,6 +1,8 @@
 
 package cl.peluditospet.gestionleads.controller;
 
+import cl.peluditospet.gestionleads.model.Lead;
+import cl.peluditospet.gestionleads.repository.LeadRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.*;
@@ -15,6 +17,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -23,6 +27,7 @@ import java.util.Map;
 public class FlowableController {
 
     private final ObjectMapper mapper;
+    private final LeadRepository leads;
     private final HttpClient client;
 
     @Value("${app.flowable.base-url}")
@@ -31,8 +36,9 @@ public class FlowableController {
     @Value("${app.flowable.auth-file}")
     private String authFile;
 
-    public FlowableController(ObjectMapper mapper) {
+    public FlowableController(ObjectMapper mapper, LeadRepository leads) {
         this.mapper = mapper;
+        this.leads = leads;
         this.client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
@@ -84,10 +90,48 @@ public class FlowableController {
         return solicitar("POST", "/runtime/process-instances", datos);
     }
 
+    public record NuevaOportunidad(Long clienteId, String motivo, String fechaOportunidad) {}
+
+    @POST
+    @Path("/oportunidades")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response iniciarOportunidad(NuevaOportunidad datos) {
+        if (datos == null || datos.clienteId() == null || datos.motivo() == null
+                || datos.motivo().isBlank() || datos.motivo().trim().length() > 150
+                || datos.fechaOportunidad() == null
+                || !datos.fechaOportunidad().matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
+            throw new BadRequestException("Indica un cliente, un motivo de hasta 150 caracteres y una fecha válida.");
+        }
+        try {
+            LocalDate.parse(datos.fechaOportunidad());
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new BadRequestException("La fecha de la oportunidad no es válida.");
+        }
+        Lead cliente = leads.findById(datos.clienteId())
+                .orElseThrow(() -> new NotFoundException("El cliente ya no está disponible."));
+        if (!"CONVERTIDO".equals(cliente.getEstado())) {
+            throw new BadRequestException("El cliente debe tener una compra registrada.");
+        }
+
+        return solicitar("POST", "/runtime/process-instances", Map.of(
+                "message", "OportunidadComercialDetectada",
+                "variables", List.of(
+                        Map.of("name", "initiator", "value", "peluditos-local"),
+                        Map.of("name", "clienteId", "type", "long", "value", cliente.getId()),
+                        Map.of("name", "nombreCliente", "value", cliente.getNombreCliente()),
+                        Map.of("name", "motivo", "value", datos.motivo().trim()),
+                        Map.of("name", "fechaOportunidad", "value", datos.fechaOportunidad())
+                )
+        ));
+    }
+
     @GET
     @Path("/tareas")
-    public Response obtenerTareas() {
-        return solicitar("GET", "/runtime/tasks", null);
+    public Response obtenerTareas(@QueryParam("start") @DefaultValue("0") int inicio) {
+        if (inicio < 0) {
+            throw new BadRequestException("La posición inicial no es válida.");
+        }
+        return solicitar("GET", "/runtime/tasks?start=" + inicio + "&size=50&sort=id&order=asc", null);
     }
 
     @GET

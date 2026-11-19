@@ -27,6 +27,7 @@ const API_CLIENTES = `${API_BASE}/leads`;
 const API_CONSULTAS = `${API_BASE}/consultas`;
 const API_PROCESOS = `${API_BASE}/procesos`;
 const API_TAREAS = `${API_BASE}/tareas`;
+const API_OPORTUNIDADES = `${API_BASE}/oportunidades`;
 const API_CORREOS = `${API_BASE}/correos`;
 const API_ACTIVIDAD = `${API_BASE}/actividad`;
 
@@ -59,6 +60,11 @@ const formulario = document.getElementById("consultaForm");
 const mensaje = document.getElementById("mensaje");
 const botonActualizar = document.getElementById("actualizar");
 const tabla = document.getElementById("tablaConsultas");
+
+const formRecompra = document.getElementById("formRecompra");
+const clienteRecompra = document.getElementById("clienteRecompra");
+const mensajeRecompra = document.getElementById("mensajeRecompra");
+const botonCrearOportunidad = formRecompra.querySelector('button[type="submit"]');
 
 const botonActualizarTareas = document.getElementById("actualizarTareas");
 
@@ -212,6 +218,63 @@ function registrarActividadLocal(clave, accion, detalle) {
 // 4. CONSULTAR CLIENTES REGISTRADOS
 // ---------------------------------------------------------
 
+function mostrarClientesRecompra(clientes) {
+  const seleccionado = clienteRecompra.value;
+  const compradores = clientes.filter((cliente) => cliente.estado === "CONVERTIDO");
+  const textoInicial = compradores.length > 0
+    ? "Selecciona un cliente"
+    : "Todavía no hay clientes con compra registrada";
+  clienteRecompra.replaceChildren(new Option(textoInicial, ""));
+  compradores.forEach((cliente) => {
+    clienteRecompra.add(new Option(
+      cliente.nombreCliente + " · " + cliente.telefono, String(cliente.id),
+    ));
+  });
+  if (compradores.some((cliente) => String(cliente.id) === seleccionado)) {
+    clienteRecompra.value = seleccionado;
+  }
+  clienteRecompra.disabled = compradores.length === 0;
+  botonCrearOportunidad.disabled = clienteRecompra.disabled || formRecompra.hasAttribute("aria-busy");
+}
+
+formRecompra.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (botonCrearOportunidad.disabled) return;
+  const datos = new FormData(formRecompra);
+  const motivo = datos.get("motivo").trim();
+  if (!motivo) {
+    mensajeRecompra.textContent = "Escribe el motivo de la oportunidad.";
+    return;
+  }
+
+  botonCrearOportunidad.disabled = true;
+  formRecompra.setAttribute("aria-busy", "true");
+  mensajeRecompra.textContent = "Creando oportunidad…";
+  try {
+    await solicitarJSON(API_OPORTUNIDADES, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({
+        clienteId: Number(datos.get("clienteId")),
+        motivo,
+        fechaOportunidad: datos.get("fechaOportunidad"),
+      }),
+    });
+    formRecompra.reset();
+    mensajeRecompra.textContent = "Oportunidad creada. Abre «Revisar oportunidad» en la bandeja.";
+    await cargarTareas();
+  } catch (error) {
+    if (error.status === 400 || error.status === 404) {
+      mensajeRecompra.textContent = "Revisa el cliente, el motivo y la fecha de la oportunidad.";
+    } else {
+      mensajeRecompra.textContent = "No se pudo confirmar la creación. Revisa la bandeja antes de volver a intentar.";
+    }
+  } finally {
+    formRecompra.removeAttribute("aria-busy");
+    botonCrearOportunidad.disabled = clienteRecompra.disabled;
+  }
+});
+
 async function cargarClientes() {
   try {
     botonActualizar.disabled = true;
@@ -224,6 +287,8 @@ async function cargarClientes() {
     const clientes = Array.isArray(respuesta)
       ? respuesta
       : (respuesta?.value ?? []);
+
+    mostrarClientesRecompra(clientes);
 
     const listaConsultas = Array.isArray(consultas) ? consultas : [];
     const overrides = leerStorageJSON(STORAGE_OVERRIDES_KEY, {});
@@ -921,8 +986,13 @@ async function cargarTareas() {
     botonActualizarTareas.disabled = true;
     mostrarMensajeTareas("Consultando tareas en Flowable...");
 
-    const respuesta = await solicitarJSON(API_TAREAS);
-    const tareas = respuesta?.data ?? [];
+    const tareas = [];
+    let pagina;
+    do {
+      pagina = await solicitarJSON(API_TAREAS + "?start=" + tareas.length);
+      if (!pagina?.data?.length) break;
+      tareas.push(...pagina.data);
+    } while (tareas.length < pagina.total);
     tareasCache = tareas;
 
     tablaTareas.replaceChildren();
@@ -978,7 +1048,14 @@ async function cargarTareas() {
 // 7. CREAR CAMPOS PARA UNA TAREA HUMANA
 // ---------------------------------------------------------
 
+const TAREAS_RECOMPRA = new Set(["revisarOportunidad", "contactarCliente", "registrarResultado"]);
+
 const CAMPOS_POR_TAREA = {
+  revisarOportunidad: [["contactarCliente", "¿Corresponde contactar al cliente?", "boolean"]],
+
+  contactarCliente: [["canalContacto", "Canal usado para el contacto"]],
+
+  registrarResultado: [["resultadoContacto", "Resultado del contacto"]],
   ExpandedSubProcess_4: [
     ["nombreCliente", "Nombre"],
     ["telefono", "Teléfono"],
@@ -1111,6 +1188,12 @@ async function seleccionarTarea(tarea) {
     const valores = new Map(
       variables.map((variable) => [variable.name, variable.value]),
     );
+    if (TAREAS_RECOMPRA.has(tarea.taskDefinitionKey)) {
+      const cliente = valores.get("nombreCliente") ?? "Cliente " + valores.get("clienteId");
+      const motivo = valores.get("motivo");
+      const fecha = valores.get("fechaOportunidad");
+      descripcionTarea.textContent = [cliente, motivo, fecha].filter(Boolean).join(" · ");
+    }
     camposTarea.querySelectorAll("input, select").forEach((campo) => {
       const valor = valores.get(campo.name);
       if (valor !== undefined && valor !== null) {
@@ -1137,7 +1220,8 @@ async function seleccionarTarea(tarea) {
 formTarea.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (!tareaSeleccionada) {
+  const tarea = tareaSeleccionada;
+  if (!tarea) {
     return;
   }
 
@@ -1160,7 +1244,7 @@ formTarea.addEventListener("submit", async (event) => {
     let varsContexto = [];
     try {
       varsContexto = await solicitarJSON(
-        `${API_TAREAS}/${encodeURIComponent(tareaSeleccionada.id)}/variables`,
+        `${API_TAREAS}/${encodeURIComponent(tarea.id)}/variables`,
       );
     } catch {
       varsContexto = [];
@@ -1169,12 +1253,13 @@ formTarea.addEventListener("submit", async (event) => {
     const mapaVars = new Map(
       (varsContexto ?? []).map((v) => [v.name, v.value]),
     );
-    const leadIdVar = mapaVars.get("leadId");
+    const esRecompra = TAREAS_RECOMPRA.has(tarea.taskDefinitionKey);
+    const leadIdVar = mapaVars.get(esRecompra ? "clienteId" : "leadId");
     const correoVar = mapaVars.get("correo");
     const telVar = mapaVars.get("telefono");
 
-    const procesoIdTarea = tareaSeleccionada.processInstanceId ?? null;
-    const rootProcesoIdTarea = tareaSeleccionada.rootProcessInstanceId ?? null;
+    const procesoIdTarea = tarea.processInstanceId ?? null;
+    const rootProcesoIdTarea = tarea.rootProcessInstanceId ?? null;
 
     // 2. Buscar el registro del cliente en memoria para obtener su clave exacta
     const registroCoincidente = registrosActuales.find((r) => {
@@ -1205,7 +1290,7 @@ formTarea.addEventListener("submit", async (event) => {
     };
 
     await solicitarJSON(
-      `${API_TAREAS}/${encodeURIComponent(tareaSeleccionada.id)}/completar`,
+      `${API_TAREAS}/${encodeURIComponent(tarea.id)}/completar`,
       {
         method: "POST",
         headers: {
@@ -1243,8 +1328,8 @@ formTarea.addEventListener("submit", async (event) => {
       const detalleActividad =
         resumenVars.join(" · ") || "Sin variables adicionales";
       const nombreTarea =
-        tareaSeleccionada.name ??
-        tareaSeleccionada.taskDefinitionKey ??
+        tarea.name ??
+        tarea.taskDefinitionKey ??
         "Tarea";
 
       clavesDestino.forEach((claveDest) => {
@@ -1280,8 +1365,23 @@ formTarea.addEventListener("submit", async (event) => {
       }
     }
 
-    panelTarea.hidden = true;
-    tareaSeleccionada = null;
+    if (esRecompra) {
+      const etapa = tarea.taskDefinitionKey;
+      if (etapa === "revisarOportunidad") {
+        mensajeRecompra.textContent = datos.contactarCliente
+          ? "Oportunidad revisada. Continúa con «Contactar cliente»."
+          : "Oportunidad cerrada sin contacto.";
+      } else {
+        mensajeRecompra.textContent = etapa === "contactarCliente"
+          ? "Contacto registrado. Continúa con «Registrar resultado»."
+          : "Resultado guardado. Oportunidad atendida.";
+      }
+    }
+
+    if (tareaSeleccionada === tarea) {
+      panelTarea.hidden = true;
+      tareaSeleccionada = null;
+    }
 
     mostrarMensajeTareas(
       "Tarea completada correctamente. Actualizando bandeja...",
@@ -1293,10 +1393,14 @@ formTarea.addEventListener("submit", async (event) => {
   } catch (error) {
     console.error("Error al completar tarea:", error);
 
-    resultadoTarea.textContent =
-      "No se pudo completar la tarea. Revisa Java y Flowable.";
+    if (tareaSeleccionada === tarea) {
+      resultadoTarea.textContent =
+        "No se pudo completar la tarea. Revisa Java y Flowable.";
+    }
   } finally {
-    botonCompletar.disabled = false;
+    if (tareaSeleccionada === tarea) {
+      botonCompletar.disabled = false;
+    }
   }
 });
 

@@ -87,6 +87,6 @@ Abre [Peluditos en local](http://127.0.0.1:5173/). Registra una consulta con dat
 
 ## Conclusión
 
-El proceso de recompra se puede iniciar por API. Queda por conectar la detección de fechas y campañas y la pantalla para gestionarlas.
+La encargada puede abrir una oportunidad de recompra desde la pantalla para un cliente que ya compró, revisarla y registrar el contacto o cerrarla sin contacto. El inicio es manual. [Ver cómo probarlo y las evidencias](Pruebas/Recorridos/README.md#recompra-desde-la-pantalla).
 
 El prototipo ya permite probar en local el recorrido de una consulta con y sin compra. El [diagrama de arquitectura](Arquitectura/modelo-arquitectura.md) muestra cómo se conectan los componentes en local. Los [videos del avance anterior](Videos/Entrega-2/) están en la carpeta de videos.
