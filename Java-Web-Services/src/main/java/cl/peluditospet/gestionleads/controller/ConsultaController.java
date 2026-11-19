@@ -49,26 +49,62 @@ public class ConsultaController {
         Lead lead = leads.bloquearPorId(datos.getLeadId())
                 .orElseThrow(() -> new NotFoundException("No existe el contacto."));
         Consulta anterior = consultas.findById(procesoId).orElse(null);
-        if (vacio(datos.getCanalOrigen()) && anterior != null && !vacio(anterior.getCanalOrigen())) {
-            datos.setCanalOrigen(anterior.getCanalOrigen());
-        }
-        if (anterior != null && (!Objects.equals(anterior.getLeadId(), datos.getLeadId())
-                || (!"PENDIENTE".equals(anterior.getResultado())
-                && !anterior.getResultado().equals(datos.getResultado())
-                && !"PENDIENTE".equals(datos.getResultado())))) {
-            throw new ClientErrorException("La consulta ya tiene otro resultado registrado.", 409);
-        }
-        // Una repetición del alta no borra un resultado que ya quedó confirmado.
-        if (anterior != null && !"PENDIENTE".equals(anterior.getResultado())
-                && "PENDIENTE".equals(datos.getResultado())) {
+        if (anterior != null) {
+            if (!Objects.equals(anterior.getLeadId(), datos.getLeadId())
+                    || (!"PENDIENTE".equals(anterior.getResultado())
+                    && !anterior.getResultado().equals(datos.getResultado())
+                    && !"PENDIENTE".equals(datos.getResultado()))) {
+                throw new ClientErrorException("La consulta ya tiene otro resultado registrado.", 409);
+            }
+            // El worker trae los datos originales del proceso. Solo avanza el resultado
+            // para conservar las ediciones que se hayan guardado desde la ficha.
+            if ("PENDIENTE".equals(anterior.getResultado())) {
+                anterior.setResultado(datos.getResultado());
+            }
             return anterior;
         }
+
         datos.setProcesoId(procesoId);
-        lead.setNombreCliente(datos.getNombreCliente());
-        lead.setTelefono(datos.getTelefono());
-        lead.setCorreo(datos.getCorreo());
-        leads.save(lead);
+        actualizarContacto(lead, datos);
         return consultas.save(datos);
+    }
+
+    @PUT
+    @Path("/{procesoId}/datos")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Consulta actualizarDatos(@PathParam("procesoId") String procesoId, Consulta datos) {
+        if (datos == null || !valido(datos.getNombreCliente(), 255)
+                || !valido(datos.getTelefono(), 255) || !valido(datos.getCorreo(), 254)
+                || !datos.getCorreo().trim().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
+                || !valido(datos.getCanalOrigen(), 255) || !valido(datos.getConsulta(), 4000)) {
+            throw new BadRequestException("Indica nombre, teléfono, correo válido, canal y consulta.");
+        }
+
+        Long leadId = consultas.buscarLeadId(procesoId)
+                .orElseThrow(() -> new NotFoundException("No existe la consulta."));
+        Lead lead = leads.bloquearPorId(leadId)
+                .orElseThrow(() -> new NotFoundException("No existe el contacto."));
+        Consulta guardada = consultas.findById(procesoId)
+                .orElseThrow(() -> new NotFoundException("No existe la consulta."));
+
+        guardada.setNombreCliente(datos.getNombreCliente().trim());
+        guardada.setTelefono(datos.getTelefono().trim());
+        guardada.setCorreo(datos.getCorreo().trim());
+        guardada.setCanalOrigen(datos.getCanalOrigen().trim());
+        guardada.setConsulta(datos.getConsulta().trim());
+        actualizarContacto(lead, guardada);
+        return guardada;
+    }
+
+    private static void actualizarContacto(Lead lead, Consulta consulta) {
+        lead.setNombreCliente(consulta.getNombreCliente());
+        lead.setTelefono(consulta.getTelefono());
+        lead.setCorreo(consulta.getCorreo());
+    }
+
+    private static boolean valido(String valor, int maximo) {
+        return !vacio(valor) && valor.trim().length() <= maximo;
     }
 
     private static boolean vacio(String valor) {

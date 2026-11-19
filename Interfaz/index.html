@@ -158,12 +158,13 @@
                 required
               ></textarea>
 
-              <label for="editResultado">Resultado / Estado</label>
-              <select id="editResultado" name="editResultado">
+              <label for="editResultado">Resultado de la consulta</label>
+              <select id="editResultado" disabled>
+                <option value="">Sin resultado registrado</option>
                 <option value="PENDIENTE">Pendiente</option>
                 <option value="COMPRO">Compró</option>
                 <option value="NO_COMPRO">No compró</option>
-                <option value="CONVERTIDO">Convertido</option>
+                <option value="CONVERTIDO">Compró</option>
               </select>
 
               <button type="submit">Guardar cambios</button>

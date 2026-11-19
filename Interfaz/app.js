@@ -32,7 +32,6 @@ const API_CORREOS = `${API_BASE}/correos`;
 const API_ACTIVIDAD = `${API_BASE}/actividad`;
 
 const STORAGE_ACTIVIDAD_KEY = "peluditos_actividad_v1";
-const STORAGE_OVERRIDES_KEY = "peluditos_overrides_v1";
 const STORAGE_GESTION_KEY = "peluditos_detalle_gestion_v1";
 
 const ETIQUETAS_GESTION = {
@@ -291,7 +290,6 @@ async function cargarClientes() {
     mostrarClientesRecompra(clientes);
 
     const listaConsultas = Array.isArray(consultas) ? consultas : [];
-    const overrides = leerStorageJSON(STORAGE_OVERRIDES_KEY, {});
 
     const contactosConConsulta = new Set(
       listaConsultas.map((consulta) => consulta.leadId),
@@ -302,15 +300,10 @@ async function cargarClientes() {
       ...clientes.filter((cliente) => !contactosConConsulta.has(cliente.id)),
     ];
 
-    const registros = baseRegistros.map((item) => {
-      const clave = obtenerClaveRegistro(item);
-      const ajusteLocal = overrides[clave] ?? {};
-      return {
-        ...item,
-        ...ajusteLocal,
-        _clave: clave,
-      };
-    });
+    const registros = baseRegistros.map((registro) => ({
+      ...registro,
+      _clave: obtenerClaveRegistro(registro),
+    }));
 
     registrosActuales = registros;
     tabla.replaceChildren();
@@ -462,21 +455,26 @@ function renderizarGrillaGestion(gestion) {
   });
 }
 
-async function abrirDetalleRegistro(registro) {
-  registroSeleccionado = registro;
-  mensajeEdicion.textContent = "";
-  mensajeCorreo.textContent = "";
-
+function mostrarEncabezadoFicha(registro) {
   detalleTitulo.textContent = registro.nombreCliente || "Ficha del cliente";
 
   const partesSubtitulo = [];
   if (registro.telefono) partesSubtitulo.push(`Tel: ${registro.telefono}`);
   if (registro.correo) partesSubtitulo.push(`Correo: ${registro.correo}`);
-  if (registro.processInstanceId) {
-    partesSubtitulo.push(`Proceso: ${registro.processInstanceId}`);
+  const procesoId = registro.procesoId ?? registro.processInstanceId;
+  if (procesoId) {
+    partesSubtitulo.push(`Proceso: ${procesoId}`);
   }
   detalleSubtitulo.textContent =
     partesSubtitulo.join(" · ") || "Gestión del cliente y trazabilidad";
+}
+
+async function abrirDetalleRegistro(registro) {
+  registroSeleccionado = registro;
+  mensajeEdicion.textContent = "";
+  mensajeCorreo.textContent = "";
+
+  mostrarEncabezadoFicha(registro);
 
   // Rellenar formulario de edición.
   editNombre.value = registro.nombreCliente ?? "";
@@ -486,7 +484,7 @@ async function abrirDetalleRegistro(registro) {
   editConsulta.value = registro.consulta ?? "";
   editResultado.value =
     registro.resultado ||
-    (registro.estado === "CONVERTIDO" ? "CONVERTIDO" : "PENDIENTE");
+    (registro.estado === "CONVERTIDO" ? "CONVERTIDO" : "");
 
   // Prellenar correo de destino.
   correoDestinatario.value = registro.correo ?? "";
@@ -552,106 +550,57 @@ volverListado.addEventListener("click", () => {
 
 formEditarCliente.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!registroSeleccionado) return;
-
+  const registro = registroSeleccionado;
   const botonGuardar = formEditarCliente.querySelector('button[type="submit"]');
-  const datosEditados = {
+  if (!registro || botonGuardar.disabled) return;
+
+  const datos = {
     nombreCliente: editNombre.value.trim(),
     telefono: editTelefono.value.trim(),
     correo: editCorreo.value.trim(),
     canalOrigen: editCanal.value,
     consulta: editConsulta.value.trim(),
-    resultado: editResultado.value,
   };
 
-  if (
-    !datosEditados.nombreCliente ||
-    !datosEditados.telefono ||
-    !datosEditados.correo ||
-    !datosEditados.canalOrigen ||
-    !datosEditados.consulta
-  ) {
+  if (Object.values(datos).some((valor) => !valor)) {
     mensajeEdicion.textContent = "Completa todos los campos obligatorios.";
     return;
   }
 
+  const procesoId = registro.procesoId ?? registro.processInstanceId;
+  const leadId = registro.leadId ?? registro.id;
+  if (!procesoId && leadId == null) {
+    mensajeEdicion.textContent = "No se encontró la ficha para guardar los cambios.";
+    return;
+  }
+
+  const url = procesoId
+    ? `${API_CONSULTAS}/${encodeURIComponent(procesoId)}/datos`
+    : `${API_CLIENTES}/${encodeURIComponent(leadId)}`;
+  botonGuardar.disabled = true;
+  mensajeEdicion.textContent = "Guardando cambios...";
   try {
-    botonGuardar.disabled = true;
-    mensajeEdicion.textContent = "Guardando cambios...";
+    const guardado = await solicitarJSON(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify(datos),
+    });
 
-    const leadId = registroSeleccionado.leadId ?? registroSeleccionado.id;
-    let guardadoEnBackend = false;
-
-    if (leadId != null) {
-      try {
-        await solicitarJSON(`${API_CLIENTES}/${encodeURIComponent(leadId)}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({
-            ...datosEditados,
-            estado:
-              datosEditados.resultado === "COMPRO" ||
-              datosEditados.resultado === "CONVERTIDO"
-                ? "CONVERTIDO"
-                : (registroSeleccionado.estado ?? "PENDIENTE"),
-          }),
-        });
-        guardadoEnBackend = true;
-      } catch (errLead) {
-        console.warn("PUT /api/leads/{id} no disponible o falló:", errLead);
+    registrarActividadLocal(registro._clave, "Actualización de datos", "Se guardaron los cambios de la ficha.");
+    if (registroSeleccionado?._clave === registro._clave) {
+      registroSeleccionado = { ...guardado, _clave: registro._clave };
+      mostrarEncabezadoFicha(registroSeleccionado);
+      if (correoDestinatario.value === (registro.correo ?? "")) {
+        correoDestinatario.value = guardado.correo;
       }
+      mensajeEdicion.textContent = "Cambios guardados.";
     }
-
-    if (registroSeleccionado.processInstanceId) {
-      try {
-        await solicitarJSON(
-          `${API_CONSULTAS}/${encodeURIComponent(registroSeleccionado.processInstanceId)}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json; charset=utf-8" },
-            body: JSON.stringify({
-              leadId: leadId ?? undefined,
-              ...datosEditados,
-            }),
-          },
-        );
-        guardadoEnBackend = true;
-      } catch (errConsulta) {
-        console.warn(
-          "PUT /api/consultas/{id} no disponible o falló:",
-          errConsulta,
-        );
-      }
-    }
-
-    // Guardar respaldo local para reflejar cambios de inmediato en la vista.
-    const overrides = leerStorageJSON(STORAGE_OVERRIDES_KEY, {});
-    overrides[registroSeleccionado._clave] = {
-      ...(overrides[registroSeleccionado._clave] ?? {}),
-      ...datosEditados,
-    };
-    guardarStorageJSON(STORAGE_OVERRIDES_KEY, overrides);
-
-    registroSeleccionado = {
-      ...registroSeleccionado,
-      ...datosEditados,
-    };
-
-    registrarActividadLocal(
-      registroSeleccionado._clave,
-      "Actualización de datos",
-      `Se actualizaron los datos del cliente (${datosEditados.nombreCliente}, ${datosEditados.telefono}, ${datosEditados.correo}) y resultado: ${datosEditados.resultado}.`,
-    );
-
-    mensajeEdicion.textContent = guardadoEnBackend
-      ? "Cambios guardados en el backend."
-      : "Cambios guardados en la interfaz (endpoint de actualización aún no activo en Java).";
-
     await cargarClientes();
-    await renderizarActividad(registroSeleccionado);
   } catch (error) {
     console.error("Error al guardar cambios:", error);
-    mensajeEdicion.textContent = "No se pudieron guardar los cambios.";
+    if (registroSeleccionado?._clave === registro._clave) {
+      mensajeEdicion.textContent = "No se pudieron guardar los cambios. Revisa los datos o la conexión y vuelve a intentar.";
+    }
   } finally {
     botonGuardar.disabled = false;
   }
@@ -678,24 +627,21 @@ botonEliminarCliente.addEventListener("click", async () => {
       });
     }
 
-    // Limpiar respaldos locales asociados tanto por clave actual, leadId o processInstanceId.
+    // Limpiar la actividad y la gestión local asociadas.
     const clavesABorrar = new Set([registroSeleccionado._clave]);
     if (leadId != null) clavesABorrar.add(`lead:${leadId}`);
     if (registroSeleccionado.processInstanceId) {
       clavesABorrar.add(`proc:${registroSeleccionado.processInstanceId}`);
     }
 
-    const overrides = leerStorageJSON(STORAGE_OVERRIDES_KEY, {});
     const historial = leerStorageJSON(STORAGE_ACTIVIDAD_KEY, {});
     const gestionMap = leerStorageJSON(STORAGE_GESTION_KEY, {});
 
     clavesABorrar.forEach((clave) => {
-      delete overrides[clave];
       delete historial[clave];
       delete gestionMap[clave];
     });
 
-    guardarStorageJSON(STORAGE_OVERRIDES_KEY, overrides);
     guardarStorageJSON(STORAGE_ACTIVIDAD_KEY, historial);
     guardarStorageJSON(STORAGE_GESTION_KEY, gestionMap);
 

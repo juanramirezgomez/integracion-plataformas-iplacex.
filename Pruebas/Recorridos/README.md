@@ -67,3 +67,13 @@ Probamos con datos ficticios una oportunidad por cumpleaños que terminó con co
 En el flujo de consultas, la espera de seguimiento se mantiene en 10 segundos para la prueba.
 
 Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué causó el bloqueo anterior en Enterprise.
+
+## Edición de la ficha
+
+Probamos editar el nombre, teléfono, correo, canal y descripción de una consulta pendiente desde el navegador. En otra sesión aparecieron los datos guardados. El worker conservó la edición cuando Flowable cerró la consulta con compra. Al reiniciar Java y Flowable, recuperamos la misma consulta y la confirmación de cierre. También se repitieron los recorridos con y sin compra.
+
+Ante un fallo simulado al guardar, el formulario mantuvo los datos escritos y la ficha siguió mostrando los datos originales al abrirla desde otra sesión.
+
+- [Ficha después del reinicio](edicion-ficha-despues-reinicio.png)
+- [Listado final después del reinicio](listado-despues-reinicio.png)
+- [Datos de la ficha e historial de Flowable](edicion-ficha-integracion.json)
