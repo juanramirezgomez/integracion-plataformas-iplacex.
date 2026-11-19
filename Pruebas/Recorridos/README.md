@@ -77,3 +77,7 @@ Ante un fallo simulado al guardar, el formulario mantuvo los datos escritos y la
 - [Ficha después del reinicio](edicion-ficha-despues-reinicio.png)
 - [Listado final después del reinicio](listado-despues-reinicio.png)
 - [Datos de la ficha e historial de Flowable](edicion-ficha-integracion.json)
+
+## Bitácora de actividades
+
+Completamos «Clasificar consulta» una vez. El historial de Flowable mostró una tarea terminada, Java guardó un evento y la ficha mostró una línea tanto en la sesión original como en otra nueva. Repetimos la revisión con copias de la bitácora anterior guardadas en el navegador y la ficha mostró una sola línea de esa tarea. Ante un fallo simulado al guardar en Java, quedó una entrada local al recargar la ficha. [Captura de la bitácora](actividad-sin-duplicados.png).

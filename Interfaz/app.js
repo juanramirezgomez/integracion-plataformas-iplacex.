@@ -732,43 +732,53 @@ formEnviarCorreo.addEventListener("submit", async (event) => {
   }
 });
 
+function coincideActividad(evento, candidato, margenMs) {
+  return evento.accion === candidato.accion
+    && evento.detalle === candidato.detalle
+    && Math.abs(Date.parse(evento.fecha) - Date.parse(candidato.fecha)) <= margenMs;
+}
+
 async function renderizarActividad(registro) {
   const historialLocal = leerStorageJSON(STORAGE_ACTIVIDAD_KEY, {});
-  const eventos = [
-    ...(Array.isArray(historialLocal[registro._clave])
-      ? historialLocal[registro._clave]
-      : []),
-  ];
+  const guardados = historialLocal[registro._clave];
+  const eventosLocales = Array.isArray(guardados) ? guardados : [];
+  let eventosJava = [];
 
-  // Si el backend expone /api/actividad, intentar incorporarlo.
-  try {
-    const params = new URLSearchParams();
-    if (registro.processInstanceId) {
-      params.set("procesoId", registro.processInstanceId);
-    }
-    const leadId = registro.leadId ?? registro.id;
-    if (leadId != null) {
-      params.set("leadId", String(leadId));
-    }
+  const params = new URLSearchParams();
+  const procesoId = registro.procesoId ?? registro.processInstanceId;
+  const leadId = registro.leadId ?? registro.id;
+  if (procesoId) params.set("procesoId", procesoId);
+  if (leadId != null) params.set("leadId", String(leadId));
 
-    const queryStr = params.toString();
-    const urlActividad = queryStr
-      ? `${API_ACTIVIDAD}?${queryStr}`
-      : API_ACTIVIDAD;
-
-    const eventosBackend = await solicitarJSON(urlActividad);
-    if (Array.isArray(eventosBackend)) {
-      eventosBackend.forEach((ev) => {
-        eventos.push({
-          fecha: ev.fecha ?? ev.timestamp ?? new Date().toISOString(),
-          accion: ev.accion ?? ev.evento ?? "Actividad del sistema",
-          detalle: ev.detalle ?? ev.descripcion ?? "",
-        });
-      });
+  if (params.size > 0) {
+    try {
+      const respuesta = await solicitarJSON(API_ACTIVIDAD + "?" + params);
+      if (Array.isArray(respuesta)) {
+        eventosJava = respuesta.map((evento) => ({
+          fecha: evento.fecha ?? evento.timestamp,
+          accion: evento.accion ?? evento.evento ?? "Actividad del sistema",
+          detalle: evento.detalle ?? evento.descripcion ?? "",
+        }));
+      }
+    } catch {
+      // Si Java no responde, aún se puede consultar el historial local.
     }
-  } catch {
-    // Si /api/actividad no existe aún, se muestran los eventos locales.
   }
+
+  // Las versiones anteriores guardaban la misma tarea varias veces de forma
+  // local y enviaban además un evento a Java. Conservamos el registro de Java.
+  const localesSinCopias = [];
+  for (const evento of eventosLocales) {
+    if (evento.accion?.startsWith("Tarea completada:")
+        && (eventosJava.some((otro) => coincideActividad(evento, otro, 15_000))
+          || localesSinCopias.some((otro) => coincideActividad(evento, otro, 1_000)))) {
+      continue;
+    }
+    localesSinCopias.push(evento);
+  }
+  const eventos = [...eventosJava, ...localesSinCopias];
+  eventos.sort((a, b) => (Date.parse(b.fecha) || 0) - (Date.parse(a.fecha) || 0));
+  if (registroSeleccionado?._clave !== registro._clave) return;
 
   // Evento base si el registro ya existía previamente.
   if (eventos.length === 0) {
@@ -1247,12 +1257,12 @@ formTarea.addEventListener("submit", async (event) => {
     );
 
     // 4. Guardar los datos de gestión y registrar la actividad bajo todas las claves asociadas
-    const clavesDestino = [
+    const clavesDestino = [...new Set([
       procesoIdTarea ? `proc:${procesoIdTarea}` : null,
       rootProcesoIdTarea ? `proc:${rootProcesoIdTarea}` : null,
       leadIdVar != null ? `lead:${leadIdVar}` : null,
       registroCoincidente?._clave ?? null,
-    ].filter(Boolean);
+    ].filter(Boolean))];
 
     if (clavesDestino.length > 0) {
       const camposGuardables = {};
@@ -1278,28 +1288,22 @@ formTarea.addEventListener("submit", async (event) => {
         tarea.taskDefinitionKey ??
         "Tarea";
 
-      clavesDestino.forEach((claveDest) => {
-        registrarActividadLocal(
-          claveDest,
-          `Tarea completada: ${nombreTarea}`,
-          detalleActividad,
-        );
-      });
-
-      solicitarJSON(API_ACTIVIDAD, {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          leadId:
-            leadIdVar ??
-            registroCoincidente?.leadId ??
-            registroCoincidente?.id ??
-            null,
-          procesoId: rootProcesoIdTarea ?? procesoIdTarea,
-          accion: `Tarea completada: ${nombreTarea}`,
-          detalle: detalleActividad,
-        }),
-      }).catch(() => {});
+      const accion = `Tarea completada: ${nombreTarea}`;
+      try {
+        await solicitarJSON(API_ACTIVIDAD, {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: JSON.stringify({
+            leadId: leadIdVar ?? registroCoincidente?.leadId ?? registroCoincidente?.id ?? null,
+            procesoId: rootProcesoIdTarea ?? procesoIdTarea,
+            accion,
+            detalle: detalleActividad,
+          }),
+        });
+      } catch (error) {
+        console.warn("No se pudo guardar la actividad en Java:", error);
+        clavesDestino.forEach((clave) => registrarActividadLocal(clave, accion, detalleActividad));
+      }
 
       // Si el usuario tiene abierta la ficha de este cliente, refrescar al instante
       if (
