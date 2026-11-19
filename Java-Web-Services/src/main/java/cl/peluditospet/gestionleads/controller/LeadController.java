@@ -1,6 +1,7 @@
 package cl.peluditospet.gestionleads.controller;
 
 import cl.peluditospet.gestionleads.model.Lead;
+import cl.peluditospet.gestionleads.repository.ActividadRepository;
 import cl.peluditospet.gestionleads.repository.LeadRepository;
 import cl.peluditospet.gestionleads.repository.ConsultaRepository;
 import jakarta.transaction.Transactional;
@@ -20,10 +21,15 @@ public class LeadController {
     private final LeadRepository leadRepository;
 
     private final ConsultaRepository consultas;
+    private final ActividadRepository actividades;
 
-    public LeadController(LeadRepository leadRepository, ConsultaRepository consultas) {
+    public LeadController(
+            LeadRepository leadRepository,
+            ConsultaRepository consultas,
+            ActividadRepository actividades) {
         this.leadRepository = leadRepository;
         this.consultas = consultas;
+        this.actividades = actividades;
     }
 
     @GET
@@ -59,14 +65,59 @@ public class LeadController {
         return leadRepository.save(lead);
     }
 
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Lead actualizarLead(@PathParam("id") Long id, Lead detalles) {
+        Lead lead = leadRepository.bloquearPorId(id)
+                .orElseThrow(() -> new NotFoundException("No existe un cliente con ese ID."));
+
+        if (detalles == null || vacio(detalles.getNombreCliente())
+                || vacio(detalles.getTelefono()) || vacio(detalles.getConsulta())) {
+            throw new BadRequestException("Nombre, teléfono y consulta son obligatorios.");
+        }
+        if (!vacio(detalles.getCorreo()) && (detalles.getCorreo().length() > 254
+                || !detalles.getCorreo().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"))) {
+            throw new BadRequestException("El correo electrónico no es válido.");
+        }
+
+        lead.setNombreCliente(detalles.getNombreCliente().trim());
+        lead.setTelefono(detalles.getTelefono().trim());
+        lead.setCorreo(detalles.getCorreo() != null ? detalles.getCorreo().trim() : null);
+
+        if (!vacio(detalles.getCanalOrigen())) {
+            lead.setCanalOrigen(detalles.getCanalOrigen().trim());
+        }
+        lead.setConsulta(detalles.getConsulta().trim());
+
+        if (!vacio(detalles.getEstado())) {
+            validarEstado(detalles.getEstado().trim());
+            lead.setEstado(detalles.getEstado().trim());
+        }
+
+        return leadRepository.save(lead);
+    }
+
     @DELETE
     @Path("/{id}")
     @Transactional
     public Response eliminarLead(@PathParam("id") Long id) {
         Lead lead = leadRepository.bloquearPorId(id)
                 .orElseThrow(() -> new NotFoundException("No existe un cliente con ese ID."));
+
+        List<String> procesosIds = consultas.findByLeadId(id).stream()
+                .map(c -> c.getProcesoId())
+                .filter(pid -> pid != null && !pid.isBlank())
+                .toList();
+
+        if (!procesosIds.isEmpty()) {
+            actividades.deleteByProcesoIdIn(procesosIds);
+        }
+        actividades.deleteByLeadId(id);
         consultas.deleteByLeadId(id);
         leadRepository.delete(lead);
+
         return Response.noContent().build();
     }
 

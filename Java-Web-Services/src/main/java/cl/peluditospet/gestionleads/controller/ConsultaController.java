@@ -17,7 +17,7 @@ import java.util.Set;
 @Path("/api/consultas")
 @Produces(MediaType.APPLICATION_JSON)
 public class ConsultaController {
-    private static final Set<String> RESULTADOS = Set.of("PENDIENTE", "COMPRO", "NO_COMPRO");
+    private static final Set<String> RESULTADOS = Set.of("PENDIENTE", "COMPRO", "NO_COMPRO", "CONVERTIDO");
     private final ConsultaRepository consultas;
     private final LeadRepository leads;
 
@@ -49,6 +49,9 @@ public class ConsultaController {
         Lead lead = leads.bloquearPorId(datos.getLeadId())
                 .orElseThrow(() -> new NotFoundException("No existe el contacto."));
         Consulta anterior = consultas.findById(procesoId).orElse(null);
+        if (vacio(datos.getCanalOrigen()) && anterior != null && !vacio(anterior.getCanalOrigen())) {
+            datos.setCanalOrigen(anterior.getCanalOrigen());
+        }
         if (anterior != null && (!Objects.equals(anterior.getLeadId(), datos.getLeadId())
                 || (!"PENDIENTE".equals(anterior.getResultado())
                 && !anterior.getResultado().equals(datos.getResultado())

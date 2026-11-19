@@ -1,316 +1,302 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peluditos Pet Chile | Gestión de Clientes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
 
-<head>
-  <!-- Configuración general del documento -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <body>
+    <header>
+      <h1>🐾 Peluditos Pet Chile</h1>
+      <p>Sistema de gestión de consultas y clientes</p>
+    </header>
 
-  <!-- Título que aparece en la pestaña del navegador -->
-  <title>Peluditos Pet Chile | Gestión de Clientes</title>
+    <main>
+      <!-- SECCIÓN 1: REGISTRO DE CONSULTAS -->
+      <section id="seccionConsultas">
+        <h2>Registrar nueva consulta</h2>
 
-  <!-- Hoja de estilos de la aplicación -->
-  <link rel="stylesheet" href="styles.css">
-
-  <!--
-    Archivo JavaScript principal.
-    defer permite cargar el HTML antes de ejecutar el script.
-  -->
-  <script src="app.js" defer></script>
-</head>
-
-<body>
-
-  <!-- =====================================================
-       ENCABEZADO PRINCIPAL
-       Identifica la aplicación Peluditos Pet Chile.
-       ===================================================== -->
-  <header>
-    <h1>🐾 Peluditos Pet Chile</h1>
-    <p>Sistema de gestión de consultas y clientes</p>
-  </header>
-
-  <main>
-
-    <!-- =====================================================
-         SECCIÓN 1: REGISTRO DE CONSULTAS
-         Permite ingresar los datos de un cliente y su consulta.
-
-         En la integración BPMN, este formulario se adaptará
-         para iniciar un proceso en Flowable OSS.
-         ===================================================== -->
-    <section id="seccionConsultas">
-
-      <h2>Registrar nueva consulta</h2>
-
-      <p>
-        Ingresa los datos del contacto para registrar
-        una nueva solicitud.
-      </p>
-
-      <!--
-        El identificador consultaForm permite que
-        app.js capture el envío del formulario.
-      -->
-      <form id="consultaForm">
-
-        <!-- Nombre del cliente -->
-        <label for="nombre">Nombre</label>
-        <input
-          type="text"
-          id="nombre"
-          name="nombre"
-          required
-        >
-
-        <!-- Teléfono o medio de contacto -->
-        <label for="contacto">Teléfono</label>
-        <input
-          type="text"
-          id="contacto"
-          name="contacto"
-          required
-        >
-
-        <label for="correo">Correo electrónico</label>
-        <input type="email" id="correo" name="correo" autocomplete="email" maxlength="254" pattern="[^@\s]+@[^@\s]+[.][^@\s]+" required>
-
-        <!-- Canal desde el cual llegó la consulta -->
-        <label for="canal">Canal de origen</label>
-        <select id="canal" name="canal" required>
-          <option value="">Seleccionar canal</option>
-          <option value="WhatsApp">WhatsApp</option>
-          <option value="Instagram">Instagram</option>
-          <option value="Facebook">Facebook</option>
-          <option value="TikTok">TikTok</option>
-        </select>
-
-        <!-- Descripción de la solicitud -->
-        <label for="descripcion">
-          Descripción de la consulta
-        </label>
-        <textarea
-          id="descripcion"
-          name="descripcion"
-          rows="4"
-          required
-        ></textarea>
-
-        <!-- Botón para enviar la información -->
-        <button type="submit">
-          Registrar consulta
-        </button>
-
-      </form>
-
-      <!-- Mensaje de éxito o error del formulario -->
-      <p
-        id="mensaje"
-        role="status"
-        aria-live="polite"
-      ></p>
-
-    </section>
-
-    <!-- =====================================================
-         SECCIÓN 2: CONSULTAS REGISTRADAS
-         Muestra los clientes almacenados en el backend Java.
-
-         Servicio REST:
-         GET http://127.0.0.1:8096/api/leads
-         ===================================================== -->
-    <section id="seccionClientes">
-
-      <h2>Consultas registradas</h2>
-
-      <p>
-        Consultas registradas y resultado de cada atención.
-      </p>
-
-      <!-- Actualiza el listado consultando el backend -->
-      <button id="actualizar" type="button">
-        Actualizar listado
-      </button>
-
-      <!-- Tabla de clientes -->
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Correo</th>
-            <th>Canal</th>
-            <th>Consulta</th>
-            <th>Resultado de la consulta</th>
-          </tr>
-        </thead>
-
-        <!--
-          app.js inserta aquí los registros
-          obtenidos desde el servicio REST.
-        -->
-        <tbody id="tablaConsultas">
-          <tr>
-            <td colspan="6">
-              Sin datos cargados
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-    </section>
-
-    <!-- =====================================================
-         SECCIÓN 3: BANDEJA DE TAREAS BPMN
-         NUEVA FUNCIONALIDAD PARA LA ENTREGA 2
-
-         Permite visualizar las tareas humanas pendientes
-         del proceso TO-BE ejecutado en Flowable OSS.
-
-         Arquitectura:
-         Frontend HTML/JavaScript
-                  |
-                  v
-         Backend Java - API REST
-                  |
-                  v
-         Motor BPMN Flowable OSS
-
-         Servicio REST:
-         GET http://127.0.0.1:8096/api/tareas
-
-         Las tareas se cargarán desde app.js.
-         ===================================================== -->
-    <section id="seccionTareas">
-
-      <h2>📋 Bandeja de tareas pendientes</h2>
-
-      <p>
-        Consulta y gestiona las actividades humanas
-        generadas por el proceso BPMN de Peluditos Pet Chile.
-      </p>
-
-      <!--
-        Botón que permitirá consultar las tareas
-        pendientes en Flowable OSS.
-      -->
-      <button id="actualizarTareas" type="button">
-        Actualizar tareas
-      </button>
-
-      <!--
-        Aquí se mostrarán mensajes de carga,
-        errores o confirmaciones.
-      -->
-      <p
-        id="mensajeTareas"
-        role="status"
-        aria-live="polite"
-      >
-        Las tareas todavía no se han cargado.
-      </p>
-
-      <!-- Tabla de tareas humanas pendientes -->
-      <table>
-        <thead>
-          <tr>
-            <th>Actividad</th>
-            <th>Responsable</th>
-            <th>Fecha de creación</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-
-        <!--
-          app.js insertará las tareas recibidas
-          desde el endpoint /api/tareas.
-
-          Ejemplos de tareas BPMN:
-          - Registrar consulta de cliente
-          - Clasificar consulta
-          - Asignar responsable
-          - Revisar y responder consulta
-          - Registrar resultado de atención
-        -->
-        <tbody id="tablaTareas">
-          <tr>
-            <td colspan="4">
-              Presiona "Actualizar tareas" para
-              consultar las actividades pendientes.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- =================================================
-           PANEL DE GESTIÓN DE TAREA
-           Se utilizará para mostrar los campos de una
-           tarea seleccionada y permitir completarla.
-
-           Inicialmente permanece oculto.
-
-           Servicio REST previsto:
-           POST /api/tareas/{id}/completar
-           ================================================= -->
-      <div id="panelTarea" hidden>
-
-        <h3 id="tituloTarea">
-          Gestionar tarea
-        </h3>
-
-        <p id="descripcionTarea">
-          Completa la información solicitada.
+        <p>
+          Ingresa los datos del contacto para registrar una nueva solicitud.
         </p>
 
-        <!--
-          Los campos específicos se generarán desde
-          JavaScript según el tipo de tarea BPMN.
-        -->
-        <form id="formTarea">
+        <form id="consultaForm">
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" required />
 
-          <div id="camposTarea">
-            <!-- Campos dinámicos -->
-          </div>
+          <label for="contacto">Teléfono</label>
+          <input type="number" id="contacto" name="contacto" required />
 
-          <!-- Envía la finalización de la tarea -->
-          <button type="submit">
-            Completar tarea
-          </button>
+          <label for="correo">Correo electrónico</label>
+          <input
+            type="email"
+            id="correo"
+            name="correo"
+            autocomplete="email"
+            maxlength="254"
+            pattern="[^@\s]+@[^@\s]+[.][^@\s]+"
+            required
+          />
 
-          <!-- Cierra el panel sin completar la tarea -->
-          <button
-            id="cancelarTarea"
-            type="button"
-          >
-            Cancelar
-          </button>
+          <label for="canal">Canal de origen</label>
+          <select id="canal" name="canal" required>
+            <option value="">Seleccionar canal</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Instagram">Instagram</option>
+            <option value="Facebook">Facebook</option>
+            <option value="TikTok">TikTok</option>
+          </select>
 
+          <label for="descripcion"> Descripción de la consulta </label>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            rows="4"
+            required
+          ></textarea>
+
+          <button type="submit">Registrar consulta</button>
         </form>
 
-        <!-- Resultado de la operación -->
-        <p
-          id="resultadoTarea"
-          role="status"
-          aria-live="polite"
-        ></p>
+        <p id="mensaje" role="status" aria-live="polite"></p>
+      </section>
 
-      </div>
+      <!-- SECCIÓN 2: CONSULTAS REGISTRADAS -->
+      <section id="seccionClientes">
+        <h2>Consultas registradas</h2>
 
-    </section>
+        <p>
+          Consultas registradas y resultado de cada atención. Haz clic en un
+          registro o en "Ver detalle" para editar, enviar correo o revisar
+          actividad.
+        </p>
 
-  </main>
+        <button id="actualizar" type="button">Actualizar listado</button>
 
-  <!-- =====================================================
-       PIE DE PÁGINA
-       Información general del proyecto académico.
-       ===================================================== -->
-  <footer>
-    <p>
-      Peluditos Pet Chile |
-      Proyecto Integración de Plataformas
-    </p>
-  </footer>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Canal</th>
+              <th>Consulta</th>
+              <th>Resultado de la consulta</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
 
-</body>
+          <tbody id="tablaConsultas">
+            <tr>
+              <td colspan="7">Sin datos cargados</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- NUEVA VISTA / PANEL: DETALLE, EDICIÓN, CORREO Y ACTIVIDAD -->
+      <section id="panelDetalleCliente" hidden aria-live="polite">
+        <div class="detalle-encabezado">
+          <div>
+            <button id="volverListado" type="button" class="boton-secundario">
+              ← Volver al listado
+            </button>
+            <h2 id="detalleTitulo">Ficha del cliente</h2>
+            <p id="detalleSubtitulo" class="detalle-subtitulo"></p>
+          </div>
+        </div>
+
+        <!-- INFORMACIÓN DE GESTIÓN Y SEGUIMIENTO BPMN -->
+        <div class="subseccion-detalle">
+          <h3>Gestión y seguimiento de la consulta</h3>
+          <div id="detalleGestion" class="detalle-grid"></div>
+        </div>
+        
+        <div class="detalle-grid">
+          <!-- SUB-BLOQUE A: ACTUALIZAR DATOS DEL CLIENTE / CONSULTA -->
+          <div class="subtarjeta">
+            <h3>✏️ Actualizar datos del cliente</h3>
+            <form id="formEditarCliente">
+              <label for="editNombre">Nombre</label>
+              <input type="text" id="editNombre" name="editNombre" required />
+
+              <label for="editTelefono">Teléfono</label>
+              <input
+                type="number"
+                id="editTelefono"
+                name="editTelefono"
+                required
+              />
+
+              <label for="editCorreo">Correo electrónico</label>
+              <input
+                type="email"
+                id="editCorreo"
+                name="editCorreo"
+                maxlength="254"
+                pattern="[^@\s]+@[^@\s]+[.][^@\s]+"
+                required
+              />
+
+              <label for="editCanal">Canal de origen</label>
+              <select id="editCanal" name="editCanal" required>
+                <option value="">Seleccionar canal</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Facebook">Facebook</option>
+                <option value="TikTok">TikTok</option>
+              </select>
+
+              <label for="editConsulta">Descripción de la consulta</label>
+              <textarea
+                id="editConsulta"
+                name="editConsulta"
+                rows="3"
+                required
+              ></textarea>
+
+              <label for="editResultado">Resultado / Estado</label>
+              <select id="editResultado" name="editResultado">
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="COMPRO">Compró</option>
+                <option value="NO_COMPRO">No compró</option>
+                <option value="CONVERTIDO">Convertido</option>
+              </select>
+
+              <button type="submit">Guardar cambios</button>
+              <!-- ZONA DE ELIMINACIÓN DE REGISTRO -->
+              <div class="zona-peligro">
+                <button
+                  id="eliminarCliente"
+                  type="button"
+                  class="boton-peligro"
+                >
+                  🗑️ Eliminar Cliente
+                </button>
+              </div>
+            </form>
+            <p id="mensajeEdicion" class="mensaje-estado" role="status"></p>
+          </div>
+
+          <!-- SUB-BLOQUE B: ENVIAR CORREO AL CLIENTE -->
+          <div class="subtarjeta">
+            <h3>✉️ Enviar correo al cliente</h3>
+            <form id="formEnviarCorreo">
+              <label for="correoDestinatario">Para (Correo)</label>
+              <input
+                type="email"
+                id="correoDestinatario"
+                name="correoDestinatario"
+                required
+              />
+
+              <label for="correoAsunto">Asunto</label>
+              <input
+                type="text"
+                id="correoAsunto"
+                name="correoAsunto"
+                placeholder="Ej: Seguimiento de tu consulta en Peluditos Pet Chile"
+                required
+              />
+
+              <label for="correoImagen">Adjuntar imagen (opcional)</label>
+              <input
+                type="file"
+                id="correoImagen"
+                name="correoImagen"
+                accept="image/*"
+              />
+              <small id="infoImagenCorreo" class="texto-ayuda"></small>
+
+              <label for="correoCuerpo">Mensaje</label>
+              <textarea
+                id="correoCuerpo"
+                name="correoCuerpo"
+                rows="5"
+                placeholder="Escribe aquí el mensaje para el cliente..."
+                required
+              ></textarea>
+
+              <button type="submit">Enviar correo</button>
+            </form>
+            <p id="mensajeCorreo" class="mensaje-estado" role="status"></p>
+          </div>
+        </div>
+
+        <!-- SUB-BLOQUE C: REGISTRO DE ACTIVIDAD -->
+        <div class="subtarjeta registro-actividad-box">
+          <h3>🕒 Registro de actividad</h3>
+          <p class="texto-ayuda">
+            Historial de acciones, cambios de datos, tareas de Flowable y
+            correos asociados a este registro.
+          </p>
+          <ul id="listaActividad" class="lista-actividad">
+            <li>Sin actividad registrada aún.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 3: BANDEJA DE TAREAS BPMN -->
+      <section id="seccionTareas">
+        <h2>📋 Bandeja de tareas pendientes</h2>
+
+        <p>
+          Consulta y gestiona las actividades humanas generadas por el proceso
+          BPMN de Peluditos Pet Chile.
+        </p>
+
+        <button id="actualizarTareas" type="button">Actualizar tareas</button>
+
+        <p id="mensajeTareas" role="status" aria-live="polite">
+          Las tareas todavía no se han cargado.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Actividad</th>
+              <th>Responsable</th>
+              <th>Fecha de creación</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody id="tablaTareas">
+            <tr>
+              <td colspan="4">
+                Presiona "Actualizar tareas" para consultar las actividades
+                pendientes.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- PANEL DE GESTIÓN DE TAREA -->
+        <div id="panelTarea" hidden>
+          <h3 id="tituloTarea">Gestionar tarea</h3>
+
+          <p id="descripcionTarea">Completa la información solicitada.</p>
+
+          <form id="formTarea">
+            <div id="camposTarea">
+              <!-- Campos dinámicos -->
+            </div>
+
+            <button type="submit">Completar tarea</button>
+
+            <button id="cancelarTarea" type="button">Cancelar</button>
+          </form>
+
+          <p id="resultadoTarea" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Peluditos Pet Chile | Proyecto Integración de Plataformas</p>
+    </footer>
+  </body>
 </html>
