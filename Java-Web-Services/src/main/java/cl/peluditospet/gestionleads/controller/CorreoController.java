@@ -7,7 +7,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import jakarta.mail.MessagingException;
@@ -23,6 +26,8 @@ import java.util.Map;
 @Path("/api/correos")
 @Produces(MediaType.APPLICATION_JSON)
 public class CorreoController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CorreoController.class);
 
     public record CorreoRequest(
             String para,
@@ -76,66 +81,61 @@ public class CorreoController {
         }
 
         JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
-        boolean smtpConfigurado = mailSender != null
-                && mailHost != null && !mailHost.isBlank()
-                && mailFrom != null && !mailFrom.isBlank();
-
-        String modoEntrega;
-        if (smtpConfigurado) {
-            try {
-                MimeMessage mimeMessage = mailSender.createMimeMessage();
-                MimeMessageHelper helper = new MimeMessageHelper(
-                        mimeMessage,
-                        request.imagenBase64() != null && !request.imagenBase64().isBlank(),
-                        "UTF-8"
-                );
-                helper.setFrom(mailFrom.trim());
-                helper.setTo(para);
-                helper.setSubject(asunto);
-                helper.setText(cuerpo, false);
-
-                if (request.imagenBase64() != null && !request.imagenBase64().isBlank()) {
-                    byte[] bytesImagen = Base64.getDecoder().decode(request.imagenBase64().trim());
-                    String nombreLimpio = (request.nombreArchivo() != null && !request.nombreArchivo().isBlank())
-                            ? request.nombreArchivo().trim()
-                            : "adjunto.png";
-                    String tipoMime = (request.tipoArchivo() != null && !request.tipoArchivo().isBlank())
-                            ? request.tipoArchivo().trim()
-                            : "application/octet-stream";
-
-                    helper.addAttachment(nombreLimpio, new ByteArrayResource(bytesImagen), tipoMime);
-                }
-
-                mailSender.send(mimeMessage);
-                modoEntrega = "SMTP";
-            } catch (MessagingException | IllegalArgumentException ex) {
-                throw new BadRequestException("No se pudo preparar o adjuntar la imagen del correo.");
-            }
-        } else {
-            modoEntrega = "REGISTRO_LOCAL_SIN_SMTP";
+        if (mailSender == null || vacio(mailHost) || vacio(mailFrom)) {
+            registrarActividad(request, "Correo no enviado", "Servidor de correo sin configurar.");
+            return errorEnvio(503, "El servidor de correo no está configurado.");
         }
 
+        boolean conAdjunto = !vacio(request.imagenBase64());
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, conAdjunto, "UTF-8");
+            helper.setFrom(mailFrom.trim());
+            helper.setTo(para);
+            helper.setSubject(asunto);
+            helper.setText(cuerpo, false);
+
+            if (conAdjunto) {
+                byte[] bytesImagen = Base64.getDecoder().decode(request.imagenBase64().trim());
+                String nombreArchivo = vacio(request.nombreArchivo())
+                        ? "adjunto.png" : request.nombreArchivo().trim();
+                String tipoMime = vacio(request.tipoArchivo())
+                        ? "application/octet-stream" : request.tipoArchivo().trim();
+                helper.addAttachment(nombreArchivo, new ByteArrayResource(bytesImagen), tipoMime);
+            }
+        } catch (MessagingException | IllegalArgumentException ex) {
+            throw new BadRequestException("No se pudo preparar el correo o su adjunto.");
+        }
+
+        try {
+            mailSender.send(mimeMessage);
+        } catch (MailException ex) {
+            LOG.warn("Falló el envío por SMTP ({})", ex.getClass().getSimpleName());
+            registrarActividad(request, "Correo sin confirmar", "El servidor de correo no confirmó el envío.");
+            return errorEnvio(502, "El servidor de correo no confirmó el envío.");
+        }
+
+        registrarActividad(request, "Correo enviado", "Para: " + para + " · Asunto: " + asunto);
+        return Response.status(Response.Status.CREATED)
+                .entity(Map.of("enviado", true, "modo", "SMTP", "para", para, "asunto", asunto))
+                .build();
+    }
+
+    private static Response errorEnvio(int estado, String mensaje) {
+        return Response.status(estado).entity(Map.of("enviado", false, "mensaje", mensaje)).build();
+    }
+
+    private void registrarActividad(CorreoRequest request, String accion, String detalle) {
         String procesoIdLimpio = (request.processInstanceId() != null && !request.processInstanceId().isBlank())
                 ? request.processInstanceId().trim()
                 : null;
 
-        Actividad evento = new Actividad(
-                request.leadId(),
-                procesoIdLimpio,
-                "Correo enviado",
-                "Para: " + para + " · Asunto: \"" + asunto + "\" (" + modoEntrega + ")",
-                LocalDateTime.now()
-        );
-        actividadRepository.save(evento);
-
-        return Response.status(Response.Status.CREATED)
-                .entity(Map.of(
-                        "enviado", true,
-                        "modo", modoEntrega,
-                        "para", para,
-                        "asunto", asunto
-                ))
-                .build();
+        try {
+            actividadRepository.save(new Actividad(
+                    request.leadId(), procesoIdLimpio, accion, detalle, LocalDateTime.now()));
+        } catch (DataAccessException ex) {
+            LOG.warn("No se pudo guardar la actividad de correo ({})", ex.getClass().getSimpleName());
+        }
     }
 
     private static boolean vacio(String valor) {

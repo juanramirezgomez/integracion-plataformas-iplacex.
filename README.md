@@ -30,6 +30,8 @@ La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flo
 
 - **18 de noviembre.** Se agregó el correo electrónico al formulario y al listado. Cada consulta guarda sus datos y muestra si está pendiente, si hubo compra o si no hubo compra. Se probaron los dos recorridos desde la página, la conexión con el worker y el guardado después de reiniciar los servicios.
 
+- **19 de noviembre.** Probamos desde la ficha del cliente el envío de un correo con imagen a un buzón local. La página confirma el envío cuando el servidor de correo lo acepta y conserva el borrador si hay un problema. [Ver avance y pruebas](Actas/Acta-2026-11-19.md).
+
 ## Cómo probarlo en Windows
 
 Necesitas Java 21, PowerShell, el archivo `flowable-rest.war` de Flowable OSS 8.0.0 y Node.js con npm para abrir la pantalla.

@@ -134,7 +134,9 @@ async function solicitarJSON(url, opciones = {}) {
 
   if (!respuesta.ok) {
     const detalle = await respuesta.text();
-    throw new Error(`HTTP ${respuesta.status}: ${detalle.slice(0, 300)}`);
+    const error = new Error(`HTTP ${respuesta.status}: ${detalle.slice(0, 300)}`);
+    error.status = respuesta.status;
+    throw error;
   }
 
   if (respuesta.status === 204) {
@@ -663,76 +665,59 @@ formEnviarCorreo.addEventListener("submit", async (event) => {
     return;
   }
 
-  let nombreArchivo = null;
-  let tipoArchivo = null;
-  let imagenBase64 = null;
-
+  const registro = registroSeleccionado;
   const archivoSeleccionado = correoImagen?.files?.[0] ?? null;
-  if (archivoSeleccionado) {
-    if (!archivoSeleccionado.type.startsWith("image/")) {
-      mensajeCorreo.textContent = "Selecciona un archivo de imagen válido.";
-      return;
-    }
-    if (archivoSeleccionado.size > 3 * 1024 * 1024) {
-      mensajeCorreo.textContent = "La imagen supera el límite de 3 MB.";
-      return;
-    }
-
-    const dataUrl = await leerArchivoComoDataURL(archivoSeleccionado);
-    const partes = String(dataUrl).split(",");
-    imagenBase64 = partes[1] ?? null;
-    nombreArchivo = archivoSeleccionado.name;
-    tipoArchivo = archivoSeleccionado.type;
+  if (archivoSeleccionado && !archivoSeleccionado.type.startsWith("image/")) {
+    mensajeCorreo.textContent = "Selecciona un archivo de imagen válido.";
+    return;
+  }
+  if (archivoSeleccionado && archivoSeleccionado.size > 3 * 1024 * 1024) {
+    mensajeCorreo.textContent = "La imagen supera el límite de 3 MB.";
+    return;
   }
 
-  const payloadCorreo = {
-    para,
-    asunto,
-    mensaje: mensajeTexto,
-    leadId: registroSeleccionado.leadId ?? registroSeleccionado.id ?? null,
-    processInstanceId: registroSeleccionado.processInstanceId ?? null,
-    nombreArchivo,
-    tipoArchivo,
-    imagenBase64,
-  };
-
+  botonEnviar.disabled = true;
+  mensajeCorreo.textContent = "Enviando correo...";
   try {
-    botonEnviar.disabled = true;
-    mensajeCorreo.textContent = "Enviando correo...";
+    const dataUrl = archivoSeleccionado ? await leerArchivoComoDataURL(archivoSeleccionado) : null;
+    const resultado = await solicitarJSON(API_CORREOS, {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({
+        para,
+        asunto,
+        mensaje: mensajeTexto,
+        leadId: registro.leadId ?? registro.id ?? null,
+        processInstanceId: registro.procesoId ?? registro.processInstanceId ?? null,
+        nombreArchivo: archivoSeleccionado?.name ?? null,
+        tipoArchivo: archivoSeleccionado?.type ?? null,
+        imagenBase64: dataUrl?.split(",")[1] ?? null,
+      }),
+    });
 
-    let enviadoBackend = false;
-    try {
-      await solicitarJSON(API_CORREOS, {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify(payloadCorreo),
-      });
-      enviadoBackend = true;
-    } catch (errCorreo) {
-      console.warn("POST /api/correos no disponible o falló:", errCorreo);
+    if (resultado?.enviado !== true || resultado.modo !== "SMTP") {
+      throw new Error("Envío sin confirmación SMTP");
     }
 
-    const detalleAdjunto = nombreArchivo ? ` · Adjunto: ${nombreArchivo}` : "";
-    registrarActividadLocal(
-      registroSeleccionado._clave,
-      "Correo enviado",
-      `Para: ${payloadCorreo.para} · Asunto: "${payloadCorreo.asunto}"${detalleAdjunto}`,
-    );
-
-    correoCuerpo.value = "";
-    if (correoImagen) correoImagen.value = "";
-    if (infoImagenCorreo) infoImagenCorreo.textContent = "";
-
-    mensajeCorreo.textContent = enviadoBackend
-      ? `Correo enviado a ${payloadCorreo.para}.`
-      : `Correo registrado en la bitácora para ${payloadCorreo.para} (configura POST /api/correos en Java para envío SMTP real).`;
-
-    await renderizarActividad(registroSeleccionado);
+    if (registroSeleccionado === registro) {
+      correoCuerpo.value = "";
+      if (correoImagen) correoImagen.value = "";
+      if (infoImagenCorreo) infoImagenCorreo.textContent = "";
+      mensajeCorreo.textContent = "Correo enviado a " + para + ".";
+    }
   } catch (error) {
     console.error("Error al enviar correo:", error);
-    mensajeCorreo.textContent = "No se pudo procesar el envío de correo.";
+    if (registroSeleccionado === registro) {
+      mensajeCorreo.textContent = error.status === 503
+        ? "Correo no enviado. El servidor de correo todavía no está configurado."
+        : "No se pudo confirmar el envío. El borrador sigue aquí.";
+    }
   } finally {
     botonEnviar.disabled = false;
+  }
+
+  if (registroSeleccionado === registro) {
+    await renderizarActividad(registro);
   }
 });
 
