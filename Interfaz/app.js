@@ -64,7 +64,7 @@ const tabla = document.getElementById("tablaConsultas");
 const formRecompra = document.getElementById("formRecompra");
 const clienteRecompra = document.getElementById("clienteRecompra");
 const mensajeRecompra = document.getElementById("mensajeRecompra");
-const botonCrearOportunidad = formRecompra.querySelector(
+const botonCrearOportunidad = formRecompra?.querySelector(
   'button[type="submit"]'
 );
 
@@ -2459,3 +2459,906 @@ botonActualizarTareas.addEventListener(
 
 cargarClientes();
 cargarTareas();
+
+
+/* =========================================================
+   14. DASHBOARD CRM - PELUDITOS PET CHILE
+
+   Funcionalidades:
+   - Navegación entre módulos
+   - Menú lateral responsive
+   - Indicadores reales
+   - Estado de conexión Java / Flowable
+   - Actualización del resumen
+   - Integración con funciones existentes
+
+   IMPORTANTE:
+   Este bloque se agrega al final del app.js.
+   No reemplaza las funciones BPMN existentes.
+   ========================================================= */
+
+
+// ---------------------------------------------------------
+// 14.1. CONFIGURACIÓN DE VISTAS
+// ---------------------------------------------------------
+
+const DASHBOARD_VISTAS = {
+  inicio: {
+    elemento: "vistaInicio",
+    titulo: "Resumen general"
+  },
+
+  consultas: {
+    elemento: "vistaConsultas",
+    titulo: "Nueva consulta"
+  },
+
+  clientes: {
+    elemento: "vistaClientes",
+    titulo: "Gestión de clientes"
+  },
+
+  recompra: {
+    elemento: "vistaRecompra",
+    titulo: "Oportunidades de recompra"
+  },
+
+  tareas: {
+    elemento: "vistaTareas",
+    titulo: "Tareas BPMN"
+  }
+};
+
+
+// ---------------------------------------------------------
+// 14.2. ELEMENTOS DEL DASHBOARD
+// ---------------------------------------------------------
+
+const dashboardTitulo =
+  document.getElementById("tituloVista");
+
+const dashboardSidebar =
+  document.getElementById("barraLateral");
+
+const dashboardMenuToggle =
+  document.getElementById("abrirMenu");
+
+const dashboardOverlay =
+  document.getElementById("mobileOverlay");
+
+const dashboardFecha =
+  document.getElementById("fechaActual");
+
+const dashboardBotonActualizar =
+  document.getElementById("actualizarDashboard");
+
+const dashboardKpiClientes =
+  document.getElementById("kpiClientes");
+
+const dashboardKpiConsultas =
+  document.getElementById("kpiConsultas");
+
+const dashboardKpiTareas =
+  document.getElementById("kpiTareas");
+
+const dashboardKpiCompradores =
+  document.getElementById("kpiCompradores");
+
+const dashboardNavConteoTareas =
+  document.getElementById("navConteoTareas");
+
+const dashboardEstadoApi =
+  document.getElementById("estadoApi");
+
+const dashboardEstadoFlowable =
+  document.getElementById("estadoFlowable");
+
+
+// ---------------------------------------------------------
+// 14.3. ESTADO INTERNO
+// ---------------------------------------------------------
+
+let dashboardVistaActual = "inicio";
+
+let dashboardActualizando = false;
+
+let dashboardActualizacionPendiente = false;
+
+
+// ---------------------------------------------------------
+// 14.4. FECHA ACTUAL
+// ---------------------------------------------------------
+
+function dashboardMostrarFecha() {
+
+  if (!dashboardFecha) {
+    return;
+  }
+
+  const fecha = new Date();
+
+  dashboardFecha.textContent =
+    fecha.toLocaleDateString("es-CL", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+
+}
+
+
+// ---------------------------------------------------------
+// 14.5. ABRIR Y CERRAR MENÚ MÓVIL
+// ---------------------------------------------------------
+
+function dashboardCerrarMenu() {
+
+  dashboardSidebar?.classList.remove("open");
+
+  if (dashboardOverlay) {
+    dashboardOverlay.hidden = true;
+  }
+
+  dashboardMenuToggle?.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+}
+
+
+function dashboardAbrirMenu() {
+
+  if (!dashboardSidebar) {
+    return;
+  }
+
+  dashboardSidebar.classList.add("open");
+
+  if (dashboardOverlay) {
+    dashboardOverlay.hidden = false;
+  }
+
+  dashboardMenuToggle?.setAttribute(
+    "aria-expanded",
+    "true"
+  );
+
+}
+
+
+dashboardMenuToggle?.addEventListener(
+  "click",
+  () => {
+
+    const abierto =
+      dashboardSidebar?.classList.contains("open");
+
+    if (abierto) {
+      dashboardCerrarMenu();
+    } else {
+      dashboardAbrirMenu();
+    }
+
+  }
+);
+
+
+dashboardOverlay?.addEventListener(
+  "click",
+  dashboardCerrarMenu
+);
+
+
+document.addEventListener(
+  "keydown",
+  (evento) => {
+
+    if (evento.key === "Escape") {
+      dashboardCerrarMenu();
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    if (window.innerWidth > 820) {
+      dashboardCerrarMenu();
+    }
+
+  }
+);
+
+
+// ---------------------------------------------------------
+// 14.6. NAVEGACIÓN ENTRE VISTAS
+// ---------------------------------------------------------
+
+function dashboardMostrarVista(
+  nombreVista,
+  opciones = {}
+) {
+
+  const configuracion =
+    DASHBOARD_VISTAS[nombreVista];
+
+  if (!configuracion) {
+    console.warn(
+      "Vista no reconocida:",
+      nombreVista
+    );
+
+    return;
+  }
+
+  // Ocultar todas las vistas.
+  Object.values(DASHBOARD_VISTAS).forEach(
+    (vista) => {
+
+      const elemento =
+        document.getElementById(vista.elemento);
+
+      if (elemento) {
+        elemento.hidden = true;
+      }
+
+    }
+  );
+
+  // Mostrar vista seleccionada.
+  const vistaSeleccionada =
+    document.getElementById(
+      configuracion.elemento
+    );
+
+  if (vistaSeleccionada) {
+    vistaSeleccionada.hidden = false;
+  }
+
+  // Actualizar título superior.
+  if (dashboardTitulo) {
+    dashboardTitulo.textContent =
+      configuracion.titulo;
+  }
+
+  // Actualizar menú activo.
+  document.querySelectorAll(
+    ".app-nav .nav-item"
+  ).forEach((boton) => {
+
+    const activo =
+      boton.dataset.vista === nombreVista;
+
+    boton.classList.toggle(
+      "active",
+      activo
+    );
+
+    if (activo) {
+      boton.setAttribute(
+        "aria-current",
+        "page"
+      );
+    } else {
+      boton.removeAttribute(
+        "aria-current"
+      );
+    }
+
+  });
+
+  dashboardVistaActual = nombreVista;
+
+  dashboardCerrarMenu();
+
+  // Volver al inicio del contenido.
+  if (!opciones.mantenerScroll) {
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }
+
+  // Actualizar información según el módulo.
+  if (nombreVista === "inicio") {
+
+    dashboardActualizarResumen();
+
+  }
+
+  if (
+    nombreVista === "clientes" &&
+    opciones.actualizarDatos
+  ) {
+
+    cargarClientes();
+
+  }
+
+  if (
+    nombreVista === "tareas" &&
+    opciones.actualizarDatos
+  ) {
+
+    cargarTareas();
+
+  }
+
+}
+
+
+// ---------------------------------------------------------
+// 14.7. EVENTOS DE NAVEGACIÓN
+// ---------------------------------------------------------
+
+document.querySelectorAll(
+  "[data-vista]"
+).forEach((boton) => {
+
+  boton.addEventListener(
+    "click",
+    () => {
+
+      const vista =
+        boton.dataset.vista;
+
+      dashboardMostrarVista(
+        vista,
+        {
+          actualizarDatos: true
+        }
+      );
+
+    }
+  );
+
+});
+
+
+// ---------------------------------------------------------
+// 14.8. INDICADORES NUMÉRICOS
+// ---------------------------------------------------------
+
+function dashboardAsignarNumero(
+  elemento,
+  numero
+) {
+
+  if (!elemento) {
+    return;
+  }
+
+  if (
+    typeof numero !== "number" ||
+    !Number.isFinite(numero)
+  ) {
+
+    elemento.textContent = "—";
+    return;
+
+  }
+
+  elemento.textContent =
+    new Intl.NumberFormat("es-CL").format(
+      numero
+    );
+
+}
+
+
+// ---------------------------------------------------------
+// 14.9. ESTADO DE CONEXIÓN
+// ---------------------------------------------------------
+
+function dashboardCambiarEstado(
+  elemento,
+  estado,
+  texto
+) {
+
+  if (!elemento) {
+    return;
+  }
+
+  elemento.classList.remove(
+    "online",
+    "offline",
+    "loading"
+  );
+
+  if (estado) {
+    elemento.classList.add(estado);
+  }
+
+  elemento.textContent = texto;
+
+}
+
+
+// ---------------------------------------------------------
+// 14.10. NORMALIZAR RESPUESTAS API
+// ---------------------------------------------------------
+
+function dashboardNormalizarLista(
+  respuesta
+) {
+
+  if (Array.isArray(respuesta)) {
+    return respuesta;
+  }
+
+  if (Array.isArray(respuesta?.data)) {
+    return respuesta.data;
+  }
+
+  if (Array.isArray(respuesta?.value)) {
+    return respuesta.value;
+  }
+
+  return [];
+
+}
+
+
+// ---------------------------------------------------------
+// 14.11. CONSULTAR TODAS LAS TAREAS
+// ---------------------------------------------------------
+
+async function dashboardConsultarTareas() {
+
+  const lista = [];
+
+  let inicio = 0;
+
+  const limitePaginas = 100;
+
+  for (
+    let paginaNumero = 0;
+    paginaNumero < limitePaginas;
+    paginaNumero++
+  ) {
+
+    const respuesta = await solicitarJSON(
+      `${API_TAREAS}?start=${inicio}`
+    );
+
+    const datos =
+      dashboardNormalizarLista(respuesta);
+
+    if (datos.length === 0) {
+      break;
+    }
+
+    lista.push(...datos);
+
+    inicio += datos.length;
+
+    const total =
+      Number(respuesta?.total);
+
+    if (
+      Number.isFinite(total) &&
+      inicio >= total
+    ) {
+      break;
+    }
+
+    if (
+      !Number.isFinite(total)
+    ) {
+      break;
+    }
+
+  }
+
+  return lista;
+
+}
+
+
+// ---------------------------------------------------------
+// 14.12. ACTUALIZAR RESUMEN GENERAL
+// ---------------------------------------------------------
+
+async function dashboardActualizarResumen() {
+
+  // Evitar solicitudes simultáneas.
+  if (dashboardActualizando) {
+
+    dashboardActualizacionPendiente = true;
+
+    return;
+  }
+
+  dashboardActualizando = true;
+
+  if (dashboardBotonActualizar) {
+    dashboardBotonActualizar.disabled = true;
+    dashboardBotonActualizar.textContent =
+      "Actualizando...";
+  }
+
+  dashboardCambiarEstado(
+    dashboardEstadoApi,
+    "loading",
+    "Comprobando..."
+  );
+
+  dashboardCambiarEstado(
+    dashboardEstadoFlowable,
+    "loading",
+    "Comprobando..."
+  );
+
+  try {
+
+    // Consultas independientes:
+    // un servicio puede fallar sin impedir
+    // mostrar los datos de los otros.
+
+    const resultados =
+      await Promise.allSettled([
+
+        solicitarJSON(API_CLIENTES),
+
+        solicitarJSON(API_CONSULTAS),
+
+        dashboardConsultarTareas()
+
+      ]);
+
+    const [
+      resultadoClientes,
+      resultadoConsultas,
+      resultadoTareas
+    ] = resultados;
+
+
+    // ---------------------------------------
+    // CLIENTES Y COMPRADORES
+    // ---------------------------------------
+
+    if (
+      resultadoClientes.status === "fulfilled"
+    ) {
+
+      const clientes =
+        dashboardNormalizarLista(
+          resultadoClientes.value
+        );
+
+      dashboardAsignarNumero(
+        dashboardKpiClientes,
+        clientes.length
+      );
+
+      const compradores =
+        clientes.filter(
+          (cliente) =>
+            cliente.estado === "CONVERTIDO"
+        );
+
+      dashboardAsignarNumero(
+        dashboardKpiCompradores,
+        compradores.length
+      );
+
+    } else {
+
+      dashboardAsignarNumero(
+        dashboardKpiClientes,
+        null
+      );
+
+      dashboardAsignarNumero(
+        dashboardKpiCompradores,
+        null
+      );
+
+      console.error(
+        "Error consultando clientes:",
+        resultadoClientes.reason
+      );
+
+    }
+
+
+    // ---------------------------------------
+    // CONSULTAS
+    // ---------------------------------------
+
+    if (
+      resultadoConsultas.status === "fulfilled"
+    ) {
+
+      const consultas =
+        dashboardNormalizarLista(
+          resultadoConsultas.value
+        );
+
+      dashboardAsignarNumero(
+        dashboardKpiConsultas,
+        consultas.length
+      );
+
+    } else {
+
+      dashboardAsignarNumero(
+        dashboardKpiConsultas,
+        null
+      );
+
+      console.error(
+        "Error consultando consultas:",
+        resultadoConsultas.reason
+      );
+
+    }
+
+
+    // ---------------------------------------
+    // ESTADO DE API JAVA
+    // ---------------------------------------
+
+    const apiDisponible =
+      resultadoClientes.status === "fulfilled" ||
+      resultadoConsultas.status === "fulfilled";
+
+    dashboardCambiarEstado(
+      dashboardEstadoApi,
+      apiDisponible ? "online" : "offline",
+      apiDisponible
+        ? "Disponible"
+        : "Sin conexión"
+    );
+
+
+    // ---------------------------------------
+    // TAREAS FLOWABLE
+    // ---------------------------------------
+
+    if (
+      resultadoTareas.status === "fulfilled"
+    ) {
+
+      const tareas =
+        resultadoTareas.value;
+
+      dashboardAsignarNumero(
+        dashboardKpiTareas,
+        tareas.length
+      );
+
+      dashboardAsignarNumero(
+        dashboardNavConteoTareas,
+        tareas.length
+      );
+
+      dashboardCambiarEstado(
+        dashboardEstadoFlowable,
+        "online",
+        "Disponible"
+      );
+
+    } else {
+
+      dashboardAsignarNumero(
+        dashboardKpiTareas,
+        null
+      );
+
+      dashboardAsignarNumero(
+        dashboardNavConteoTareas,
+        null
+      );
+
+      dashboardCambiarEstado(
+        dashboardEstadoFlowable,
+        "offline",
+        "Sin conexión"
+      );
+
+      console.error(
+        "Error consultando tareas:",
+        resultadoTareas.reason
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Error general del dashboard:",
+      error
+    );
+
+  } finally {
+
+    dashboardActualizando = false;
+
+    if (dashboardBotonActualizar) {
+
+      dashboardBotonActualizar.disabled = false;
+
+      dashboardBotonActualizar.textContent =
+        "Actualizar resumen";
+
+    }
+
+    if (dashboardActualizacionPendiente) {
+
+      dashboardActualizacionPendiente = false;
+
+      dashboardActualizarResumen();
+
+    }
+
+  }
+
+}
+
+
+// ---------------------------------------------------------
+// 14.13. BOTÓN ACTUALIZAR DASHBOARD
+// ---------------------------------------------------------
+
+dashboardBotonActualizar?.addEventListener(
+  "click",
+  dashboardActualizarResumen
+);
+
+
+// ---------------------------------------------------------
+// 14.14. SINCRONIZACIÓN TRAS OPERACIONES
+// ---------------------------------------------------------
+
+// Observar mensajes de operaciones exitosas.
+// Esto permite actualizar los indicadores sin
+// modificar la lógica original de Flowable.
+
+function dashboardObservarMensajes() {
+
+  const elementos = [
+    document.getElementById("mensaje"),
+    document.getElementById("mensajeTareas"),
+    document.getElementById("mensajeRecompra")
+  ].filter(Boolean);
+
+  let ultimaActualizacionProgramada = null;
+
+  const observador = new MutationObserver(
+    (mutaciones) => {
+
+      const huboCambio = mutaciones.some(
+        (mutacion) =>
+          mutacion.type === "childList" ||
+          mutacion.type === "characterData"
+      );
+
+      if (!huboCambio) {
+        return;
+      }
+
+      const textos =
+        elementos.map(
+          (elemento) =>
+            elemento.textContent.toLowerCase()
+        );
+
+      const operacionExitosa =
+        textos.some(
+          (texto) =>
+
+            texto.includes(
+              "consulta registrada correctamente"
+            ) ||
+
+            texto.includes(
+              "tarea completada correctamente"
+            ) ||
+
+            texto.includes(
+              "oportunidad creada"
+            )
+
+        );
+
+      if (!operacionExitosa) {
+        return;
+      }
+
+      if (ultimaActualizacionProgramada) {
+        clearTimeout(
+          ultimaActualizacionProgramada
+        );
+      }
+
+      ultimaActualizacionProgramada =
+        setTimeout(
+          () => {
+
+            ultimaActualizacionProgramada = null;
+
+            dashboardActualizarResumen();
+
+          },
+          1800
+        );
+
+    }
+  );
+
+  elementos.forEach(
+    (elemento) => {
+
+      observador.observe(
+        elemento,
+        {
+          childList: true,
+          characterData: true,
+          subtree: true
+        }
+      );
+
+    }
+  );
+
+}
+
+
+// ---------------------------------------------------------
+// 14.15. INTEGRACIÓN CON FICHA DE CLIENTE
+// ---------------------------------------------------------
+
+// El código existente controla:
+// seccionClientes.hidden
+// panelDetalleCliente.hidden
+//
+// La navegación del dashboard solamente
+// muestra u oculta la vista contenedora.
+// Por eso no se modifica abrirDetalleRegistro()
+// ni el evento original de volverListado.
+
+
+// ---------------------------------------------------------
+// 14.16. INICIALIZACIÓN
+// ---------------------------------------------------------
+
+function dashboardInicializar() {
+
+  dashboardMostrarFecha();
+
+  dashboardObservarMensajes();
+
+  // Mostrar pantalla principal.
+  dashboardMostrarVista(
+    "inicio",
+    {
+      mantenerScroll: true
+    }
+  );
+
+  console.info(
+    "Dashboard Peluditos Pet Chile inicializado."
+  );
+
+}
+
+
+// ---------------------------------------------------------
+// 14.17. EJECUTAR DASHBOARD
+// ---------------------------------------------------------
+
+dashboardInicializar();
+
+
+/* =========================================================
+   FIN DEL MÓDULO DASHBOARD CRM
+   ========================================================= */
