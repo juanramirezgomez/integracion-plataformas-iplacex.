@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" id="DefOportunidadesRecompra" targetNamespace="https://peluditospetchile.local/bpmn">
+  <message id="MensajeOportunidad" name="OportunidadComercialDetectada"/>
+  <process id="peluditosOportunidadesRecompra" name="Peluditos Pet Chile - Oportunidades de recompra" isExecutable="true">
+    <documentation>Se inicia al detectar una fecha relevante o una campaña para un cliente existente. El emisor del mensaje selecciona un cliente con compra previa y entrega clienteId, motivo y fechaOportunidad. La encargada revisa la oportunidad, decide si corresponde contactar y registra su resultado.</documentation>
+    <startEvent id="fechaOCampana" name="Fecha o campaña detectada" flowable:initiator="initiator">
+      <messageEventDefinition messageRef="MensajeOportunidad"/>
+    </startEvent>
+    <userTask id="revisarOportunidad" name="Revisar oportunidad" flowable:assignee="${initiator}">
+      <documentation>Confirmar cliente, motivo, fecha y si corresponde contactar. Captura contactarCliente (booleano).</documentation>
+    </userTask>
+    <exclusiveGateway id="contactoCorresponde" name="¿Corresponde contactar?" default="flujoCerrar"/>
+    <userTask id="contactarCliente" name="Contactar cliente" flowable:assignee="${initiator}">
+      <documentation>Registrar el canal utilizado para el contacto comercial.</documentation>
+    </userTask>
+    <userTask id="registrarResultado" name="Registrar resultado" flowable:assignee="${initiator}">
+      <documentation>Registrar resultadoContacto (texto).</documentation>
+    </userTask>
+    <endEvent id="oportunidadAtendida" name="Oportunidad atendida"/>
+    <endEvent id="oportunidadCerrada" name="Cerrada sin contacto"/>
+    <sequenceFlow id="flujoInicio" sourceRef="fechaOCampana" targetRef="revisarOportunidad"/>
+    <sequenceFlow id="flujoDecision" sourceRef="revisarOportunidad" targetRef="contactoCorresponde"/>
+    <sequenceFlow id="flujoContactar" sourceRef="contactoCorresponde" targetRef="contactarCliente" name="Sí">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${execution.getVariable('contactarCliente') == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flujoCerrar" sourceRef="contactoCorresponde" targetRef="oportunidadCerrada" name="No"/>
+    <sequenceFlow id="flujoResultado" sourceRef="contactarCliente" targetRef="registrarResultado"/>
+    <sequenceFlow id="flujoAtendida" sourceRef="registrarResultado" targetRef="oportunidadAtendida"/>
+  </process>
+  <bpmndi:BPMNDiagram id="DiagramaOportunidades">
+    <bpmndi:BPMNPlane id="PlanoOportunidades" bpmnElement="peluditosOportunidadesRecompra">
+      <bpmndi:BPMNShape id="Figura_fechaOCampana" bpmnElement="fechaOCampana">
+        <omgdc:Bounds x="70" y="173" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="20" y="218" width="136" height="34"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Figura_revisarOportunidad" bpmnElement="revisarOportunidad">
+        <omgdc:Bounds x="166" y="151" width="162" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Figura_contactoCorresponde" bpmnElement="contactoCorresponde">
+        <omgdc:Bounds x="397" y="166" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="354" y="225" width="136" height="34"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Figura_contactarCliente" bpmnElement="contactarCliente">
+        <omgdc:Bounds x="508" y="151" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Figura_registrarResultado" bpmnElement="registrarResultado">
+        <omgdc:Bounds x="718" y="151" width="150" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Figura_oportunidadAtendida" bpmnElement="oportunidadAtendida">
+        <omgdc:Bounds x="931" y="173" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="881" y="218" width="136" height="34"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Figura_oportunidadCerrada" bpmnElement="oportunidadCerrada">
+        <omgdc:Bounds x="404" y="321" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="354" y="366" width="136" height="34"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flecha_flujoInicio" bpmnElement="flujoInicio">
+        <omgdi:waypoint x="106" y="191"/>
+        <omgdi:waypoint x="166" y="191"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flecha_flujoDecision" bpmnElement="flujoDecision">
+        <omgdi:waypoint x="328" y="191"/>
+        <omgdi:waypoint x="397" y="191"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flecha_flujoContactar" bpmnElement="flujoContactar">
+        <omgdi:waypoint x="447" y="191"/>
+        <omgdi:waypoint x="508" y="191"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="455" y="170" width="30" height="18"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flecha_flujoCerrar" bpmnElement="flujoCerrar">
+        <omgdi:waypoint x="422" y="216"/>
+        <omgdi:waypoint x="422" y="321"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="430" y="243" width="30" height="18"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flecha_flujoResultado" bpmnElement="flujoResultado">
+        <omgdi:waypoint x="658" y="191"/>
+        <omgdi:waypoint x="718" y="191"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flecha_flujoAtendida" bpmnElement="flujoAtendida">
+        <omgdi:waypoint x="868" y="191"/>
+        <omgdi:waypoint x="931" y="191"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
