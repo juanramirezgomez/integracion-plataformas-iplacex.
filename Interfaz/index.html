@@ -1,323 +1,677 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Peluditos Pet Chile | Gestión de Clientes</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="app.js" defer></script>
-  </head>
+<head>
+  <meta charset="UTF-8">
 
-  <body>
-    <header>
-      <h1>🐾 Peluditos Pet Chile</h1>
-      <p>Sistema de gestión de consultas y clientes</p>
-    </header>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-    <main>
-      <!-- SECCIÓN 1: REGISTRO DE CONSULTAS -->
-      <section id="seccionConsultas">
-        <h2>Registrar nueva consulta</h2>
+  <meta
+    name="description"
+    content="Plataforma de gestión de consultas, clientes, tareas BPMN y oportunidades de recompra de Peluditos Pet Chile."
+  >
 
-        <p>
-          Ingresa los datos del contacto para registrar una nueva solicitud.
-        </p>
+  <title>Peluditos Pet Chile | Gestión de Consultas</title>
 
-        <form id="consultaForm">
-          <label for="nombre">Nombre</label>
-          <input type="text" id="nombre" name="nombre" required />
+  <link rel="stylesheet" href="styles.css">
+</head>
 
-          <label for="contacto">Teléfono</label>
-          <input type="number" id="contacto" name="contacto" required />
+<body>
 
-          <label for="correo">Correo electrónico</label>
-          <input
-            type="email"
-            id="correo"
-            name="correo"
-            autocomplete="email"
-            maxlength="254"
-            pattern="[^@\s]+@[^@\s]+[.][^@\s]+"
-            required
-          />
+  <!-- ============================================= -->
+  <!-- ENCABEZADO -->
+  <!-- ============================================= -->
 
-          <label for="canal">Canal de origen</label>
-          <select id="canal" name="canal" required>
-            <option value="">Seleccionar canal</option>
-            <option value="WhatsApp">WhatsApp</option>
-            <option value="Instagram">Instagram</option>
-            <option value="Facebook">Facebook</option>
-            <option value="TikTok">TikTok</option>
-          </select>
+  <header>
+    <h1>🐾 Peluditos Pet Chile</h1>
 
-          <label for="descripcion"> Descripción de la consulta </label>
-          <textarea
-            id="descripcion"
-            name="descripcion"
-            rows="4"
-            required
-          ></textarea>
+    <p>
+      Plataforma de integración de servicios,
+      gestión de clientes y automatización de procesos.
+    </p>
+  </header>
 
-          <button type="submit">Registrar consulta</button>
-        </form>
+  <main>
 
-        <p id="mensaje" role="status" aria-live="polite"></p>
-      </section>
+    <!-- ============================================= -->
+    <!-- REGISTRO DE CONSULTAS -->
+    <!-- ============================================= -->
 
-      <!-- SECCIÓN 2: CONSULTAS REGISTRADAS -->
-      <section id="seccionClientes">
-        <h2>Consultas registradas</h2>
+    <section id="seccionRegistro">
 
-        <p>
-          Consultas registradas y resultado de cada atención. Haz clic en un
-          registro o en "Ver detalle" para editar, enviar correo o revisar
-          actividad.
-        </p>
+      <h2>📝 Registrar nueva consulta</h2>
 
-        <button id="actualizar" type="button">Actualizar listado</button>
+      <p>
+        Ingresa los datos del cliente para registrar
+        su solicitud e iniciar el proceso BPMN
+        correspondiente en Flowable.
+      </p>
+
+      <form id="consultaForm">
+
+        <label for="nombre">
+          Nombre del cliente
+        </label>
+
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          placeholder="Ej.: María González"
+          required
+        >
+
+        <label for="contacto">
+          Teléfono de contacto
+        </label>
+
+        <input
+          type="tel"
+          id="contacto"
+          name="contacto"
+          placeholder="Ej.: 912345678"
+          required
+        >
+
+        <label for="correo">
+          Correo electrónico
+        </label>
+
+        <input
+          type="email"
+          id="correo"
+          name="correo"
+          placeholder="cliente@ejemplo.com"
+          required
+        >
+
+        <label for="canal">
+          Canal de origen
+        </label>
+
+        <select
+          id="canal"
+          name="canal"
+          required
+        >
+          <option value="">
+            Selecciona un canal
+          </option>
+
+          <option value="WhatsApp">
+            WhatsApp
+          </option>
+
+          <option value="Instagram">
+            Instagram
+          </option>
+
+          <option value="Facebook">
+            Facebook
+          </option>
+
+          <option value="TikTok">
+            TikTok
+          </option>
+
+          <option value="Sitio web">
+            Sitio web
+          </option>
+
+          <option value="Otro">
+            Otro
+          </option>
+        </select>
+
+        <label for="descripcion">
+          Descripción de la consulta
+        </label>
+
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          rows="4"
+          placeholder="Describe qué producto o servicio necesita el cliente."
+          required
+        ></textarea>
+
+        <button type="submit">
+          Registrar consulta
+        </button>
+
+      </form>
+
+      <p
+        id="mensaje"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+    </section>
+
+
+    <!-- ============================================= -->
+    <!-- LISTADO DE CLIENTES Y CONSULTAS -->
+    <!-- ============================================= -->
+
+    <section id="seccionClientes">
+
+      <h2>👥 Clientes y consultas registradas</h2>
+
+      <p>
+        Consulta las solicitudes recibidas,
+        revisa su estado y accede al detalle
+        de cada cliente.
+      </p>
+
+      <button
+        id="actualizar"
+        type="button"
+      >
+        Actualizar listado
+      </button>
+
+      <div class="tabla-contenedor">
 
         <table>
+
           <thead>
             <tr>
-              <th>Nombre</th>
+              <th>Cliente</th>
               <th>Teléfono</th>
               <th>Correo</th>
               <th>Canal</th>
               <th>Consulta</th>
-              <th>Resultado de la consulta</th>
-              <th>Detalle</th>
-            </tr>
-          </thead>
-
-          <tbody id="tablaConsultas">
-            <tr>
-              <td colspan="7">Sin datos cargados</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- NUEVA VISTA / PANEL: DETALLE, EDICIÓN, CORREO Y ACTIVIDAD -->
-      <section id="panelDetalleCliente" hidden aria-live="polite">
-        <div class="detalle-encabezado">
-          <div>
-            <button id="volverListado" type="button" class="boton-secundario">
-              ← Volver al listado
-            </button>
-            <h2 id="detalleTitulo">Ficha del cliente</h2>
-            <p id="detalleSubtitulo" class="detalle-subtitulo"></p>
-          </div>
-        </div>
-
-        <!-- INFORMACIÓN DE GESTIÓN Y SEGUIMIENTO BPMN -->
-        <div class="subseccion-detalle">
-          <h3>Gestión y seguimiento de la consulta</h3>
-          <div id="detalleGestion" class="detalle-grid"></div>
-        </div>
-        
-        <div class="detalle-grid">
-          <!-- SUB-BLOQUE A: ACTUALIZAR DATOS DEL CLIENTE / CONSULTA -->
-          <div class="subtarjeta">
-            <h3>✏️ Actualizar datos del cliente</h3>
-            <form id="formEditarCliente">
-              <label for="editNombre">Nombre</label>
-              <input type="text" id="editNombre" name="editNombre" required />
-
-              <label for="editTelefono">Teléfono</label>
-              <input
-                type="number"
-                id="editTelefono"
-                name="editTelefono"
-                required
-              />
-
-              <label for="editCorreo">Correo electrónico</label>
-              <input
-                type="email"
-                id="editCorreo"
-                name="editCorreo"
-                maxlength="254"
-                pattern="[^@\s]+@[^@\s]+[.][^@\s]+"
-                required
-              />
-
-              <label for="editCanal">Canal de origen</label>
-              <select id="editCanal" name="editCanal" required>
-                <option value="">Seleccionar canal</option>
-                <option value="WhatsApp">WhatsApp</option>
-                <option value="Instagram">Instagram</option>
-                <option value="Facebook">Facebook</option>
-                <option value="TikTok">TikTok</option>
-              </select>
-
-              <label for="editConsulta">Descripción de la consulta</label>
-              <textarea
-                id="editConsulta"
-                name="editConsulta"
-                rows="3"
-                required
-              ></textarea>
-
-              <label for="editResultado">Resultado de la consulta</label>
-              <select id="editResultado" disabled>
-                <option value="">Sin resultado registrado</option>
-                <option value="PENDIENTE">Pendiente</option>
-                <option value="COMPRO">Compró</option>
-                <option value="NO_COMPRO">No compró</option>
-                <option value="CONVERTIDO">Compró</option>
-              </select>
-
-              <button type="submit">Guardar cambios</button>
-              <!-- ZONA DE ELIMINACIÓN DE REGISTRO -->
-              <div class="zona-peligro">
-                <button
-                  id="eliminarCliente"
-                  type="button"
-                  class="boton-peligro"
-                >
-                  🗑️ Eliminar Cliente
-                </button>
-              </div>
-            </form>
-            <p id="mensajeEdicion" class="mensaje-estado" role="status"></p>
-          </div>
-
-          <!-- SUB-BLOQUE B: ENVIAR CORREO AL CLIENTE -->
-          <div class="subtarjeta">
-            <h3>✉️ Enviar correo al cliente</h3>
-            <form id="formEnviarCorreo">
-              <label for="correoDestinatario">Para (Correo)</label>
-              <input
-                type="email"
-                id="correoDestinatario"
-                name="correoDestinatario"
-                required
-              />
-
-              <label for="correoAsunto">Asunto</label>
-              <input
-                type="text"
-                id="correoAsunto"
-                name="correoAsunto"
-                placeholder="Ej: Seguimiento de tu consulta en Peluditos Pet Chile"
-                required
-              />
-
-              <label for="correoImagen">Adjuntar imagen (opcional)</label>
-              <input
-                type="file"
-                id="correoImagen"
-                name="correoImagen"
-                accept="image/*"
-              />
-              <small id="infoImagenCorreo" class="texto-ayuda"></small>
-
-              <label for="correoCuerpo">Mensaje</label>
-              <textarea
-                id="correoCuerpo"
-                name="correoCuerpo"
-                rows="5"
-                placeholder="Escribe aquí el mensaje para el cliente..."
-                required
-              ></textarea>
-
-              <button type="submit">Enviar correo</button>
-            </form>
-            <p id="mensajeCorreo" class="mensaje-estado" role="status"></p>
-          </div>
-        </div>
-
-        <!-- SUB-BLOQUE C: REGISTRO DE ACTIVIDAD -->
-        <div class="subtarjeta registro-actividad-box">
-          <h3>🕒 Registro de actividad</h3>
-          <p class="texto-ayuda">
-            Historial de acciones, cambios de datos, tareas de Flowable y
-            correos asociados a este registro.
-          </p>
-          <ul id="listaActividad" class="lista-actividad">
-            <li>Sin actividad registrada aún.</li>
-          </ul>
-        </div>
-      </section>
-
-      <section id="seccionRecompra">
-        <h2>Oportunidades de recompra</h2>
-        <form id="formRecompra">
-          <label for="clienteRecompra">Cliente con compra registrada</label>
-          <select id="clienteRecompra" name="clienteId" required disabled>
-            <option value="">Cargando clientes…</option>
-          </select>
-
-          <label for="motivoRecompra">Motivo</label>
-          <input id="motivoRecompra" name="motivo" maxlength="150"
-                 placeholder="Por ejemplo, cumpleaños o promoción de Navidad" required />
-
-          <label for="fechaRecompra">Fecha de la oportunidad</label>
-          <input id="fechaRecompra" type="date" name="fechaOportunidad" required />
-
-          <button type="submit" disabled>Crear oportunidad</button>
-        </form>
-        <p id="mensajeRecompra" role="status"></p>
-      </section>
-
-      <!-- SECCIÓN 3: BANDEJA DE TAREAS BPMN -->
-      <section id="seccionTareas">
-        <h2>📋 Bandeja de tareas pendientes</h2>
-
-        <p>
-          Consulta y gestiona las actividades humanas generadas por el proceso
-          BPMN de Peluditos Pet Chile.
-        </p>
-
-        <button id="actualizarTareas" type="button">Actualizar tareas</button>
-
-        <p id="mensajeTareas" role="status" aria-live="polite">
-          Las tareas todavía no se han cargado.
-        </p>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Actividad</th>
-              <th>Responsable</th>
-              <th>Fecha de creación</th>
+              <th>Resultado</th>
               <th>Acción</th>
             </tr>
           </thead>
 
-          <tbody id="tablaTareas">
+          <tbody id="tablaConsultas">
+
             <tr>
-              <td colspan="4">
-                Presiona "Actualizar tareas" para consultar las actividades
-                pendientes.
+              <td colspan="7">
+                Cargando clientes y consultas...
               </td>
             </tr>
+
           </tbody>
+
         </table>
 
-        <!-- PANEL DE GESTIÓN DE TAREA -->
-        <div id="panelTarea" hidden>
-          <h3 id="tituloTarea">Gestionar tarea</h3>
+      </div>
 
-          <p id="descripcionTarea">Completa la información solicitada.</p>
+    </section>
 
-          <form id="formTarea">
-            <div id="camposTarea">
-              <!-- Campos dinámicos -->
-            </div>
 
-            <button type="submit">Completar tarea</button>
+    <!-- ============================================= -->
+    <!-- DETALLE Y GESTIÓN DEL CLIENTE -->
+    <!-- ============================================= -->
 
-            <button id="cancelarTarea" type="button">Cancelar</button>
-          </form>
+    <section
+      id="panelDetalleCliente"
+      hidden
+    >
 
-          <p id="resultadoTarea" role="status" aria-live="polite"></p>
-        </div>
-      </section>
-    </main>
+      <button
+        id="volverListado"
+        type="button"
+      >
+        ← Volver al listado
+      </button>
 
-    <footer>
-      <p>Peluditos Pet Chile | Proyecto Integración de Plataformas</p>
-    </footer>
-  </body>
+      <h2 id="detalleTitulo">
+        Detalle del cliente
+      </h2>
+
+      <p id="detalleSubtitulo">
+        Información y seguimiento del cliente.
+      </p>
+
+
+      <!-- INFORMACIÓN DE GESTIÓN -->
+
+      <h3>📊 Información de gestión</h3>
+
+      <div
+        id="detalleGestion"
+        class="detalle-gestion"
+      ></div>
+
+
+      <!-- EDICIÓN DEL CLIENTE -->
+
+      <h3>✏️ Editar datos del cliente</h3>
+
+      <form id="formEditarCliente">
+
+        <label for="editNombre">
+          Nombre del cliente
+        </label>
+
+        <input
+          type="text"
+          id="editNombre"
+          name="nombreCliente"
+          required
+        >
+
+        <label for="editTelefono">
+          Teléfono
+        </label>
+
+        <input
+          type="tel"
+          id="editTelefono"
+          name="telefono"
+          required
+        >
+
+        <label for="editCorreo">
+          Correo electrónico
+        </label>
+
+        <input
+          type="email"
+          id="editCorreo"
+          name="correo"
+          required
+        >
+
+        <label for="editCanal">
+          Canal de origen
+        </label>
+
+        <select
+          id="editCanal"
+          name="canalOrigen"
+          required
+        >
+
+          <option value="">
+            Selecciona un canal
+          </option>
+
+          <option value="WhatsApp">
+            WhatsApp
+          </option>
+
+          <option value="Instagram">
+            Instagram
+          </option>
+
+          <option value="Facebook">
+            Facebook
+          </option>
+
+          <option value="TikTok">
+            TikTok
+          </option>
+
+          <option value="Sitio web">
+            Sitio web
+          </option>
+
+          <option value="Otro">
+            Otro
+          </option>
+
+        </select>
+
+        <label for="editConsulta">
+          Consulta
+        </label>
+
+        <textarea
+          id="editConsulta"
+          name="consulta"
+          rows="4"
+          required
+        ></textarea>
+
+        <label for="editResultado">
+          Resultado de la gestión
+        </label>
+
+        <select
+          id="editResultado"
+          name="resultado"
+        >
+
+          <option value="">
+            Sin resultado registrado
+          </option>
+
+          <option value="PENDIENTE">
+            Pendiente
+          </option>
+
+          <option value="COMPRO">
+            Compró
+          </option>
+
+          <option value="NO_COMPRO">
+            No compró
+          </option>
+
+          <option value="CONVERTIDO">
+            Convertido
+          </option>
+
+        </select>
+
+        <button type="submit">
+          Guardar cambios
+        </button>
+
+        <button
+          id="eliminarCliente"
+          type="button"
+        >
+          Eliminar cliente
+        </button>
+
+      </form>
+
+      <p
+        id="mensajeEdicion"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+
+      <!-- ENVÍO DE CORREO -->
+
+      <h3>📧 Enviar correo al cliente</h3>
+
+      <form id="formEnviarCorreo">
+
+        <label for="correoDestinatario">
+          Destinatario
+        </label>
+
+        <input
+          type="email"
+          id="correoDestinatario"
+          name="para"
+          required
+        >
+
+        <label for="correoAsunto">
+          Asunto
+        </label>
+
+        <input
+          type="text"
+          id="correoAsunto"
+          name="asunto"
+          required
+        >
+
+        <label for="correoCuerpo">
+          Mensaje
+        </label>
+
+        <textarea
+          id="correoCuerpo"
+          name="mensaje"
+          rows="6"
+          placeholder="Escribe el mensaje para el cliente."
+          required
+        ></textarea>
+
+        <label for="correoImagen">
+          Adjuntar imagen (opcional)
+        </label>
+
+        <input
+          type="file"
+          id="correoImagen"
+          name="imagen"
+          accept="image/*"
+        >
+
+        <p id="infoImagenCorreo">
+          Puedes adjuntar una imagen de hasta 3 MB.
+        </p>
+
+        <button type="submit">
+          Enviar correo
+        </button>
+
+      </form>
+
+      <p
+        id="mensajeCorreo"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+
+      <!-- HISTORIAL DE ACTIVIDAD -->
+
+      <h3>🕒 Historial de actividad</h3>
+
+      <ul id="listaActividad">
+        <li>
+          No hay actividades registradas.
+        </li>
+      </ul>
+
+    </section>
+
+
+    <!-- ============================================= -->
+    <!-- OPORTUNIDADES DE RECOMPRA -->
+    <!-- ============================================= -->
+
+    <section id="seccionRecompra">
+
+      <h2>🔄 Oportunidades de recompra</h2>
+
+      <p>
+        Registra oportunidades comerciales para
+        clientes que ya realizaron una compra.
+        La oportunidad podrá gestionarse mediante
+        las tareas del proceso BPMN.
+      </p>
+
+      <form id="formRecompra">
+
+        <label for="clienteRecompra">
+          Cliente
+        </label>
+
+        <select
+          id="clienteRecompra"
+          name="clienteId"
+          required
+        >
+          <option value="">
+            Cargando clientes...
+          </option>
+        </select>
+
+        <label for="motivoRecompra">
+          Motivo de la oportunidad
+        </label>
+
+        <textarea
+          id="motivoRecompra"
+          name="motivo"
+          rows="3"
+          placeholder="Ej.: Próximo cumpleaños de su mascota."
+          required
+        ></textarea>
+
+        <label for="fechaRecompra">
+          Fecha de la oportunidad
+        </label>
+
+        <input
+          type="date"
+          id="fechaRecompra"
+          name="fechaOportunidad"
+          required
+        >
+
+        <button type="submit">
+          Crear oportunidad
+        </button>
+
+      </form>
+
+      <p
+        id="mensajeRecompra"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+    </section>
+
+
+    <!-- ============================================= -->
+    <!-- BANDEJA DE TAREAS FLOWABLE -->
+    <!-- ============================================= -->
+
+    <section id="seccionTareas">
+
+      <h2>📋 Bandeja de tareas pendientes</h2>
+
+      <p>
+        Consulta y gestiona las actividades humanas
+        generadas por el proceso BPMN de
+        Peluditos Pet Chile.
+      </p>
+
+      <button
+        id="actualizarTareas"
+        type="button"
+      >
+        Actualizar tareas
+      </button>
+
+      <p
+        id="mensajeTareas"
+        role="status"
+        aria-live="polite"
+      >
+        Las tareas todavía no se han cargado.
+      </p>
+
+      <div class="tabla-contenedor">
+
+        <table id="tablaTareasPendientes">
+
+          <thead>
+            <tr>
+              <th scope="col">Actividad</th>
+              <th scope="col">Cliente y consulta</th>
+              <th scope="col">Responsable</th>
+              <th scope="col">Fecha de creación</th>
+              <th scope="col">Acción</th>
+            </tr>
+          </thead>
+
+          <tbody id="tablaTareas">
+
+            <tr>
+              <td colspan="5">
+                Presiona "Actualizar tareas"
+                para consultar las actividades pendientes.
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <!-- PANEL DE GESTIÓN DE TAREAS -->
+
+      <div
+        id="panelTarea"
+        hidden
+      >
+
+        <h3 id="tituloTarea">
+          Gestionar tarea
+        </h3>
+
+        <p id="descripcionTarea">
+          Completa la información solicitada.
+        </p>
+
+        <form id="formTarea">
+
+          <div id="camposTarea"></div>
+
+          <button type="submit">
+            Completar tarea
+          </button>
+
+          <button
+            id="cancelarTarea"
+            type="button"
+          >
+            Cancelar
+          </button>
+
+        </form>
+
+        <p
+          id="resultadoTarea"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ============================================= -->
+  <!-- PIE DE PÁGINA -->
+  <!-- ============================================= -->
+
+  <footer>
+
+    <p>
+      🐾 Peluditos Pet Chile
+    </p>
+
+    <p>
+      Proyecto académico de Integración de Plataformas
+      — IPLACEX
+    </p>
+
+    <p>
+      Integración Frontend · API REST Java · Flowable BPMN
+    </p>
+
+  </footer>
+
+
+  <!-- ============================================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ============================================= -->
+
+  <!--
+    Se agrega un parámetro de versión para evitar
+    que el navegador utilice un app.js antiguo.
+  -->
+
+  <script
+    src="app.js?v=3"
+    defer
+  ></script>
+
+</body>
 </html>
