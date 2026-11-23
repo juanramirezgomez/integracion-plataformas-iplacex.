@@ -105,8 +105,41 @@ $webCode = @"
 `$listener.Prefixes.Add('http://localhost:5173/')
 `$listener.Start()
 `$webRoot = '$(Join-Path $root 'Interfaz')'
+`$handler = New-Object System.Net.Http.HttpClientHandler
+`$client = New-Object System.Net.Http.HttpClient(`$handler)
+
 while (`$listener.IsListening) {
     `$ctx = `$listener.GetContext()
+    `$rawUrl = `$ctx.Request.RawUrl
+    if (`$rawUrl.StartsWith('/api/')) {
+        try {
+            `$targetUrl = 'http://127.0.0.1:8096' + `$rawUrl
+            `$msg = New-Object System.Net.Http.HttpRequestMessage((New-Object System.Net.Http.HttpMethod(`$ctx.Request.HttpMethod)), `$targetUrl)
+            if (`$ctx.Request.HasEntityBody) {
+                `$ms = New-Object System.IO.MemoryStream
+                `$ctx.Request.InputStream.CopyTo(`$ms)
+                `$content = New-Object System.Net.Http.ByteArrayContent(,`$ms.ToArray())
+                if (`$ctx.Request.ContentType) {
+                    `$content.Headers.TryAddWithoutValidation('Content-Type', `$ctx.Request.ContentType) | Out-Null
+                }
+                `$msg.Content = `$content
+            }
+            `$resp = `$client.SendAsync(`$msg).GetAwaiter().GetResult()
+            `$ctx.Response.StatusCode = [int]`$resp.StatusCode
+            if (`$resp.Content.Headers.ContentType) {
+                `$ctx.Response.ContentType = `$resp.Content.Headers.ContentType.ToString()
+            }
+            `$respBytes = `$resp.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
+            `$ctx.Response.ContentLength64 = `$respBytes.Length
+            `$ctx.Response.OutputStream.Write(`$respBytes, 0, `$respBytes.Length)
+        } catch {
+            `$ctx.Response.StatusCode = 502
+        } finally {
+            `$ctx.Response.Close()
+        }
+        continue
+    }
+
     `$rel = `$ctx.Request.Url.LocalPath.TrimStart('/')
     if ([string]::IsNullOrEmpty(`$rel)) { `$rel = 'index.html' }
     `$file = Join-Path `$webRoot `$rel
@@ -120,7 +153,7 @@ while (`$listener.IsListening) {
     `$ctx.Response.Close()
 }
 "@
-Start-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', $webCode -WorkingDirectory $root
+Start-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', "Add-Type -AssemblyName System.Net.Http; $webCode" -WorkingDirectory $root
 
 Start-Sleep -Seconds 1
 Start-Process 'http://localhost:5173'

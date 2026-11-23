@@ -1,12 +1,9 @@
-
-/Java-Web-Services/datos/
-
-# Credenciales y configuraciones locales
-.local/
-
 # Registros temporales del Worker
-External-Workers/worker-ejecucion.jsonl
+/External-Workers/worker-ejecucion.jsonl
+PeluditosPetChile_APP/External-Workers/worker-ejecucion.jsonl
 flowable-8.0.0
 # Bases de datos H2
 *.mv.db
 *.trace.db
+# Credenciales y configuraciones locales
+.local/
