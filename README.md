@@ -32,7 +32,20 @@ La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flo
 
 - **19 de noviembre.** Probamos desde la ficha del cliente el envío de un correo con imagen a un buzón local. La página confirma el envío cuando el servidor de correo lo acepta y conserva el borrador si hay un problema. [Ver avance y pruebas](Actas/Acta-2026-11-19.md).
 
-## Cómo probarlo en Windows
+- **20 de noviembre.** Dejamos un paquete portátil para Windows con Java 21, Flowable OSS 8, el servicio Java, los dos BPMN y el worker.
+- **23 de noviembre.** Ajustamos el arranque del paquete para que las llamadas de la interfaz a `/api` lleguen al servicio Java a través del servidor local. Ese cambio permite registrar consultas desde la pantalla del paquete.
+
+## Abrir el paquete para Windows
+
+Descarga el repositorio, extrae el ZIP en una ruta sin espacios y abre [PeluditosPetChile_APP](PeluditosPetChile_APP/). Comprueba que los puertos locales `5173`, `8096` y `8098` estén libres. Ejecuta [Iniciar_Peluditos.bat](PeluditosPetChile_APP/Iniciar_Peluditos.bat) y espera a que se abra la pantalla en [localhost:5173](http://localhost:5173). El paquete incluye Java y el servidor web local, por lo que para esta modalidad puedes abrirlo sin instalar Java ni Node.js.
+
+El paquete incluye la bandeja con el detalle del cliente y la consulta. Si quieres probar el dashboard con navegación e indicadores, usa el código de [Interfaz](Interfaz/) y sigue los pasos de abajo. Los datos y la configuración local del paquete se guardan en su carpeta `.local`.
+
+En una prueba con una copia limpia del paquete, la pantalla abrió y el worker procesó una consulta de prueba que quedó guardada en Java.
+
+[Instrucciones del paquete](PeluditosPetChile_APP/README.md).
+
+## Probar el código fuente en Windows
 
 Necesitas Java 21, PowerShell, el archivo `flowable-rest.war` de Flowable OSS 8.0.0 y Node.js con npm para abrir la pantalla.
 
