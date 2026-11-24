@@ -1,677 +1,1266 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1"
   >
 
-  <meta
-    name="description"
-    content="Plataforma de gestión de consultas, clientes, tareas BPMN y oportunidades de recompra de Peluditos Pet Chile."
-  >
+  <meta name="theme-color" content="#6b4b94">
 
-  <title>Peluditos Pet Chile | Gestión de Consultas</title>
+  <title>
+    Peluditos Pet Chile | Gestión comercial
+  </title>
 
+  <!-- Estilos originales -->
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Estilos del nuevo dashboard -->
+  <link rel="stylesheet" href="dashboard.css">
+
+  <!-- Funcionalidades JavaScript -->
+  <script src="app.js?v=20261120-2" defer></script>
 </head>
 
 <body>
 
-  <!-- ============================================= -->
-  <!-- ENCABEZADO -->
-  <!-- ============================================= -->
+  <div class="app-shell">
 
-  <header>
-    <h1>🐾 Peluditos Pet Chile</h1>
+    <!-- ==========================================
+         MENÚ LATERAL
+         ========================================== -->
 
-    <p>
-      Plataforma de integración de servicios,
-      gestión de clientes y automatización de procesos.
-    </p>
-  </header>
+    <aside
+      class="app-sidebar"
+      id="barraLateral"
+      aria-label="Navegación principal"
+    >
 
-  <main>
+      <div class="brand">
 
-    <!-- ============================================= -->
-    <!-- REGISTRO DE CONSULTAS -->
-    <!-- ============================================= -->
-
-    <section id="seccionRegistro">
-
-      <h2>📝 Registrar nueva consulta</h2>
-
-      <p>
-        Ingresa los datos del cliente para registrar
-        su solicitud e iniciar el proceso BPMN
-        correspondiente en Flowable.
-      </p>
-
-      <form id="consultaForm">
-
-        <label for="nombre">
-          Nombre del cliente
-        </label>
-
-        <input
-          type="text"
-          id="nombre"
-          name="nombre"
-          placeholder="Ej.: María González"
-          required
+        <span
+          class="brand-mark"
+          aria-hidden="true"
         >
+          🐾
+        </span>
 
-        <label for="contacto">
-          Teléfono de contacto
-        </label>
-
-        <input
-          type="tel"
-          id="contacto"
-          name="contacto"
-          placeholder="Ej.: 912345678"
-          required
-        >
-
-        <label for="correo">
-          Correo electrónico
-        </label>
-
-        <input
-          type="email"
-          id="correo"
-          name="correo"
-          placeholder="cliente@ejemplo.com"
-          required
-        >
-
-        <label for="canal">
-          Canal de origen
-        </label>
-
-        <select
-          id="canal"
-          name="canal"
-          required
-        >
-          <option value="">
-            Selecciona un canal
-          </option>
-
-          <option value="WhatsApp">
-            WhatsApp
-          </option>
-
-          <option value="Instagram">
-            Instagram
-          </option>
-
-          <option value="Facebook">
-            Facebook
-          </option>
-
-          <option value="TikTok">
-            TikTok
-          </option>
-
-          <option value="Sitio web">
-            Sitio web
-          </option>
-
-          <option value="Otro">
-            Otro
-          </option>
-        </select>
-
-        <label for="descripcion">
-          Descripción de la consulta
-        </label>
-
-        <textarea
-          id="descripcion"
-          name="descripcion"
-          rows="4"
-          placeholder="Describe qué producto o servicio necesita el cliente."
-          required
-        ></textarea>
-
-        <button type="submit">
-          Registrar consulta
-        </button>
-
-      </form>
-
-      <p
-        id="mensaje"
-        role="status"
-        aria-live="polite"
-      ></p>
-
-    </section>
-
-
-    <!-- ============================================= -->
-    <!-- LISTADO DE CLIENTES Y CONSULTAS -->
-    <!-- ============================================= -->
-
-    <section id="seccionClientes">
-
-      <h2>👥 Clientes y consultas registradas</h2>
-
-      <p>
-        Consulta las solicitudes recibidas,
-        revisa su estado y accede al detalle
-        de cada cliente.
-      </p>
-
-      <button
-        id="actualizar"
-        type="button"
-      >
-        Actualizar listado
-      </button>
-
-      <div class="tabla-contenedor">
-
-        <table>
-
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Teléfono</th>
-              <th>Correo</th>
-              <th>Canal</th>
-              <th>Consulta</th>
-              <th>Resultado</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-
-          <tbody id="tablaConsultas">
-
-            <tr>
-              <td colspan="7">
-                Cargando clientes y consultas...
-              </td>
-            </tr>
-
-          </tbody>
-
-        </table>
+        <div>
+          <strong>Peluditos</strong>
+          <small>PET CHILE · CRM</small>
+        </div>
 
       </div>
 
-    </section>
-
-
-    <!-- ============================================= -->
-    <!-- DETALLE Y GESTIÓN DEL CLIENTE -->
-    <!-- ============================================= -->
-
-    <section
-      id="panelDetalleCliente"
-      hidden
-    >
-
-      <button
-        id="volverListado"
-        type="button"
-      >
-        ← Volver al listado
-      </button>
-
-      <h2 id="detalleTitulo">
-        Detalle del cliente
-      </h2>
-
-      <p id="detalleSubtitulo">
-        Información y seguimiento del cliente.
+      <p class="nav-caption">
+        ESPACIO DE TRABAJO
       </p>
 
+      <nav class="app-nav" aria-label="Módulos">
 
-      <!-- INFORMACIÓN DE GESTIÓN -->
-
-      <h3>📊 Información de gestión</h3>
-
-      <div
-        id="detalleGestion"
-        class="detalle-gestion"
-      ></div>
-
-
-      <!-- EDICIÓN DEL CLIENTE -->
-
-      <h3>✏️ Editar datos del cliente</h3>
-
-      <form id="formEditarCliente">
-
-        <label for="editNombre">
-          Nombre del cliente
-        </label>
-
-        <input
-          type="text"
-          id="editNombre"
-          name="nombreCliente"
-          required
+        <button
+          type="button"
+          class="nav-item active"
+          data-vista="inicio"
+          aria-current="page"
         >
-
-        <label for="editTelefono">
-          Teléfono
-        </label>
-
-        <input
-          type="tel"
-          id="editTelefono"
-          name="telefono"
-          required
-        >
-
-        <label for="editCorreo">
-          Correo electrónico
-        </label>
-
-        <input
-          type="email"
-          id="editCorreo"
-          name="correo"
-          required
-        >
-
-        <label for="editCanal">
-          Canal de origen
-        </label>
-
-        <select
-          id="editCanal"
-          name="canalOrigen"
-          required
-        >
-
-          <option value="">
-            Selecciona un canal
-          </option>
-
-          <option value="WhatsApp">
-            WhatsApp
-          </option>
-
-          <option value="Instagram">
-            Instagram
-          </option>
-
-          <option value="Facebook">
-            Facebook
-          </option>
-
-          <option value="TikTok">
-            TikTok
-          </option>
-
-          <option value="Sitio web">
-            Sitio web
-          </option>
-
-          <option value="Otro">
-            Otro
-          </option>
-
-        </select>
-
-        <label for="editConsulta">
-          Consulta
-        </label>
-
-        <textarea
-          id="editConsulta"
-          name="consulta"
-          rows="4"
-          required
-        ></textarea>
-
-        <label for="editResultado">
-          Resultado de la gestión
-        </label>
-
-        <select
-          id="editResultado"
-          name="resultado"
-        >
-
-          <option value="">
-            Sin resultado registrado
-          </option>
-
-          <option value="PENDIENTE">
-            Pendiente
-          </option>
-
-          <option value="COMPRO">
-            Compró
-          </option>
-
-          <option value="NO_COMPRO">
-            No compró
-          </option>
-
-          <option value="CONVERTIDO">
-            Convertido
-          </option>
-
-        </select>
-
-        <button type="submit">
-          Guardar cambios
+          <span>▦</span>
+          Inicio
         </button>
 
         <button
-          id="eliminarCliente"
           type="button"
+          class="nav-item"
+          data-vista="consultas"
         >
-          Eliminar cliente
+          <span>✎</span>
+          Nueva consulta
         </button>
 
-      </form>
-
-      <p
-        id="mensajeEdicion"
-        role="status"
-        aria-live="polite"
-      ></p>
-
-
-      <!-- ENVÍO DE CORREO -->
-
-      <h3>📧 Enviar correo al cliente</h3>
-
-      <form id="formEnviarCorreo">
-
-        <label for="correoDestinatario">
-          Destinatario
-        </label>
-
-        <input
-          type="email"
-          id="correoDestinatario"
-          name="para"
-          required
+        <button
+          type="button"
+          class="nav-item"
+          data-vista="clientes"
         >
-
-        <label for="correoAsunto">
-          Asunto
-        </label>
-
-        <input
-          type="text"
-          id="correoAsunto"
-          name="asunto"
-          required
-        >
-
-        <label for="correoCuerpo">
-          Mensaje
-        </label>
-
-        <textarea
-          id="correoCuerpo"
-          name="mensaje"
-          rows="6"
-          placeholder="Escribe el mensaje para el cliente."
-          required
-        ></textarea>
-
-        <label for="correoImagen">
-          Adjuntar imagen (opcional)
-        </label>
-
-        <input
-          type="file"
-          id="correoImagen"
-          name="imagen"
-          accept="image/*"
-        >
-
-        <p id="infoImagenCorreo">
-          Puedes adjuntar una imagen de hasta 3 MB.
-        </p>
-
-        <button type="submit">
-          Enviar correo
+          <span>♧</span>
+          Clientes
         </button>
 
-      </form>
-
-      <p
-        id="mensajeCorreo"
-        role="status"
-        aria-live="polite"
-      ></p>
-
-
-      <!-- HISTORIAL DE ACTIVIDAD -->
-
-      <h3>🕒 Historial de actividad</h3>
-
-      <ul id="listaActividad">
-        <li>
-          No hay actividades registradas.
-        </li>
-      </ul>
-
-    </section>
-
-
-    <!-- ============================================= -->
-    <!-- OPORTUNIDADES DE RECOMPRA -->
-    <!-- ============================================= -->
-
-    <section id="seccionRecompra">
-
-      <h2>🔄 Oportunidades de recompra</h2>
-
-      <p>
-        Registra oportunidades comerciales para
-        clientes que ya realizaron una compra.
-        La oportunidad podrá gestionarse mediante
-        las tareas del proceso BPMN.
-      </p>
-
-      <form id="formRecompra">
-
-        <label for="clienteRecompra">
-          Cliente
-        </label>
-
-        <select
-          id="clienteRecompra"
-          name="clienteId"
-          required
+        <button
+          type="button"
+          class="nav-item"
+          data-vista="recompra"
         >
-          <option value="">
-            Cargando clientes...
-          </option>
-        </select>
-
-        <label for="motivoRecompra">
-          Motivo de la oportunidad
-        </label>
-
-        <textarea
-          id="motivoRecompra"
-          name="motivo"
-          rows="3"
-          placeholder="Ej.: Próximo cumpleaños de su mascota."
-          required
-        ></textarea>
-
-        <label for="fechaRecompra">
-          Fecha de la oportunidad
-        </label>
-
-        <input
-          type="date"
-          id="fechaRecompra"
-          name="fechaOportunidad"
-          required
-        >
-
-        <button type="submit">
-          Crear oportunidad
+          <span>↻</span>
+          Recompra
         </button>
 
-      </form>
+        <button
+          type="button"
+          class="nav-item"
+          data-vista="tareas"
+        >
+          <span>☷</span>
+          Tareas BPMN
 
-      <p
-        id="mensajeRecompra"
-        role="status"
-        aria-live="polite"
-      ></p>
+          <span
+            class="nav-count"
+            id="navConteoTareas"
+          >
+            —
+          </span>
+        </button>
 
-    </section>
+      </nav>
 
+      <div class="sidebar-foot">
 
-    <!-- ============================================= -->
-    <!-- BANDEJA DE TAREAS FLOWABLE -->
-    <!-- ============================================= -->
+        <span class="connection-dot"></span>
 
-    <section id="seccionTareas">
+        Integración Java · Flowable
 
-      <h2>📋 Bandeja de tareas pendientes</h2>
-
-      <p>
-        Consulta y gestiona las actividades humanas
-        generadas por el proceso BPMN de
-        Peluditos Pet Chile.
-      </p>
-
-      <button
-        id="actualizarTareas"
-        type="button"
-      >
-        Actualizar tareas
-      </button>
-
-      <p
-        id="mensajeTareas"
-        role="status"
-        aria-live="polite"
-      >
-        Las tareas todavía no se han cargado.
-      </p>
-
-      <div class="tabla-contenedor">
-
-        <table id="tablaTareasPendientes">
-
-          <thead>
-            <tr>
-              <th scope="col">Actividad</th>
-              <th scope="col">Cliente y consulta</th>
-              <th scope="col">Responsable</th>
-              <th scope="col">Fecha de creación</th>
-              <th scope="col">Acción</th>
-            </tr>
-          </thead>
-
-          <tbody id="tablaTareas">
-
-            <tr>
-              <td colspan="5">
-                Presiona "Actualizar tareas"
-                para consultar las actividades pendientes.
-              </td>
-            </tr>
-
-          </tbody>
-
-        </table>
+        <small>
+          Proyecto académico · IPLACEX
+        </small>
 
       </div>
 
+    </aside>
 
-      <!-- PANEL DE GESTIÓN DE TAREAS -->
 
-      <div
-        id="panelTarea"
-        hidden
-      >
+    <!-- ==========================================
+         CONTENIDO PRINCIPAL
+         ========================================== -->
 
-        <h3 id="tituloTarea">
-          Gestionar tarea
-        </h3>
+    <div class="app-content">
 
-        <p id="descripcionTarea">
-          Completa la información solicitada.
-        </p>
+      <!-- ENCABEZADO SUPERIOR -->
 
-        <form id="formTarea">
+      <header class="app-topbar">
 
-          <div id="camposTarea"></div>
-
-          <button type="submit">
-            Completar tarea
-          </button>
+        <div class="topbar-left">
 
           <button
-            id="cancelarTarea"
             type="button"
+            id="abrirMenu"
+            class="menu-toggle"
+            aria-label="Abrir menú"
+            aria-expanded="false"
           >
-            Cancelar
+            ☰
           </button>
 
-        </form>
+          <div>
 
-        <p
-          id="resultadoTarea"
-          role="status"
-          aria-live="polite"
-        ></p>
+            <p class="eyebrow">
+              GESTIÓN COMERCIAL
+            </p>
 
-      </div>
+            <h1 id="tituloVista">
+              Resumen general
+            </h1>
 
-    </section>
+          </div>
 
-  </main>
+        </div>
 
+        <div class="topbar-right">
 
-  <!-- ============================================= -->
-  <!-- PIE DE PÁGINA -->
-  <!-- ============================================= -->
+          <span
+            class="topbar-date"
+            id="fechaActual"
+          ></span>
 
-  <footer>
+          <span
+            class="user-avatar"
+            aria-label="Usuario de demostración"
+          >
+            PP
+          </span>
 
-    <p>
-      🐾 Peluditos Pet Chile
-    </p>
+        </div>
 
-    <p>
-      Proyecto académico de Integración de Plataformas
-      — IPLACEX
-    </p>
-
-    <p>
-      Integración Frontend · API REST Java · Flowable BPMN
-    </p>
-
-  </footer>
+      </header>
 
 
-  <!-- ============================================= -->
-  <!-- JAVASCRIPT -->
-  <!-- ============================================= -->
+      <main id="contenidoPrincipal">
 
-  <!--
-    Se agrega un parámetro de versión para evitar
-    que el navegador utilice un app.js antiguo.
-  -->
 
-  <script
-    src="app.js?v=3"
-    defer
-  ></script>
+        <!-- ======================================
+             VISTA 1: DASHBOARD
+             ====================================== -->
+
+        <div class="vista" id="vistaInicio">
+
+          <section class="welcome-card">
+
+            <div>
+
+              <p class="eyebrow">
+                PANEL DE CONTROL
+              </p>
+
+              <h2>
+                Bienvenido a Peluditos Pet Chile
+              </h2>
+
+              <p>
+                Administra consultas, clientes y
+                actividades del proceso comercial
+                desde un solo lugar.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+              class="primary-action"
+              data-vista="consultas"
+            >
+              + Nueva consulta
+            </button>
+
+          </section>
+
+
+          <!-- INDICADORES GENERALES -->
+
+          <div
+            class="stats-grid"
+            aria-label="Indicadores generales"
+          >
+
+            <article class="stat-card">
+
+              <span class="stat-icon">♧</span>
+
+              <p>Clientes registrados</p>
+
+              <strong id="kpiClientes">—</strong>
+
+              <small>
+                Contactos del sistema
+              </small>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <span class="stat-icon">✎</span>
+
+              <p>Consultas registradas</p>
+
+              <strong id="kpiConsultas">—</strong>
+
+              <small>
+                Solicitudes recibidas
+              </small>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <span class="stat-icon">☷</span>
+
+              <p>Tareas pendientes</p>
+
+              <strong id="kpiTareas">—</strong>
+
+              <small>
+                Actividades de Flowable
+              </small>
+
+            </article>
+
+
+            <article class="stat-card">
+
+              <span class="stat-icon">↻</span>
+
+              <p>Clientes con compra</p>
+
+              <strong id="kpiCompradores">—</strong>
+
+              <small>
+                Potenciales recompras
+              </small>
+
+            </article>
+
+          </div>
+
+
+          <!-- ACCESOS RÁPIDOS E INTEGRACIÓN -->
+
+          <div class="home-grid">
+
+            <section class="home-panel">
+
+              <div class="panel-heading">
+
+                <h2>Accesos rápidos</h2>
+
+                <p>
+                  Acciones más utilizadas
+                </p>
+
+              </div>
+
+              <div class="quick-actions">
+
+                <button
+                  type="button"
+                  data-vista="consultas"
+                >
+
+                  <span>✎</span>
+
+                  <strong>
+                    Registrar consulta
+                  </strong>
+
+                  <small>
+                    Iniciar proceso BPMN
+                  </small>
+
+                </button>
+
+
+                <button
+                  type="button"
+                  data-vista="clientes"
+                >
+
+                  <span>♧</span>
+
+                  <strong>
+                    Ver clientes
+                  </strong>
+
+                  <small>
+                    Consultar fichas y actividad
+                  </small>
+
+                </button>
+
+
+                <button
+                  type="button"
+                  data-vista="tareas"
+                >
+
+                  <span>☷</span>
+
+                  <strong>
+                    Gestionar tareas
+                  </strong>
+
+                  <small>
+                    Continuar flujos pendientes
+                  </small>
+
+                </button>
+
+
+                <button
+                  type="button"
+                  data-vista="recompra"
+                >
+
+                  <span>↻</span>
+
+                  <strong>
+                    Crear recompra
+                  </strong>
+
+                  <small>
+                    Generar oportunidad comercial
+                  </small>
+
+                </button>
+
+              </div>
+
+            </section>
+
+
+            <section class="home-panel">
+
+              <div class="panel-heading">
+
+                <h2>
+                  Estado de integración
+                </h2>
+
+                <p>
+                  Conexiones del sistema
+                </p>
+
+              </div>
+
+              <div class="integration-row">
+
+                <span>API REST Java</span>
+
+                <span
+                  id="estadoApi"
+                  class="status-pill"
+                >
+                  Sin comprobar
+                </span>
+
+              </div>
+
+
+              <div class="integration-row">
+
+                <span>
+                  Motor de tareas Flowable
+                </span>
+
+                <span
+                  id="estadoFlowable"
+                  class="status-pill"
+                >
+                  Sin comprobar
+                </span>
+
+              </div>
+
+
+              <p class="muted-note">
+                Los indicadores se actualizan
+                con información real del backend.
+              </p>
+
+              <button
+                type="button"
+                class="secondary-action"
+                id="actualizarDashboard"
+              >
+                Actualizar resumen
+              </button>
+
+            </section>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================
+             VISTA 2: REGISTRAR CONSULTA
+             ====================================== -->
+
+        <div
+          class="vista"
+          id="vistaConsultas"
+          hidden
+        >
+
+          <section
+            id="seccionRegistro"
+            class="module-card"
+          >
+
+            <div class="module-heading">
+
+              <div>
+
+                <p class="eyebrow">
+                  CAPTACIÓN DE CLIENTES
+                </p>
+
+                <h2>
+                  Registrar nueva consulta
+                </h2>
+
+                <p>
+                  Ingresa los datos del cliente
+                  para iniciar el proceso BPMN
+                  en Flowable.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <form id="consultaForm">
+
+              <div class="form-grid">
+
+                <div class="field">
+
+                  <label for="nombre">
+                    Nombre del cliente
+                  </label>
+
+                  <input
+                    id="nombre"
+                    name="nombre"
+                    type="text"
+                    placeholder="Ej.: María González"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="field">
+
+                  <label for="contacto">
+                    Teléfono de contacto
+                  </label>
+
+                  <input
+                    id="contacto"
+                    name="contacto"
+                    type="tel"
+                    placeholder="Ej.: 912345678"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="field">
+
+                  <label for="correo">
+                    Correo electrónico
+                  </label>
+
+                  <input
+                    id="correo"
+                    name="correo"
+                    type="email"
+                    pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                    placeholder="cliente@ejemplo.com"
+                    required
+                  >
+
+                </div>
+
+
+                <div class="field">
+
+                  <label for="canal">
+                    Canal de origen
+                  </label>
+
+                  <select
+                    id="canal"
+                    name="canal"
+                    required
+                  >
+
+                    <option value="">
+                      Selecciona un canal
+                    </option>
+
+                    <option>WhatsApp</option>
+                    <option>Instagram</option>
+                    <option>Facebook</option>
+                    <option>TikTok</option>
+                    <option>Sitio web</option>
+                    <option>Otro</option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="field full">
+
+                  <label for="descripcion">
+                    Descripción de la consulta
+                  </label>
+
+                  <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    placeholder="Describe qué producto o servicio necesita el cliente."
+                    required
+                  ></textarea>
+
+                </div>
+
+              </div>
+
+
+              <button type="submit">
+                Registrar consulta
+              </button>
+
+              <p
+                id="mensaje"
+                class="mensaje-estado"
+                role="status"
+                aria-live="polite"
+              ></p>
+
+            </form>
+
+          </section>
+
+        </div>
+
+
+        <!-- ======================================
+             VISTA 3: CLIENTES
+             ====================================== -->
+
+        <div
+          class="vista"
+          id="vistaClientes"
+          hidden
+        >
+
+          <!-- LISTADO DE CLIENTES -->
+
+          <section
+            id="seccionClientes"
+            class="module-card"
+          >
+
+            <div class="module-heading">
+
+              <div>
+
+                <p class="eyebrow">
+                  BASE DE CONTACTOS
+                </p>
+
+                <h2>
+                  Clientes y consultas registradas
+                </h2>
+
+                <p>
+                  Revisa las solicitudes recibidas
+                  y accede al detalle de cada cliente.
+                </p>
+
+              </div>
+
+              <button
+                id="actualizar"
+                type="button"
+                class="secondary-action"
+              >
+                ↻ Actualizar listado
+              </button>
+
+            </div>
+
+
+            <div class="table-scroll">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Canal</th>
+                    <th>Consulta</th>
+                    <th>Resultado</th>
+                    <th>Acción</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="tablaConsultas">
+
+                  <tr>
+                    <td colspan="7">
+                      Cargando clientes...
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </section>
+
+
+          <!-- FICHA DEL CLIENTE -->
+
+          <section
+            id="panelDetalleCliente"
+            class="module-card"
+            hidden
+          >
+
+            <button
+              type="button"
+              id="volverListado"
+              class="boton-secundario"
+            >
+              ← Volver al listado
+            </button>
+
+
+            <div class="module-heading">
+
+              <div>
+
+                <p class="eyebrow">
+                  FICHA DEL CLIENTE
+                </p>
+
+                <h2 id="detalleTitulo">
+                  Detalle del cliente
+                </h2>
+
+                <p
+                  id="detalleSubtitulo"
+                  class="detalle-subtitulo"
+                ></p>
+
+              </div>
+
+            </div>
+
+
+            <!-- SEGUIMIENTO BPMN -->
+
+            <div
+              class="subtarjeta gestion-seguimiento-box"
+            >
+
+              <h3>
+                Gestión y seguimiento BPMN
+              </h3>
+
+              <div
+                id="detalleGestion"
+                class="gestion-grid"
+              ></div>
+
+            </div>
+
+
+            <div class="detalle-grid">
+
+              <!-- EDICIÓN DEL CLIENTE -->
+
+              <div class="subtarjeta">
+
+                <h3>
+                  Editar información
+                </h3>
+
+                <form id="formEditarCliente">
+
+                  <label for="editNombre">
+                    Nombre del cliente
+                  </label>
+
+                  <input
+                    id="editNombre"
+                    required
+                  >
+
+
+                  <label for="editTelefono">
+                    Teléfono
+                  </label>
+
+                  <input
+                    id="editTelefono"
+                    required
+                  >
+
+
+                  <label for="editCorreo">
+                    Correo
+                  </label>
+
+                  <input
+                    id="editCorreo"
+                    type="email"
+                    required
+                  >
+
+
+                  <label for="editCanal">
+                    Canal
+                  </label>
+
+                  <select
+                    id="editCanal"
+                    required
+                  >
+
+                    <option value="">
+                      Selecciona un canal
+                    </option>
+
+                    <option>WhatsApp</option>
+                    <option>Instagram</option>
+                    <option>Facebook</option>
+                    <option>TikTok</option>
+                    <option>Sitio web</option>
+                    <option>Otro</option>
+
+                    <option value="whatsapp">
+                      whatsapp
+                    </option>
+
+                    <option value="instagram">
+                      instagram
+                    </option>
+
+                    <option value="facebook">
+                      facebook
+                    </option>
+
+                  </select>
+
+
+                  <label for="editConsulta">
+                    Consulta
+                  </label>
+
+                  <textarea
+                    id="editConsulta"
+                    required
+                  ></textarea>
+
+
+                  <label for="editResultado">
+                    Resultado
+                  </label>
+
+                  <select id="editResultado">
+
+                    <option value="">
+                      Sin resultado
+                    </option>
+
+                    <option value="PENDIENTE">
+                      Pendiente
+                    </option>
+
+                    <option value="COMPRO">
+                      Compró
+                    </option>
+
+                    <option value="NO_COMPRO">
+                      No compró
+                    </option>
+
+                    <option value="CONVERTIDO">
+                      Convertido
+                    </option>
+
+                  </select>
+
+
+                  <button type="submit">
+                    Guardar cambios
+                  </button>
+
+                  <p
+                    id="mensajeEdicion"
+                    class="mensaje-estado"
+                    role="status"
+                  ></p>
+
+                </form>
+
+              </div>
+
+
+              <!-- ENVÍO DE CORREOS -->
+
+              <div class="subtarjeta">
+
+                <h3>
+                  Enviar correo al cliente
+                </h3>
+
+                <form id="formEnviarCorreo">
+
+                  <label for="correoDestinatario">
+                    Destinatario
+                  </label>
+
+                  <input
+                    id="correoDestinatario"
+                    type="email"
+                    required
+                  >
+
+
+                  <label for="correoAsunto">
+                    Asunto
+                  </label>
+
+                  <input
+                    id="correoAsunto"
+                    required
+                  >
+
+
+                  <label for="correoCuerpo">
+                    Mensaje
+                  </label>
+
+                  <textarea
+                    id="correoCuerpo"
+                    required
+                  ></textarea>
+
+
+                  <label for="correoImagen">
+                    Adjuntar imagen (opcional)
+                  </label>
+
+                  <input
+                    id="correoImagen"
+                    type="file"
+                    accept="image/*"
+                  >
+
+                  <p
+                    id="infoImagenCorreo"
+                    class="texto-ayuda"
+                  ></p>
+
+
+                  <button type="submit">
+                    Enviar correo
+                  </button>
+
+                  <p
+                    id="mensajeCorreo"
+                    class="mensaje-estado"
+                    role="status"
+                  ></p>
+
+                </form>
+
+              </div>
+
+            </div>
+
+
+            <!-- HISTORIAL DE ACTIVIDAD -->
+
+            <div
+              class="subtarjeta registro-actividad-box"
+            >
+
+              <h3>
+                Historial de actividad
+              </h3>
+
+              <ul
+                id="listaActividad"
+                class="lista-actividad"
+              ></ul>
+
+            </div>
+
+
+            <!-- ELIMINAR CLIENTE -->
+
+            <div class="zona-peligro">
+
+              <h3>
+                Eliminar registro
+              </h3>
+
+              <p>
+                Esta acción es permanente.
+              </p>
+
+              <button
+                type="button"
+                id="eliminarCliente"
+                class="boton-peligro"
+              >
+                Eliminar cliente
+              </button>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- ======================================
+             VISTA 4: RECOMPRA
+             ====================================== -->
+
+        <div
+          class="vista"
+          id="vistaRecompra"
+          hidden
+        >
+
+          <section class="module-card">
+
+            <div class="module-heading">
+
+              <div>
+
+                <p class="eyebrow">
+                  FIDELIZACIÓN
+                </p>
+
+                <h2>
+                  Oportunidades de recompra
+                </h2>
+
+                <p>
+                  Registra oportunidades comerciales
+                  para clientes que ya realizaron
+                  una compra.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <form id="formRecompra">
+
+              <label for="clienteRecompra">
+                Cliente
+              </label>
+
+              <select
+                id="clienteRecompra"
+                name="clienteId"
+                required
+              >
+
+                <option value="">
+                  Cargando clientes...
+                </option>
+
+              </select>
+
+
+              <label for="motivoRecompra">
+                Motivo de la oportunidad
+              </label>
+
+              <textarea
+                id="motivoRecompra"
+                name="motivo"
+                placeholder="Ej.: Próximo cumpleaños de su mascota."
+                required
+              ></textarea>
+
+
+              <label for="fechaRecompra">
+                Fecha de la oportunidad
+              </label>
+
+              <input
+                id="fechaRecompra"
+                name="fechaOportunidad"
+                type="date"
+                required
+              >
+
+
+              <button type="submit">
+                Crear oportunidad
+              </button>
+
+              <p
+                id="mensajeRecompra"
+                class="mensaje-estado"
+                role="status"
+              ></p>
+
+            </form>
+
+          </section>
+
+        </div>
+
+
+        <!-- ======================================
+             VISTA 5: TAREAS BPMN
+             ====================================== -->
+
+        <div
+          class="vista"
+          id="vistaTareas"
+          hidden
+        >
+
+          <section
+            id="seccionTareas"
+            class="module-card"
+          >
+
+            <div class="module-heading">
+
+              <div>
+
+                <p class="eyebrow">
+                  AUTOMATIZACIÓN DE PROCESOS
+                </p>
+
+                <h2>
+                  Bandeja de tareas pendientes
+                </h2>
+
+                <p>
+                  Gestiona las actividades humanas
+                  generadas por el proceso BPMN.
+                </p>
+
+              </div>
+
+              <button
+                id="actualizarTareas"
+                type="button"
+                class="secondary-action"
+              >
+                ↻ Actualizar tareas
+              </button>
+
+            </div>
+
+
+            <p
+              id="mensajeTareas"
+              role="status"
+              aria-live="polite"
+            >
+              Las tareas todavía no se han cargado.
+            </p>
+
+
+            <!-- TABLA DE TAREAS -->
+
+            <div class="table-scroll">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Actividad</th>
+                    <th>Cliente y consulta</th>
+                    <th>Responsable</th>
+                    <th>Fecha de creación</th>
+                    <th>Acción</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="tablaTareas">
+
+                  <tr>
+                    <td colspan="5">
+                      Cargando tareas...
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+
+            <!-- PANEL PARA GESTIONAR TAREAS -->
+
+            <div id="panelTarea" hidden>
+
+              <h3 id="tituloTarea">
+                Gestionar tarea
+              </h3>
+
+              <p id="descripcionTarea">
+                Completa la información solicitada.
+              </p>
+
+
+              <form id="formTarea">
+
+                <div id="camposTarea"></div>
+
+                <div class="form-actions">
+
+                  <button type="submit">
+                    Completar tarea
+                  </button>
+
+                  <button
+                    id="cancelarTarea"
+                    type="button"
+                    class="boton-secundario"
+                  >
+                    Cancelar
+                  </button>
+
+                </div>
+
+              </form>
+
+
+              <p
+                id="resultadoTarea"
+                role="status"
+                aria-live="polite"
+              ></p>
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+      </main>
+
+
+      <!-- ======================================
+           PIE DE PÁGINA
+           ====================================== -->
+
+      <footer>
+        🐾 Peluditos Pet Chile ·
+        Integración Frontend ·
+        API REST Java ·
+        Flowable BPMN ·
+        IPLACEX
+      </footer>
+
+    </div>
+
+  </div>
+
+
+  <!-- FONDO PARA MENÚ MÓVIL -->
+
+  <div
+    class="mobile-overlay"
+    id="mobileOverlay"
+    hidden
+  ></div>
 
 </body>
+
 </html>

@@ -1,8 +1,13 @@
 flowchart LR
-    U["Responsable del emprendimiento"] --> UI["Interfaz web"]
-    UI -->|Registrar consultas y completar tareas| J["Servicio Java - Jakarta REST con Jersey"]
-    J -->|Iniciar procesos y gestionar tareas humanas| F["Flowable OSS 8"]
-    W["External worker en PowerShell"] -->|Tomar tareas y devolver resultados| F
-    W -->|Consultar y actualizar clientes| J
-    F --> M[("H2 en archivo - datos del motor")]
-    J --> D[("H2 en archivo - datos de clientes")]
+    U["Responsable del emprendimiento"] -->|Navegador| B
+    subgraph PC["Computador de destino con Windows"]
+        B["Dashboard y servidor web local"] -->|Proxy /api| J["Java 21 · Jakarta REST"]
+        J -->|Instancias y tareas humanas| F["Flowable OSS 8.0.0"]
+        W["External worker · PowerShell"] -->|Toma tareas y devuelve resultados| F
+        W -->|Consulta y actualiza clientes| J
+        F --> M[("H2 · datos del motor")]
+        J --> D[("H2 · datos de negocio")]
+        C[".local/instalacion.json"] -. Puertos .-> B
+        C -. Puertos .-> J
+        C -. Puertos .-> F
+    end

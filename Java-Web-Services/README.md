@@ -2,7 +2,7 @@
 
 Aquí dejé el servicio que veníamos trabajando, ajustado a lo que pidió el profesor: los endpoints ahora usan Jakarta REST con Jersey. Mantuve la entidad `Lead`, el repositorio JPA y las operaciones que ya estaban, incluida la opción de borrar clientes.
 
-Spring Boot 4.1.2 sigue iniciando la aplicación y Spring Data JPA se encarga de guardar los datos. Para los endpoints usé las anotaciones de `jakarta.ws.rs`, como `@GET`, `@POST` y `@Path`.
+Spring Boot sigue iniciando la aplicación y Spring Data JPA se encarga de guardar los datos. Para los endpoints usé las anotaciones de `jakarta.ws.rs`, como `@GET`, `@POST` y `@Path`.
 
 ## Operaciones que probé
 
@@ -15,6 +15,13 @@ Spring Boot 4.1.2 sigue iniciando la aplicación y Spring Data JPA se encarga de
 | GET | `/api/consultas` | Lista las consultas con sus datos y resultado. |
 | PUT | `/api/consultas/{procesoId}` | Guarda una consulta o su resultado. Requiere correo válido y el ID del contacto. Los reintentos del mismo proceso conservan un único registro. |
 | GET | `/api/tareas/{id}/variables` | Recupera los datos ingresados para completar la tarea sin volver a escribirlos. |
+| PUT | `/api/consultas/{procesoId}/datos` | Actualiza los datos de la consulta y su contacto. |
+| POST | `/api/procesos` | Inicia una instancia de Flowable. |
+| POST | `/api/oportunidades` | Inicia una recompra para un cliente con compra registrada. |
+| GET | `/api/tareas` | Lista las tareas humanas de Flowable. |
+| POST | `/api/tareas/{id}/completar` | Envía las variables del formulario y completa la tarea. |
+| GET y POST | `/api/actividad` | Consulta o guarda actividad asociada a fichas. |
+| POST | `/api/correos` | Envía un correo si está configurado el servidor SMTP. |
 
 Para crear un cliente dejé como obligatorios el nombre, el teléfono y la consulta. El correo y el canal de origen también se pueden guardar. Si no se indica un estado, queda como NUEVO.
 

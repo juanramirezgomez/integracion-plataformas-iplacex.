@@ -1,0 +1,54 @@
+{
+  "entorno": "Copia limpia del paquete Windows en una carpeta con espacios",
+  "flowable": "8.0.0",
+  "interaccion": "Operaciones por API a través del proxy del paquete",
+  "puertosPrimeraEjecucion": {
+    "puertoWeb": 15273,
+    "puertoJava": 18096,
+    "puertoFlowable": 18098
+  },
+  "puertosDespuesDelReinicio": {
+    "puertoWeb": 5173,
+    "puertoJava": 8096,
+    "puertoFlowable": 8098
+  },
+  "consultas": {
+    "21165bcd-e85a-11f1-ac08-0a0027000013": "COMPRO",
+    "24ab69c2-e85a-11f1-ac08-0a0027000013": "NO_COMPRO"
+  },
+  "sinContactoDuplicado": true,
+  "recorridos": {
+    "conCompra": {
+      "id": "21165bcd-e85a-11f1-ac08-0a0027000013",
+      "eventoFinal": "EndNoneEvent_102",
+      "fin": "2026-11-24T22:55:28.150Z"
+    },
+    "sinCompra": {
+      "id": "24ab69c2-e85a-11f1-ac08-0a0027000013",
+      "eventoFinal": "EndNoneEvent_105",
+      "fin": "2026-11-24T22:55:50.784Z"
+    },
+    "recompraConContacto": {
+      "id": "320d0250-e85a-11f1-ac08-0a0027000013",
+      "eventoFinal": "oportunidadAtendida",
+      "fin": "2026-11-24T22:55:51.043Z"
+    },
+    "recompraSinContacto": {
+      "id": "321d5629-e85a-11f1-ac08-0a0027000013",
+      "eventoFinal": "oportunidadCerrada",
+      "fin": "2026-11-24T22:55:51.097Z"
+    }
+  },
+  "persistencia": {
+    "clientes": true,
+    "consultas": true,
+    "historialFlowable": true
+  },
+  "fechaInvalidaRechazada": 400,
+  "cierreDeServiciosPropios": true,
+  "controlesDeArranque": {
+    "puertosDuplicadosRechazados": true,
+    "puertoWebOcupadoDetectado": 15373,
+    "programaAjenoSiguioActivo": true
+  }
+}

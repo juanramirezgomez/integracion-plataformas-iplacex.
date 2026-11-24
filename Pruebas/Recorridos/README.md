@@ -81,3 +81,15 @@ Ante un fallo simulado al guardar, el formulario mantuvo los datos escritos y la
 ## Bitácora de actividades
 
 Completamos «Clasificar consulta» una vez. El historial de Flowable mostró una tarea terminada, Java guardó un evento y la ficha mostró una línea tanto en la sesión original como en otra nueva. Repetimos la revisión con copias de la bitácora anterior guardadas en el navegador y la ficha mostró una sola línea de esa tarea. Ante un fallo simulado al guardar en Java, quedó una entrada local al recargar la ficha. [Captura de la bitácora](actividad-sin-duplicados.png).
+
+## Paquete final para Windows
+
+Probamos una copia limpia del paquete en una carpeta con espacios. Iniciamos la interfaz en el puerto 15273, Java en 18096 y Flowable OSS 8.0.0 en 18098.
+
+- El dashboard abrió con su hoja de estilos y la API respondió a través de la misma dirección web.
+- Completamos una consulta con compra y otra sin compra, ambas del mismo contacto. El registro de cliente quedó en una sola ficha.
+- Probamos dos oportunidades de recompra, una con contacto registrado y otra cerrada sin contacto. El servicio rechazó una fecha inválida con HTTP 400.
+- Detuvimos el paquete y volvimos a iniciarlo con los puertos del ejemplo. Recuperamos la ficha, los dos resultados y los cuatro historiales con sus fechas de término.
+- Al ocupar el puerto web con otro programa, el paquete rechazó el inicio y el otro programa siguió escuchando después de intentar iniciar y detener Peluditos. Una configuración con puertos duplicados también se rechazó.
+
+Los recorridos de esta prueba se ejecutaron por la API del paquete. Los identificadores y cierres quedaron en [instalacion-windows-final.json](instalacion-windows-final.json). Para repetir el arranque y la comprobación manual, sigue la [guía de instalación](../../PeluditosPetChile_APP/README.md).

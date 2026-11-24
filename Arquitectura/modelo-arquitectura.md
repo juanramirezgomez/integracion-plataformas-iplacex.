@@ -1,30 +1,30 @@
-# Arquitectura local
+# Arquitectura de Peluditos Pet Chile
 
 ```mermaid
 flowchart LR
-    U["Responsable del emprendimiento"] --> UI["Interfaz web"]
-    UI -->|Registrar consultas y completar tareas| J["Servicio Java - Jakarta REST con Jersey"]
-    J -->|Iniciar procesos y gestionar tareas humanas| F["Flowable OSS 8"]
-    W["External worker en PowerShell"] -->|Tomar tareas y devolver resultados| F
-    W -->|Consultar y actualizar clientes| J
-    F --> M[("H2 en archivo - datos del motor")]
-    J --> D[("H2 en archivo - datos de clientes")]
+    U["Responsable del emprendimiento"] -->|Navegador| B
+    subgraph PC["Computador de destino con Windows"]
+        B["Dashboard y servidor web local"] -->|Proxy /api| J["Java 21 · Jakarta REST"]
+        J -->|Instancias y tareas humanas| F["Flowable OSS 8.0.0"]
+        W["External worker · PowerShell"] -->|Toma tareas y devuelve resultados| F
+        W -->|Consulta y actualiza clientes| J
+        F --> M[("H2 · datos del motor")]
+        J --> D[("H2 · datos de negocio")]
+        C[".local/instalacion.json"] -. Puertos .-> B
+        C -. Puertos .-> J
+        C -. Puertos .-> F
+    end
 ```
 
-La pantalla envía las consultas a Java. Java inicia el proceso en Flowable y se comunica con el motor para listar y completar tareas humanas. El worker toma las tareas externas, consulta o actualiza el cliente en Java y devuelve el resultado a Flowable.
+El destino definido es un computador Windows de 64 bits. El navegador abre el servidor web local, que entrega el dashboard y reenvía las llamadas a Java. Java inicia los BPMN y gestiona las tareas humanas con Flowable. El worker toma las tareas externas, consulta o actualiza el contacto en Java y devuelve el resultado a Flowable.
 
-Java guarda los datos de clientes. Flowable guarda aparte las tareas, las variables y el historial de cada proceso. La configuración para el entorno de destino queda pendiente.
+## Configuración y almacenamiento
 
-## Dónde quedó cada parte en local
+| Componente | Puerto de ejemplo | Datos o configuración |
+| --- | ---: | --- |
+| Dashboard | 5173 | El navegador usa la ruta /api del servidor web. |
+| Java 21 | 8096 | H2, contactos y consultas en .local/datos-negocio/clientes.mv.db. |
+| Flowable OSS 8.0.0 | 8098 | H2, instancias y tareas en .local/datos-motor/flowable.mv.db. |
+| Worker | | Se conecta a Java y Flowable con las direcciones de la instalación. |
 
-| Parte | Dirección o archivo |
-|---|---|
-| Flowable 8 | `http://127.0.0.1:8098/flowable-rest` |
-| Servicio Java | `http://127.0.0.1:8096/api/leads` |
-| Worker | `External-Workers/worker.ps1` |
-| Datos de Flowable | `.local/datos-motor/flowable.mv.db` |
-| Datos de los clientes | `.local/datos-negocio/clientes.mv.db` |
-
-Para estas pruebas usé H2 guardando los datos en archivos. Nos falta definir qué base de datos vamos a usar. Las claves y la configuración de cada computador quedan en `.local`, que está excluida del repo.
-
-WhatsApp e Instagram se anotan como canal de origen de la consulta; todavía no conecté sus APIs.
+Los tres puertos se definen en un solo archivo de configuración. El paquete genera las credenciales en la carpeta privada de la instalación. Para reinstalar o respaldar, sigue la [guía de Windows](../PeluditosPetChile_APP/README.md). La [fuente editable del diagrama](modelo-arquitectura.mmd) está en esta carpeta.

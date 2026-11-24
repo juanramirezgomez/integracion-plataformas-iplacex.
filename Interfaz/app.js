@@ -22,7 +22,7 @@
 // 1. CONFIGURACIÓN DE SERVICIOS REST
 // ---------------------------------------------------------
 
-const API_BASE = "http://127.0.0.1:8096/api";
+const API_BASE = window.PELUDITOS_CONFIG?.apiBase || "/api";
 
 const API_CLIENTES = `${API_BASE}/leads`;
 const API_CONSULTAS = `${API_BASE}/consultas`;
