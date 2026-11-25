@@ -568,18 +568,12 @@ async function cargarClientes() {
 // ---------------------------------------------------------
 
 function guardarGestionLocal(clavesLista, nuevosCampos) {
-  if (
-    !nuevosCampos ||
-    Object.keys(nuevosCampos).length === 0
-  ) {
+  if (!nuevosCampos || Object.keys(nuevosCampos).length === 0) {
     return;
   }
 
   const mapa = leerStorageJSON(STORAGE_GESTION_KEY, {});
-
-  const clavesUnicas = [
-    ...new Set(clavesLista.filter(Boolean))
-  ];
+  const clavesUnicas = [...new Set(clavesLista.filter(Boolean))];
 
   clavesUnicas.forEach((k) => {
     mapa[k] = {
@@ -593,26 +587,15 @@ function guardarGestionLocal(clavesLista, nuevosCampos) {
 
 function obtenerGestionLocal(registro) {
   const mapa = leerStorageJSON(STORAGE_GESTION_KEY, {});
+  const claves = obtenerClavesRegistroCompletas(registro);
 
-  const procId =
-    registro.procesoId ??
-    registro.processInstanceId;
-
-  const leadId =
-    registro.leadId ??
-    registro.id;
-
-  return {
-    ...(leadId != null
-      ? mapa[`lead:${leadId}`]
-      : {}),
-
-    ...(procId
-      ? mapa[`proc:${procId}`]
-      : {}),
-
-    ...(mapa[registro._clave] || {})
-  };
+  return claves.reduce(
+    (acumulado, clave) => ({
+      ...acumulado,
+      ...(mapa[clave] || {})
+    }),
+    {}
+  );
 }
 
 function formatearFechaCorta(fechaISO) {
@@ -1364,6 +1347,34 @@ async function renderizarActividad(registro) {
     ...localesSinCopias
   ];
 
+  // Recuperar variables de gestión desde el historial de actividad si aún no están en la grilla.
+  const gestionActual = obtenerGestionLocal(registro);
+  const recuperadosActividad = {};
+
+  for (let i = eventos.length - 1; i >= 0; i--) {
+    const det = eventos[i].detalle || "";
+    Object.entries(ETIQUETAS_GESTION).forEach(([claveVar, etiquetaVar]) => {
+      const regex = new RegExp(`${etiquetaVar}:\\s*([^·]+)`, "i");
+      const match = det.match(regex);
+      if (match && match[1]?.trim()) {
+        recuperadosActividad[claveVar] = match[1].trim();
+      }
+    });
+  }
+
+  const faltantes = Object.entries(recuperadosActividad).filter(
+    ([k, v]) => !gestionActual[k] && v
+  );
+
+  if (faltantes.length > 0) {
+    const nuevos = Object.fromEntries(faltantes);
+    guardarGestionLocal(obtenerClavesRegistroCompletas(registro), nuevos);
+    renderizarGrillaGestion({
+      ...gestionActual,
+      ...nuevos
+    });
+  }
+  
   eventos.sort(
     (a, b) =>
       (Date.parse(b.fecha) || 0) -
@@ -1418,7 +1429,33 @@ async function renderizarActividad(registro) {
     li.appendChild(texto);
 
     listaActividad.appendChild(li);
-  });
+   });
+}
+
+function obtenerClavesRegistroCompletas(registro) {
+  if (!registro) return [];
+  const procId = registro.procesoId ?? registro.processInstanceId;
+  const leadId = registro.leadId ?? registro.id;
+  const telNombre =
+    registro.telefono && registro.nombreCliente
+      ? `tel:${String(registro.telefono).trim()}_${String(registro.nombreCliente).trim()}`
+      : null;
+  const correoKey = registro.correo
+    ? `mail:${String(registro.correo).trim().toLowerCase()}`
+    : null;
+
+  return [
+    ...new Set(
+      [
+        registro._clave,
+        procId ? `proc:${procId}` : null,
+        leadId != null ? `lead:${leadId}` : null,
+        registro.id != null ? `id:${registro.id}` : null,
+        telNombre,
+        correoKey
+      ].filter(Boolean)
+    )
+  ];
 }
 
 function escaparHTML(texto) {
@@ -2245,20 +2282,15 @@ formTarea.addEventListener(
       );
 
       // 4. Guardar datos de gestión y actividad.
+// 4. Guardar datos de gestión y actividad.
       const clavesDestino = [
         ...new Set(
           [
-            procesoIdTarea
-              ? `proc:${procesoIdTarea}`
-              : null,
-            rootProcesoIdTarea
-              ? `proc:${rootProcesoIdTarea}`
-              : null,
-            leadIdVar != null
-              ? `lead:${leadIdVar}`
-              : null,
-            registroCoincidente?._clave ??
-              null
+            procesoIdTarea ? `proc:${procesoIdTarea}` : null,
+            rootProcesoIdTarea ? `proc:${rootProcesoIdTarea}` : null,
+            leadIdVar != null ? `lead:${leadIdVar}` : null,
+            correoVar ? `mail:${String(correoVar).trim().toLowerCase()}` : null,
+            ...obtenerClavesRegistroCompletas(registroCoincidente)
           ].filter(Boolean)
         )
       ];
