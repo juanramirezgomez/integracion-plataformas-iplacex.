@@ -34,6 +34,7 @@ La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flo
 
 - **20 de noviembre.** Dejamos un paquete portátil para Windows con Java 21, Flowable OSS 8, el servicio Java, los dos BPMN y el worker.
 - **23 de noviembre.** Ajustamos el arranque del paquete para que las llamadas de la interfaz a `/api` lleguen al servicio Java a través del servidor local. Ese cambio permite registrar consultas desde la pantalla del paquete.
+- **24 de noviembre.** Corregimos el seguimiento de las consultas sin compra. Desde el dashboard elegimos la fecha y hora del contacto. En Flowable OSS 8 comprobamos que la tarea de contacto se habilitó a partir de la hora programada y que, al terminar el seguimiento, Java conservó el resultado «No compró». [Registro de la prueba](Pruebas/Recorridos/seguimiento-programado-final.json) · [Captura del formulario](Pruebas/Recorridos/seguimiento-fecha-pantalla.png).
 
 ## Abrir el paquete para Windows
 
