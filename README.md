@@ -10,7 +10,7 @@
 
 ## Objetivo
 
-Registrar las consultas de Peluditos Pet Chile, identificar por qué canal llegaron y darles seguimiento. Si un prospecto compra, el proceso registra su cambio a cliente. Las [oportunidades de recompra](BPMN/Oportunidades-Recompra.bpmn) se modelan como un proceso aparte que puede empezar por una fecha o campaña.
+Registrar las consultas de Peluditos Pet Chile, identificar por qué canal llegaron y darles seguimiento. Si un prospecto compra, el proceso registra su cambio a cliente. Las [oportunidades de recompra](BPMN/Oportunidades-Recompra.bpmn) se gestionan en un proceso aparte. La encargada las crea desde el dashboard para un cliente con una compra previa.
 
 ## Componentes y arquitectura
 
@@ -22,6 +22,13 @@ Registrar las consultas de Peluditos Pet Chile, identificar por qué canal llega
 | [External worker](External-Workers/worker.ps1) | Toma las tareas externas, llama a Java y devuelve el resultado a Flowable. El [registro de la prueba](Pruebas/Recorridos/worker-ejecucion.jsonl#L11-L14) muestra la llamada y la respuesta del motor. |
 
 La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flowable guarda las instancias y su historial en un archivo H2 separado de la base de clientes.
+
+## Estructura del repositorio
+
+- [PeluditosPetChile_APP](PeluditosPetChile_APP/) reúne el paquete de Windows y la guía de instalación.
+- [BPMN](BPMN/) contiene los modelos editables y sus imágenes. [Arquitectura](Arquitectura/) explica cómo se conectan los componentes.
+- [Interfaz](Interfaz/), [Java-Web-Services](Java-Web-Services/), [External-Workers](External-Workers/) y [Flowable](Flowable/) contienen el código, la guía de uso y los scripts para ejecutar la integración.
+- [Pruebas](Pruebas/) reúne los resultados de las verificaciones. [Actas](Actas/) registra los avances del grupo y [Videos](Videos/) reúne los enlaces a las grabaciones.
 
 ## Avance del prototipo
 

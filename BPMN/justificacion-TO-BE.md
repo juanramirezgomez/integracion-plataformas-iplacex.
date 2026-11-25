@@ -10,8 +10,8 @@ Cada consulta guarda su nombre, teléfono, correo, canal, descripción y resulta
 
 ## Oportunidades de recompra
 
-El [proceso de recompra](Oportunidades-Recompra.bpmn) ([diagrama](Oportunidades-Recompra.png)) empieza con el mensaje `OportunidadComercialDetectada`. Puede originarse por el cumpleaños de una mascota, una campaña u otra fecha relevante. La instancia recibe el identificador de un cliente con compra previa (`clienteId`), el `motivo` y la `fechaOportunidad`. El cliente puede proceder de un registro previo del negocio.
+El [proceso de recompra](Oportunidades-Recompra.bpmn) ([diagrama](Oportunidades-Recompra.png)) empieza cuando la encargada abre **Recompra** en el dashboard, selecciona un cliente con compra previa e ingresa el motivo y la fecha. El servicio Java envía a Flowable el mensaje `OportunidadComercialDetectada` con `clienteId`, `motivo` y `fechaOportunidad`.
 
 La encargada revisa la oportunidad y decide si corresponde contactar (`contactarCliente`). Si responde que sí, registra el contacto y su resultado. Si responde que no, se cierra la oportunidad.
 
-El mensaje se envía manualmente por API en la [prueba del modelo](../Pruebas/Recorridos/resultados-recompra.json). Queda por conectar la detección de fechas y campañas, la selección automática de clientes y la pantalla de recompra al servicio definitivo.
+La detección automática de fechas y campañas y la selección automática de clientes quedan fuera de esta versión. Probamos desde el dashboard las dos salidas del proceso, con contacto y sin contacto. También dejamos la prueba directa por API. [Prueba en el dashboard](../Pruebas/Recorridos/README.md#recompra-desde-la-pantalla) · [Prueba del modelo por API](../Pruebas/Recorridos/resultados-recompra.json).
