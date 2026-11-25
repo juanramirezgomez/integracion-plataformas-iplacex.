@@ -1,0 +1,27 @@
+{
+  "motor": "Flowable OSS 8.0.0",
+  "entorno": "Paquete Windows limpio con dashboard, Java y worker",
+  "interaccion": "API del dashboard y consulta directa al historial del motor",
+  "datos": "Ficticios",
+  "fechaHoraIngresada": "2026-11-24T21:00",
+  "zonaHoraria": "Hora local de Santiago",
+  "fechaHoraTemporizador": "2026-11-25T00:00:00Z",
+  "contactoAusenteEn": "2026-11-24T23:59:16.344885+00:00",
+  "fechaHoraCreacionContacto": "2026-11-25T00:00:01.714Z",
+  "fechasInvalidaPasadaYOmitida": {
+    "estadoHttp": 400,
+    "tareaDeProgramacionConservada": true
+  },
+  "registroJava": "NO_COMPRO",
+  "historial": {
+    "id": "0696ac13-e863-11f1-ae6f-0a0027000013",
+    "eventoFinal": "EndNoneEvent_105",
+    "fin": "2026-11-25T00:00:04.038Z"
+  },
+  "formularioDashboard": {
+    "navegador": "Microsoft Edge",
+    "envioVerificado": true,
+    "captura": "seguimiento-fecha-pantalla.png",
+    "ejecucion": "Prueba visual separada"
+  }
+}

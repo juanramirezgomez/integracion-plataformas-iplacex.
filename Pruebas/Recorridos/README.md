@@ -64,7 +64,11 @@ Probamos con datos ficticios una oportunidad por cumpleaños que terminó con co
 - [Confirmación del cierre sin contacto](recompra-cierre-sin-contacto.png)
 - [Historial de las dos instancias de Flowable](historial-recompra-navegador.json)
 
-En el flujo de consultas, la espera de seguimiento se mantiene en 10 segundos para la prueba.
+La prueba anterior usó una espera fija de 10 segundos. Ahora Flowable programa el seguimiento según la fecha y hora ingresadas.
+
+[Registro del seguimiento programado](seguimiento-programado-final.json) · [Formulario de fecha y hora en el dashboard](seguimiento-fecha-pantalla.png)
+
+En el paquete Windows probamos que el motor mantuvo la espera pasada la marca de 10 segundos, habilitó **Contactar cliente de seguimiento** a partir de la hora elegida y cerró la instancia en `EndNoneEvent_105`. Java conservó el resultado `NO_COMPRO`.
 
 Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué causó el bloqueo anterior en Enterprise.
 

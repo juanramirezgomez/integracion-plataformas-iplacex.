@@ -143,6 +143,13 @@ async function solicitarJSON(url, opciones = {}) {
       `HTTP ${respuesta.status}: ${detalle.slice(0, 300)}`
     );
     error.status = respuesta.status;
+    if (respuesta.status === 400) {
+      try {
+        error.mensajeServidor = JSON.parse(detalle).mensaje;
+      } catch {
+        // La respuesta puede venir de un proxy sin formato JSON.
+      }
+    }
     throw error;
   }
 
@@ -700,7 +707,8 @@ function renderizarGrillaGestion(gestion) {
         const badge = document.createElement("span");
         badge.className = "badge-seguimiento";
 
-        badge.textContent = formatearFechaCorta(valor);
+        const hora = String(valor).match(/T(\d{2}:\d{2})/);
+        badge.textContent = formatearFechaCorta(valor) + (hora ? ` ${hora[1]}` : "");
         dato.appendChild(badge);
       } else {
         dato.textContent = valor;
@@ -1824,8 +1832,8 @@ const CAMPOS_POR_TAREA = {
   ExpandedSubProcess_30: [
     [
       "fechaSeguimiento",
-      "Fecha de seguimiento",
-      "date"
+      "Fecha y hora de seguimiento",
+      "datetime-local"
     ]
   ],
 
@@ -1886,8 +1894,8 @@ function agregarCampo(
   const input =
     document.createElement("input");
 
-  if (tipo === "date") {
-    input.type = "date";
+  if (tipo === "date" || tipo === "datetime-local") {
+    input.type = tipo;
   } else if (nombre === "correo") {
     input.type = "email";
   } else {
@@ -2413,8 +2421,8 @@ formTarea.addEventListener(
         tareaSeleccionada === tarea
       ) {
         resultadoTarea.textContent =
-          "No se pudo completar la tarea. " +
-          "Revisa Java y Flowable.";
+          (tarea.taskDefinitionKey === "ExpandedSubProcess_30" && error.mensajeServidor) ||
+          "No se pudo completar la tarea. Revisa Java y Flowable.";
       }
     } finally {
       if (

@@ -3,8 +3,11 @@ package cl.peluditospet.gestionleads.controller;
 
 import cl.peluditospet.gestionleads.model.Lead;
 import cl.peluditospet.gestionleads.repository.LeadRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -17,7 +20,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -153,6 +160,74 @@ public class FlowableController {
             throw new BadRequestException("ID de tarea no válido.");
         }
 
-        return solicitar("POST", "/runtime/tasks/" + id, datos);
+        String ruta = "/runtime/tasks/" + id;
+        if (datos == null || !"complete".equals(datos.path("action").asText())) {
+            return solicitar("POST", ruta, datos);
+        }
+
+        Response tarea = solicitar("GET", ruta, null);
+        if (tarea.getStatus() != 200) {
+            return tarea;
+        }
+
+        try {
+            JsonNode detalle = mapper.readTree((String) tarea.getEntity());
+            if ("ExpandedSubProcess_30".equals(detalle.path("taskDefinitionKey").asText())) {
+                datos = programarSeguimiento((ObjectNode) datos);
+            }
+        } catch (JsonProcessingException e) {
+            throw new WebApplicationException("No se pudo leer la tarea de Flowable.", 502);
+        }
+        return solicitar("POST", ruta, datos);
+    }
+
+    private ObjectNode programarSeguimiento(ObjectNode datos) {
+        JsonNode variables = datos.path("variables");
+        if (!variables.isArray()) {
+            throw new BadRequestException("Ingresa la fecha y hora del seguimiento.");
+        }
+
+        ObjectNode solicitud = datos.deepCopy();
+        ArrayNode variablesNormalizadas = solicitud.putArray("variables");
+        String fecha = null;
+        for (JsonNode variable : variables) {
+            String nombre = variable.path("name").asText();
+            if ("fechaSeguimiento".equals(nombre)) {
+                if (fecha != null) {
+                    throw new BadRequestException("Ingresa una sola fecha de seguimiento.");
+                }
+                fecha = variable.path("value").asText();
+            } else if (!"fechaSeguimientoProgramada".equals(nombre)) {
+                variablesNormalizadas.add(variable);
+            }
+        }
+        if (fecha == null || fecha.isBlank()) {
+            throw new BadRequestException("Ingresa la fecha y hora del seguimiento.");
+        }
+
+        LocalDateTime fechaLocal;
+        try {
+            fechaLocal = fecha.length() == 10
+                    ? LocalDate.parse(fecha).atTime(9, 0)
+                    : LocalDateTime.parse(fecha);
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException("La fecha y hora del seguimiento no son válidas.");
+        }
+
+        ZoneId zona = ZoneId.systemDefault();
+        var offsets = zona.getRules().getValidOffsets(fechaLocal);
+        if (offsets.isEmpty()) {
+            throw new BadRequestException("Esa hora no existe en la zona horaria del equipo.");
+        }
+        Instant programada = fechaLocal.toInstant(offsets.getFirst());
+        if (!programada.isAfter(Instant.now())) {
+            throw new BadRequestException("El seguimiento debe quedar programado para una fecha y hora futuras.");
+        }
+
+        variablesNormalizadas.addObject().put("name", "fechaSeguimiento")
+                .put("type", "string").put("value", fechaLocal.toString());
+        variablesNormalizadas.addObject().put("name", "fechaSeguimientoProgramada")
+                .put("type", "string").put("value", programada.toString());
+        return solicitud;
     }
 }

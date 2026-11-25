@@ -119,7 +119,7 @@ de seguimiento</flowable:element-name>
         <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
       </extensionElements>
       <timerEventDefinition>
-        <timeDuration>PT10S</timeDuration>
+        <timeDate>${fechaSeguimientoProgramada}</timeDate>
       </timerEventDefinition>
     </intermediateCatchEvent>
     <endEvent id="EndNoneEvent_102" name="Compra registrada">

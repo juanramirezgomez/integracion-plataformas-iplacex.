@@ -1,4 +1,5 @@
 """Prueba real de Jakarta REST + Flowable 8. Solo usa la biblioteca estándar de Python."""
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import argparse,base64,json,secrets,shutil,subprocess,time,urllib.request,urllib.error
 
@@ -133,12 +134,20 @@ def run():
     lead=next(x for x in request('/api/leads',java=True) if x['id']==lead['id']);assert lead['estado']=='CONVERTIDO'
     write('historial-instancia-completa.json',hist);write('cliente-final.json',lead)
     write('actividades-ejecutadas.json',request('/history/historic-activity-instances?processInstanceId='+pid+'&size=100'))
-    write('resultado.json',dict(versionFlowable=engine['version'],servicio='Jakarta REST con Jersey 4',instancia=pid,completado=True,fin=hist['endTime'],cliente=lead,persistenciaMotorComprobada=bool(args.war),persistenciaNegocioComprobada=bool(args.war),inicio='Mensaje ConsultaClienteRecibida',temporizadorDemo='PT10S',interaccion='Tareas humanas completadas por API en esta prueba',alcance='Recorrido con compra probado directamente por API.'))
+    write('resultado.json',dict(versionFlowable=engine['version'],servicio='Jakarta REST con Jersey 4',instancia=pid,completado=True,fin=hist['endTime'],cliente=lead,persistenciaMotorComprobada=bool(args.war),persistenciaNegocioComprobada=bool(args.war),inicio='Mensaje ConsultaClienteRecibida',interaccion='Tareas humanas completadas por API en esta prueba',alcance='Recorrido con compra probado directamente por API.'))
     event('Recorrido con compra completado',instancia=pid)
     pid2=start(values);complete(pid2,'ExpandedSubProcess_4',values);worker();complete(pid2,'ExpandedSubProcess_69')
     assert len([x for x in request('/api/leads',java=True) if x['telefono']==values['telefono']])==1
-    for key in ['ExpandedSubProcess_18','ExpandedSubProcess_24','ExpandedSubProcess_20','ExpandedSubProcess_22','ExpandedSubProcess_30']:
+    for key in ['ExpandedSubProcess_18','ExpandedSubProcess_24','ExpandedSubProcess_20','ExpandedSubProcess_22']:
         complete(pid2,key,{'compraRealizada':False} if key.endswith('_22') else {})
+    due = datetime.now(timezone.utc).replace(microsecond=0) + timedelta(seconds=20)
+    schedule = tasks(pid2)[0]
+    assert schedule['taskDefinitionKey'] == 'ExpandedSubProcess_30', schedule
+    request('/api/tareas/' + schedule['id'] + '/completar', 'POST', dict(
+        action='complete', variables=variables({
+            'fechaSeguimiento': due.astimezone().replace(tzinfo=None).isoformat()
+        })), java=True)
+    assert not tasks(pid2), 'El seguimiento está disponible antes de su fecha'
     wait_task(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_103');complete(pid2,'ExpandedSubProcess_104');worker()
     hist2=wait_finished(pid2,'EndNoneEvent_105')
     write('cliente-existente-sin-compra.json',dict(instancia=pid2,completado=True,sinDuplicados=True,historial=hist2))

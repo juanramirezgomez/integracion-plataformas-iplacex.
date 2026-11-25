@@ -40,4 +40,4 @@ Si un puerto está ocupado, el iniciador avisa y puedes elegir otro en la config
 
 El envío de correos requiere configurar un servidor SMTP y probar la cuenta autorizada. Mantén las credenciales fuera del repositorio. El registro de WhatsApp o Instagram identifica el canal de origen. La comunicación se realiza desde el canal que utilice el negocio.
 
-La demostración de seguimiento usa un temporizador de diez segundos y conserva la fecha ingresada como dato de la consulta. La recompra se crea manualmente desde el dashboard.
+En las consultas nuevas sin compra, Flowable habilita el seguimiento a partir de la fecha y hora elegidas en el dashboard. Las consultas que ya estaban en curso conservan la versión del proceso con la que se iniciaron. La recompra se crea manualmente desde el dashboard.
