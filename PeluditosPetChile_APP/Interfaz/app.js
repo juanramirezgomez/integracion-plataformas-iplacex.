@@ -27,6 +27,7 @@ const API_BASE = "/api";
 const API_CLIENTES = `${API_BASE}/leads`;
 const API_CONSULTAS = `${API_BASE}/consultas`;
 const API_PROCESOS = `${API_BASE}/procesos`;
+const fechasSeguimientoFicha = new Map();
 const API_TAREAS = `${API_BASE}/tareas`;
 const API_OPORTUNIDADES = `${API_BASE}/oportunidades`;
 const API_CORREOS = `${API_BASE}/correos`;
@@ -589,13 +590,19 @@ function obtenerGestionLocal(registro) {
   const mapa = leerStorageJSON(STORAGE_GESTION_KEY, {});
   const claves = obtenerClavesRegistroCompletas(registro);
 
-  return claves.reduce(
+  const gestion = claves.reduce(
     (acumulado, clave) => ({
       ...acumulado,
       ...(mapa[clave] || {})
     }),
     {}
   );
+  const procesoId = registro?.procesoId ?? registro?.processInstanceId;
+
+  // Las fechas guardadas por cliente pueden pertenecer a otra consulta.
+  gestion.fechaSeguimiento = fechasSeguimientoFicha.get(procesoId)?.fecha ??
+    (procesoId ? "Consultando fecha..." : "No programada");
+  return gestion;
 }
 
 function formatearFechaCorta(fechaISO) {
@@ -685,7 +692,7 @@ function renderizarGrillaGestion(gestion) {
           clave === "fechaSeguimiento" ||
           clave === "fechaProximoContacto"
         ) &&
-        valor !== "No programada"
+        /^\d{4}-\d{2}-\d{2}/.test(valor)
       ) {
         const badge = document.createElement("span");
         badge.className = "badge-seguimiento";
@@ -812,6 +819,7 @@ async function abrirDetalleRegistro(registro) {
 
         (vars ?? []).forEach((v) => {
           if (
+            v.name !== "fechaSeguimiento" &&
             ETIQUETAS_GESTION[v.name] &&
             v.value !== null &&
             v.value !== undefined &&
@@ -848,7 +856,7 @@ async function abrirDetalleRegistro(registro) {
             registro._clave
           ) {
             renderizarGrillaGestion({
-              ...gestion,
+              ...obtenerGestionLocal(registro),
               ...extraidos
             });
           }
@@ -1255,6 +1263,18 @@ async function renderizarActividad(registro) {
     registro.leadId ??
     registro.id;
 
+  const consultaSeguimiento = procesoId ? {} : null;
+  let seguimientoPendiente;
+  if (consultaSeguimiento) {
+    fechasSeguimientoFicha.set(procesoId, consultaSeguimiento);
+    seguimientoPendiente = solicitarJSON(
+      `${API_PROCESOS}/${encodeURIComponent(procesoId)}/seguimiento`
+    ).then(
+      (datos) => { consultaSeguimiento.fecha = datos?.fechaSeguimiento ?? "No programada"; },
+      () => { consultaSeguimiento.fecha = "Fecha no disponible"; }
+    );
+  }
+
   if (procesoId) {
     params.set("procesoId", procesoId);
   }
@@ -1339,6 +1359,8 @@ async function renderizarActividad(registro) {
   for (let i = eventos.length - 1; i >= 0; i--) {
     const det = eventos[i].detalle || "";
     Object.entries(ETIQUETAS_GESTION).forEach(([claveVar, etiquetaVar]) => {
+      if (claveVar === "fechaSeguimiento") return;
+
       const regex = new RegExp(`${etiquetaVar}:\\s*([^·]+)`, "i");
       const match = det.match(regex);
       if (match && match[1]?.trim()) {
@@ -1354,10 +1376,6 @@ async function renderizarActividad(registro) {
   if (faltantes.length > 0) {
     const nuevos = Object.fromEntries(faltantes);
     guardarGestionLocal(obtenerClavesRegistroCompletas(registro), nuevos);
-    renderizarGrillaGestion({
-      ...gestionActual,
-      ...nuevos
-    });
   }
   
   eventos.sort(
@@ -1366,12 +1384,12 @@ async function renderizarActividad(registro) {
       (Date.parse(a.fecha) || 0)
   );
 
-  if (
-    registroSeleccionado?._clave !==
-    registro._clave
-  ) {
+  await seguimientoPendiente;
+  if (registroSeleccionado?._clave !== registro._clave) {
     return;
   }
+
+  renderizarGrillaGestion(obtenerGestionLocal(registro));
 
   if (eventos.length === 0) {
     eventos.push({
@@ -2278,8 +2296,9 @@ formTarea.addEventListener(
               ETIQUETAS_GESTION[k] &&
               v !== ""
             ) {
-              camposGuardables[k] =
-                String(v);
+              if (k !== "fechaSeguimiento") {
+                camposGuardables[k] = String(v);
+              }
 
               resumenVars.push(
                 `${ETIQUETAS_GESTION[k]}: ${String(v)}`

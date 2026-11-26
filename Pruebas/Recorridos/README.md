@@ -72,6 +72,8 @@ En el paquete Windows probamos que el motor mantuvo la espera pasada la marca de
 
 Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué causó el bloqueo anterior en Enterprise.
 
+Comprobamos en el paquete de Windows que cada ficha muestra la fecha registrada en su propia instancia de Flowable. Probamos dos consultas del mismo cliente, una sin programar y otra con seguimiento, y repetimos la consulta desde una sesión de navegador nueva. [Ver comprobación de las fechas por consulta](fechas-seguimiento-por-consulta.json).
+
 ## Edición de la ficha
 
 Probamos editar el nombre, teléfono, correo, canal y descripción de una consulta pendiente desde el navegador. En otra sesión aparecieron los datos guardados. El worker conservó la edición cuando Flowable cerró la consulta con compra. Al reiniciar Java y Flowable, recuperamos la misma consulta y la confirmación de cierre. También se repitieron los recorridos con y sin compra.

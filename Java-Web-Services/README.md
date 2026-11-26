@@ -19,6 +19,7 @@ Spring Boot sigue iniciando la aplicación y Spring Data JPA se encarga de guard
 | POST | `/api/procesos` | Inicia una instancia de Flowable. |
 | POST | `/api/oportunidades` | Inicia una recompra para un cliente con compra registrada. |
 | GET | `/api/tareas` | Lista las tareas humanas de Flowable. |
+| GET | `/api/procesos/{id}/seguimiento` | Consulta en Flowable la fecha de seguimiento de esa instancia. Devuelve `null` si aún no se programó. |
 | POST | `/api/tareas/{id}/completar` | Envía las variables del formulario y completa la tarea. |
 | GET y POST | `/api/actividad` | Consulta o guarda actividad asociada a fichas. |
 | POST | `/api/correos` | Envía un correo si está configurado el servidor SMTP. |

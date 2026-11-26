@@ -1,0 +1,19 @@
+{
+  "flujo": "Dos consultas del mismo cliente",
+  "navegador": "Microsoft Edge",
+  "primeraAntes": "25-11-2026 21:10",
+  "segundaAntes": "No programada",
+  "primeraDespues": "25-11-2026 21:10",
+  "segundaDespues": "27-11-2026 21:10",
+  "primeraProgramadaPor": "API del paquete",
+  "segundaProgramadaPor": "Formulario del dashboard",
+  "zonaLocal": "America/Santiago",
+  "clienteCompartido": true,
+  "cacheConFechasIncorrectasIgnorada": true,
+  "segundaSesionSinDatosLocales": true,
+  "seguimientoDespuesDelCierre": {
+    "fecha": "2026-11-25T21:10:54",
+    "resultado": "NO_COMPRO",
+    "eventoFinal": "EndNoneEvent_105"
+  }
+}

@@ -99,6 +99,36 @@ public class FlowableController {
         return solicitar("POST", "/runtime/process-instances", datos);
     }
 
+    @GET
+    @Path("/procesos/{id}/seguimiento")
+    public Response obtenerSeguimiento(@PathParam("id") String id) {
+        if (!id.matches("[a-zA-Z0-9-]+")) {
+            throw new BadRequestException("ID de proceso no válido.");
+        }
+
+        Response historial = solicitar("GET", "/history/historic-variable-instances"
+                + "?processInstanceId=" + id
+                + "&variableName=fechaSeguimiento&excludeTaskVariables=true", null);
+        if (historial.getStatus() != 200) {
+            return historial;
+        }
+
+        try {
+            JsonNode variables = mapper.readTree((String) historial.getEntity()).path("data");
+            for (JsonNode registro : variables) {
+                JsonNode variable = registro.path("variable");
+                if (id.equals(registro.path("processInstanceId").asText())
+                        && "fechaSeguimiento".equals(variable.path("name").asText())
+                        && variable.path("value").isTextual()) {
+                    return Response.ok(Map.of("fechaSeguimiento", variable.path("value").asText())).build();
+                }
+            }
+            return Response.ok(mapper.createObjectNode().putNull("fechaSeguimiento")).build();
+        } catch (JsonProcessingException e) {
+            throw new WebApplicationException("No se pudo leer el seguimiento de Flowable.", 502);
+        }
+    }
+
     @DELETE
     @Path("/procesos/{id}")
     public Response eliminarProceso(@PathParam("id") String id) {
