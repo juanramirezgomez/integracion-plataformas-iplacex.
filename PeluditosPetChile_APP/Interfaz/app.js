@@ -991,103 +991,85 @@ formEditarCliente.addEventListener(
 // 5B. ELIMINAR CLIENTE
 // ---------------------------------------------------------
 
-botonEliminarCliente.addEventListener(
-  "click",
-  async () => {
-    if (!registroSeleccionado) return;
+botonEliminarCliente.addEventListener("click", async () => {
+  if (!registroSeleccionado) return;
 
-    const nombre =
-      registroSeleccionado.nombreCliente ||
-      "este cliente";
+  const nombre = registroSeleccionado.nombreCliente || "este cliente";
+  const confirmado = window.confirm(
+    `¿Estás seguro de que deseas eliminar permanentemente a "${nombre}" y sus tareas BPMN asociadas? Esta acción no se puede deshacer.`
+  );
 
-    const confirmado = window.confirm(
-      `¿Estás seguro de que deseas eliminar permanentemente a "${nombre}" y sus consultas asociadas? Esta acción no se puede deshacer.`
+  if (!confirmado) return;
+
+  const leadId = registroSeleccionado.leadId ?? registroSeleccionado.id;
+  const procesoId =
+    registroSeleccionado.procesoId ?? registroSeleccionado.processInstanceId;
+
+  try {
+    botonEliminarCliente.disabled = true;
+
+    // 1. Cancelar las tareas/instancias activas vinculadas a este proceso o cliente en Flowable
+    const tareasRelacionadas = tareasCache.filter(
+      (t) =>
+        (procesoId &&
+          (t.processInstanceId === procesoId ||
+            t.rootProcessInstanceId === procesoId)) ||
+        (leadId != null && String(t.idCliente) === String(leadId))
     );
 
-    if (!confirmado) return;
+    const instanciasACancelar = new Set(
+      [
+        procesoId,
+        ...tareasRelacionadas.map(
+          (t) => t.rootProcessInstanceId ?? t.processInstanceId
+        )
+      ].filter(Boolean)
+    );
 
-    const leadId =
-      registroSeleccionado.leadId ??
-      registroSeleccionado.id;
-
-    try {
-      botonEliminarCliente.disabled = true;
-
-      if (leadId != null) {
-        await solicitarJSON(
-          `${API_CLIENTES}/${encodeURIComponent(leadId)}`,
-          {
-            method: "DELETE"
-          }
-        );
-      }
-
-      // Limpiar actividad y gestión local.
-      const clavesABorrar = new Set([
-        registroSeleccionado._clave
-      ]);
-
-      if (leadId != null) {
-        clavesABorrar.add(
-          `lead:${leadId}`
-        );
-      }
-
-      if (registroSeleccionado.processInstanceId) {
-        clavesABorrar.add(
-          `proc:${registroSeleccionado.processInstanceId}`
-        );
-      }
-
-      const historial = leerStorageJSON(
-        STORAGE_ACTIVIDAD_KEY,
-        {}
-      );
-
-      const gestionMap = leerStorageJSON(
-        STORAGE_GESTION_KEY,
-        {}
-      );
-
-      clavesABorrar.forEach((clave) => {
-        delete historial[clave];
-        delete gestionMap[clave];
-      });
-
-      guardarStorageJSON(
-        STORAGE_ACTIVIDAD_KEY,
-        historial
-      );
-
-      guardarStorageJSON(
-        STORAGE_GESTION_KEY,
-        gestionMap
-      );
-
-      panelDetalleCliente.hidden = true;
-      seccionClientes.hidden = false;
-      registroSeleccionado = null;
-
-      mostrarMensaje(
-        `El registro de "${nombre}" fue eliminado correctamente.`
-      );
-
-      await cargarClientes();
-    } catch (error) {
-      console.error(
-        "Error al eliminar cliente:",
-        error
-      );
-
-      alert(
-        "No se pudo eliminar el registro en el servidor. " +
-        "Revisa la conexión con Java."
-      );
-    } finally {
-      botonEliminarCliente.disabled = false;
+    for (const instId of instanciasACancelar) {
+      await fetch(`${API_PROCESOS}/${encodeURIComponent(instId)}`, {
+        method: "DELETE"
+      }).catch(() => {});
     }
+
+    // 2. Eliminar el registro en el backend Java
+    if (leadId != null) {
+      await solicitarJSON(`${API_CLIENTES}/${encodeURIComponent(leadId)}`, {
+        method: "DELETE"
+      });
+    }
+
+    // 3. Limpiar actividad y gestión local
+    const clavesABorrar = obtenerClavesRegistroCompletas(registroSeleccionado);
+    const historial = leerStorageJSON(STORAGE_ACTIVIDAD_KEY, {});
+    const gestionMap = leerStorageJSON(STORAGE_GESTION_KEY, {});
+
+    clavesABorrar.forEach((clave) => {
+      delete historial[clave];
+      delete gestionMap[clave];
+    });
+
+    guardarStorageJSON(STORAGE_ACTIVIDAD_KEY, historial);
+    guardarStorageJSON(STORAGE_GESTION_KEY, gestionMap);
+
+    panelDetalleCliente.hidden = true;
+    seccionClientes.hidden = false;
+    registroSeleccionado = null;
+
+    mostrarMensaje(
+      `El registro de "${nombre}" y sus tareas asociadas fueron eliminados.`
+    );
+
+    await Promise.all([cargarClientes(), cargarTareas()]);
+  } catch (error) {
+    console.error("Error al eliminar cliente:", error);
+    alert(
+      "No se pudo eliminar el registro en el servidor. Revisa la conexión con Java."
+    );
+  } finally {
+    botonEliminarCliente.disabled = false;
   }
-);
+});
 
 // ---------------------------------------------------------
 // 5C. ENVIAR CORREO
@@ -1288,21 +1270,24 @@ async function renderizarActividad(registro) {
       );
 
       if (Array.isArray(respuesta)) {
-        eventosJava = respuesta.map(
-          (evento) => ({
-            fecha:
-              evento.fecha ??
-              evento.timestamp,
-            accion:
-              evento.accion ??
-              evento.evento ??
-              "Actividad del sistema",
-            detalle:
-              evento.detalle ??
-              evento.descripcion ??
-              ""
+        eventosJava = respuesta
+          .filter((evento) => {
+            const evProc = evento.procesoId ?? evento.processInstanceId ?? null;
+            const evLead = evento.leadId ?? null;
+
+            if (procesoId && evProc) {
+              return String(evProc) === String(procesoId);
+            }
+            if (leadId != null && evLead != null) {
+              return String(evLead) === String(leadId);
+            }
+            return false;
           })
-        );
+          .map((evento) => ({
+            fecha: evento.fecha ?? evento.timestamp,
+            accion: evento.accion ?? evento.evento ?? "Actividad del sistema",
+            detalle: evento.detalle ?? evento.descripcion ?? ""
+          }));
       }
     } catch {
       // Mantener historial local si Java no responde.
@@ -1436,13 +1421,6 @@ function obtenerClavesRegistroCompletas(registro) {
   if (!registro) return [];
   const procId = registro.procesoId ?? registro.processInstanceId;
   const leadId = registro.leadId ?? registro.id;
-  const telNombre =
-    registro.telefono && registro.nombreCliente
-      ? `tel:${String(registro.telefono).trim()}_${String(registro.nombreCliente).trim()}`
-      : null;
-  const correoKey = registro.correo
-    ? `mail:${String(registro.correo).trim().toLowerCase()}`
-    : null;
 
   return [
     ...new Set(
@@ -1450,9 +1428,7 @@ function obtenerClavesRegistroCompletas(registro) {
         registro._clave,
         procId ? `proc:${procId}` : null,
         leadId != null ? `lead:${leadId}` : null,
-        registro.id != null ? `id:${registro.id}` : null,
-        telNombre,
-        correoKey
+        registro.id != null ? `id:${registro.id}` : null
       ].filter(Boolean)
     )
   ];
@@ -2208,6 +2184,9 @@ formTarea.addEventListener(
       const correoVar =
         mapaVars.get("correo");
 
+      const nombreVar = 
+        mapaVars.get("nombreCliente");
+
       const telVar =
         mapaVars.get("telefono");
 
@@ -2220,33 +2199,30 @@ formTarea.addEventListener(
       // 2. Buscar el registro correspondiente.
       const registroCoincidente =
         registrosActuales.find((r) => {
-          const procR =
-            r.procesoId ??
-            r.processInstanceId;
+          const procR = r.procesoId ?? r.processInstanceId;
 
           if (
             procR &&
-            (
-              procR === procesoIdTarea ||
-              procR === rootProcesoIdTarea
-            )
+            (procR === procesoIdTarea || procR === rootProcesoIdTarea)
           ) {
             return true;
           }
 
           if (
             leadIdVar != null &&
-            String(r.leadId ?? r.id) ===
-              String(leadIdVar)
+            String(r.leadId ?? r.id) === String(leadIdVar)
           ) {
             return true;
           }
 
+          return false;
+        }) ??
+        registrosActuales.find((r) => {
           if (
-            correoVar &&
-            r.correo &&
-            r.correo.toLowerCase() ===
-              String(correoVar).toLowerCase()
+            nombreVar &&
+            r.nombreCliente &&
+            r.nombreCliente.trim().toLowerCase() ===
+              String(nombreVar).trim().toLowerCase()
           ) {
             return true;
           }
@@ -2254,8 +2230,7 @@ formTarea.addEventListener(
           if (
             telVar &&
             r.telefono &&
-            String(r.telefono) ===
-              String(telVar)
+            String(r.telefono) === String(telVar)
           ) {
             return true;
           }
@@ -2281,7 +2256,6 @@ formTarea.addEventListener(
         }
       );
 
-      // 4. Guardar datos de gestión y actividad.
 // 4. Guardar datos de gestión y actividad.
       const clavesDestino = [
         ...new Set(
@@ -2289,7 +2263,6 @@ formTarea.addEventListener(
             procesoIdTarea ? `proc:${procesoIdTarea}` : null,
             rootProcesoIdTarea ? `proc:${rootProcesoIdTarea}` : null,
             leadIdVar != null ? `lead:${leadIdVar}` : null,
-            correoVar ? `mail:${String(correoVar).trim().toLowerCase()}` : null,
             ...obtenerClavesRegistroCompletas(registroCoincidente)
           ].filter(Boolean)
         )

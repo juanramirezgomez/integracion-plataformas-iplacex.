@@ -1,4 +1,3 @@
-
 package cl.peluditospet.gestionleads.controller;
 
 import cl.peluditospet.gestionleads.model.Lead;
@@ -67,6 +66,8 @@ public class FlowableController {
                 builder.header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(
                                 mapper.writeValueAsString(datos)));
+            } else if ("DELETE".equals(metodo)) {
+                builder.DELETE();
             } else {
                 builder.GET();
             }
@@ -76,10 +77,11 @@ public class FlowableController {
                     HttpResponse.BodyHandlers.ofString()
             );
 
-            return Response.status(respuesta.statusCode())
-                    .type(MediaType.APPLICATION_JSON)
-                    .entity(respuesta.body())
-                    .build();
+            Response.ResponseBuilder rb = Response.status(respuesta.statusCode());
+            if (respuesta.statusCode() != 204 && respuesta.body() != null && !respuesta.body().isBlank()) {
+                rb.type(MediaType.APPLICATION_JSON).entity(respuesta.body());
+            }
+            return rb.build();
 
         } catch (Exception e) {
             return Response.status(502)
@@ -95,6 +97,15 @@ public class FlowableController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response iniciarProceso(JsonNode datos) {
         return solicitar("POST", "/runtime/process-instances", datos);
+    }
+
+    @DELETE
+    @Path("/procesos/{id}")
+    public Response eliminarProceso(@PathParam("id") String id) {
+        if (!id.matches("[a-zA-Z0-9-]+")) {
+            throw new BadRequestException("ID de proceso no válido.");
+        }
+        return solicitar("DELETE", "/runtime/process-instances/" + id, null);
     }
 
     public record NuevaOportunidad(Long clienteId, String motivo, String fechaOportunidad) {}
