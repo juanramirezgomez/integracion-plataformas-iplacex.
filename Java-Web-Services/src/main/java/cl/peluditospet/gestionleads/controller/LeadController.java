@@ -22,14 +22,17 @@ public class LeadController {
 
     private final ConsultaRepository consultas;
     private final ActividadRepository actividades;
+    private final FlowableController flowable;
 
     public LeadController(
             LeadRepository leadRepository,
             ConsultaRepository consultas,
-            ActividadRepository actividades) {
+            ActividadRepository actividades,
+            FlowableController flowable) {
         this.leadRepository = leadRepository;
         this.consultas = consultas;
         this.actividades = actividades;
+        this.flowable = flowable;
     }
 
     @GET
@@ -110,6 +113,8 @@ public class LeadController {
                 .map(c -> c.getProcesoId())
                 .filter(pid -> pid != null && !pid.isBlank())
                 .toList();
+
+        flowable.cancelarProcesosDelCliente(id, procesosIds);
 
         if (!procesosIds.isEmpty()) {
             actividades.deleteByProcesoIdIn(procesosIds);

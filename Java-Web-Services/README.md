@@ -11,7 +11,7 @@ Spring Boot sigue iniciando la aplicación y Spring Data JPA se encarga de guard
 | GET | `/api/leads` | Lista los clientes. Devuelve 200. |
 | POST | `/api/leads` | Registra un cliente y devuelve sus datos con el ID. Devuelve 200. |
 | PUT | `/api/leads/{id}/estado` | Cambia el estado del cliente. Devuelve 200. |
-| DELETE | `/api/leads/{id}` | Borra el contacto y sus consultas. Devuelve 204. |
+| DELETE | `/api/leads/{id}` | Cancela los procesos pendientes en Flowable y borra el contacto y sus consultas. Devuelve 204. Si Flowable no responde, conserva la ficha para reintentar. |
 | GET | `/api/consultas` | Lista las consultas con sus datos y resultado. |
 | PUT | `/api/consultas/{procesoId}` | Guarda una consulta o su resultado. Requiere correo válido y el ID del contacto. Los reintentos del mismo proceso conservan un único registro. |
 | GET | `/api/tareas/{id}/variables` | Recupera los datos ingresados para completar la tarea sin volver a escribirlos. |

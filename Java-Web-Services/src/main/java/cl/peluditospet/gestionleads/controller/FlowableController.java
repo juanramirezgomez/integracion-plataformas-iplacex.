@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -24,8 +25,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @Path("/api")
@@ -138,11 +141,61 @@ public class FlowableController {
         return solicitar("DELETE", "/runtime/process-instances/" + id, null);
     }
 
+    void cancelarProcesosDelCliente(Long leadId, List<String> consultas) {
+        Set<String> instancias = new LinkedHashSet<>(consultas);
+        instancias.addAll(buscarRecomprasActivas(leadId));
+
+        for (String instancia : instancias) {
+            int estado = eliminarProceso(instancia).getStatus();
+            // Una instancia cerrada o cancelada en un intento anterior ya no está en runtime.
+            if (estado != 204 && estado != 404) {
+                throw new ServiceUnavailableException(
+                        "Flowable no pudo cancelar todos los procesos. La ficha sigue guardada; vuelve a intentar.");
+            }
+        }
+    }
+
+    private Set<String> buscarRecomprasActivas(Long leadId) {
+        Map<String, Object> filtro = Map.of(
+                "processDefinitionKey", "peluditosOportunidadesRecompra",
+                "variables", List.of(Map.of("name", "clienteId", "value", leadId,
+                        "operation", "equals", "type", "long")));
+        Set<String> instancias = new LinkedHashSet<>();
+        int inicio = 0;
+        try {
+            while (true) {
+                Response respuesta = solicitar("POST",
+                        "/query/process-instances?sort=id&order=asc&size=100&start=" + inicio, filtro);
+                if (respuesta.getStatus() != 200 || !respuesta.hasEntity()) {
+                    throw new ServiceUnavailableException(
+                            "Flowable no está disponible para comprobar los procesos del cliente. La ficha sigue guardada.");
+                }
+
+                JsonNode pagina = mapper.readTree((String) respuesta.getEntity());
+                JsonNode resultados = pagina.path("data");
+                JsonNode total = pagina.path("total");
+                if (!resultados.isArray() || !total.canConvertToLong()) {
+                    throw new ServiceUnavailableException("Flowable devolvió una lista de procesos incompleta.");
+                }
+                for (JsonNode instancia : resultados) {
+                    instancias.add(instancia.path("id").asText());
+                }
+                inicio += resultados.size();
+                if (resultados.isEmpty() || inicio >= total.asLong()) {
+                    return instancias;
+                }
+            }
+        } catch (JsonProcessingException e) {
+            throw new ServiceUnavailableException("No se pudo leer la lista de procesos del cliente en Flowable.");
+        }
+    }
+
     public record NuevaOportunidad(Long clienteId, String motivo, String fechaOportunidad) {}
 
     @POST
     @Path("/oportunidades")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response iniciarOportunidad(NuevaOportunidad datos) {
         if (datos == null || datos.clienteId() == null || datos.motivo() == null
                 || datos.motivo().isBlank() || datos.motivo().trim().length() > 150
@@ -155,7 +208,7 @@ public class FlowableController {
         } catch (java.time.format.DateTimeParseException e) {
             throw new BadRequestException("La fecha de la oportunidad no es válida.");
         }
-        Lead cliente = leads.findById(datos.clienteId())
+        Lead cliente = leads.bloquearPorId(datos.clienteId())
                 .orElseThrow(() -> new NotFoundException("El cliente ya no está disponible."));
         if (!"CONVERTIDO".equals(cliente.getEstado())) {
             throw new BadRequestException("El cliente debe tener una compra registrada.");

@@ -74,6 +74,10 @@ Estas pruebas locales funcionaron, pero con eso todavía no puedo explicar qué 
 
 Comprobamos en el paquete de Windows que cada ficha muestra la fecha registrada en su propia instancia de Flowable. Probamos dos consultas del mismo cliente, una sin programar y otra con seguimiento, y repetimos la consulta desde una sesión de navegador nueva. [Ver comprobación de las fechas por consulta](fechas-seguimiento-por-consulta.json).
 
+## Eliminación de un cliente
+
+Desde el paquete de Windows borramos un cliente ficticio que tenía una tarea abierta, un seguimiento agendado y una recompra pendiente. En Flowable comprobamos que los tres procesos se cancelaron y que la tarea y la recompra de un segundo cliente siguieron abiertas. También verificamos que Java conserva la ficha si Flowable está apagado. [Registro de la prueba](eliminar-clientes-verificado.json).
+
 ## Edición de la ficha
 
 Probamos editar el nombre, teléfono, correo, canal y descripción de una consulta pendiente desde el navegador. En otra sesión aparecieron los datos guardados. El worker conservó la edición cuando Flowable cerró la consulta con compra. Al reiniciar Java y Flowable, recuperamos la misma consulta y la confirmación de cierre. También se repitieron los recorridos con y sin compra.

@@ -18,6 +18,10 @@ Flowable usa la hora local del computador donde instalaste Peluditos. Si el paqu
 
 La oportunidad se crea desde la pantalla. La fecha se guarda como referencia. Para escribirle al cliente, usa el canal elegido. El envío desde la ficha requiere una cuenta de correo configurada en la instalación.
 
+## Eliminar un cliente
+
+En **Clientes**, abre **Ver detalle**, pulsa **Eliminar cliente** y confirma. Se borran su ficha y sus consultas, y se cancelan sus procesos pendientes. Si Flowable está caído, la ficha se conserva. Vuelve a intentar después de iniciar Flowable.
+
 ## Qué revisar si algo falla
 
 - Si aparece un campo inválido, corrige el dato indicado antes de volver a enviar.

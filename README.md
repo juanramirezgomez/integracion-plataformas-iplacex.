@@ -44,6 +44,8 @@ La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flo
 - **24 de noviembre.** Corregimos el seguimiento de las consultas sin compra. Desde el dashboard elegimos la fecha y hora del contacto. En Flowable OSS 8 comprobamos que la tarea de contacto se habilitó a partir de la hora programada y que, al terminar el seguimiento, Java conservó el resultado «No compró». [Registro de la prueba](Pruebas/Recorridos/seguimiento-programado-final.json) · [Captura del formulario](Pruebas/Recorridos/seguimiento-fecha-pantalla.png).
 - **25 de noviembre.** Corregimos la fecha de seguimiento que aparece en la ficha. Ahora cada consulta muestra su propia fecha y hora o «No programada» si aún no se agendó. Lo comprobamos con dos consultas del mismo cliente desde una sesión nueva del navegador. El cambio quedó incluido en el paquete de Windows. [Acta de avance](Actas/Acta-2026-11-25.md) · [Registro de la prueba](Pruebas/Recorridos/fechas-seguimiento-por-consulta.json).
 
+También corregimos la eliminación de clientes. Flowable cancela las tareas, los seguimientos agendados y las recompras pendientes del cliente eliminado. Probamos que las consultas y tareas del otro cliente siguieran disponibles. [Registro de la prueba](Pruebas/Recorridos/eliminar-clientes-verificado.json).
+
 ## Abrir el paquete para Windows
 
 Descarga y extrae el repositorio en un computador Windows de 64 bits. Abre [PeluditosPetChile_APP](PeluditosPetChile_APP/) y ejecuta [Iniciar_Peluditos.bat](PeluditosPetChile_APP/Iniciar_Peluditos.bat). El paquete incluye Java 21, Flowable OSS 8.0.0, el dashboard y el worker.

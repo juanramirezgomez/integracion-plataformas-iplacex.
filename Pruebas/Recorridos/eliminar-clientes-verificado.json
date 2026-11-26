@@ -1,0 +1,19 @@
+{
+  "entorno": "Paquete Windows, Flowable OSS 8.0.0 y navegador Edge",
+  "contactosIniciales": 2,
+  "contactosRestantes": 1,
+  "consultasDelClienteEliminado": 0,
+  "cancelados": [
+    "Consulta con tarea humana",
+    "Consulta con seguimiento agendado",
+    "Recompra activa"
+  ],
+  "temporizadoresDelClienteEliminado": 0,
+  "consultasDelOtroClienteConservadas": 2,
+  "tareaYRecompraDelOtroClienteActivas": true,
+  "compraCerradaConservadaEnHistorial": true,
+  "motorNoDisponible": {
+    "estadoHttp": 503,
+    "datosDeNegocioConservados": true
+  }
+}

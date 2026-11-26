@@ -144,7 +144,7 @@ async function solicitarJSON(url, opciones = {}) {
       `HTTP ${respuesta.status}: ${detalle.slice(0, 300)}`
     );
     error.status = respuesta.status;
-    if (respuesta.status === 400) {
+    if (respuesta.status === 400 || respuesta.status === 503) {
       try {
         error.mensajeServidor = JSON.parse(detalle).mensaje;
       } catch {
@@ -1000,80 +1000,53 @@ formEditarCliente.addEventListener(
 // ---------------------------------------------------------
 
 botonEliminarCliente.addEventListener("click", async () => {
-  if (!registroSeleccionado) return;
+  const registro = registroSeleccionado;
+  if (!registro) return;
 
-  const nombre = registroSeleccionado.nombreCliente || "este cliente";
+  const leadId = registro.leadId ?? registro.id;
+  if (leadId == null) return;
+
+  const nombre = registro.nombreCliente || "este cliente";
   const confirmado = window.confirm(
-    `¿Estás seguro de que deseas eliminar permanentemente a "${nombre}" y sus tareas BPMN asociadas? Esta acción no se puede deshacer.`
+    `¿Quieres eliminar permanentemente a "${nombre}" y sus consultas? También se cancelarán sus procesos pendientes.`
   );
-
   if (!confirmado) return;
-
-  const leadId = registroSeleccionado.leadId ?? registroSeleccionado.id;
-  const procesoId =
-    registroSeleccionado.procesoId ?? registroSeleccionado.processInstanceId;
 
   try {
     botonEliminarCliente.disabled = true;
-
-    // 1. Cancelar las tareas/instancias activas vinculadas a este proceso o cliente en Flowable
-    const tareasRelacionadas = tareasCache.filter(
-      (t) =>
-        (procesoId &&
-          (t.processInstanceId === procesoId ||
-            t.rootProcessInstanceId === procesoId)) ||
-        (leadId != null && String(t.idCliente) === String(leadId))
-    );
-
-    const instanciasACancelar = new Set(
-      [
-        procesoId,
-        ...tareasRelacionadas.map(
-          (t) => t.rootProcessInstanceId ?? t.processInstanceId
-        )
-      ].filter(Boolean)
-    );
-
-    for (const instId of instanciasACancelar) {
-      await fetch(`${API_PROCESOS}/${encodeURIComponent(instId)}`, {
-        method: "DELETE"
-      }).catch(() => {});
-    }
-
-    // 2. Eliminar el registro en el backend Java
-    if (leadId != null) {
-      await solicitarJSON(`${API_CLIENTES}/${encodeURIComponent(leadId)}`, {
-        method: "DELETE"
-      });
-    }
-
-    // 3. Limpiar actividad y gestión local
-    const clavesABorrar = obtenerClavesRegistroCompletas(registroSeleccionado);
-    const historial = leerStorageJSON(STORAGE_ACTIVIDAD_KEY, {});
-    const gestionMap = leerStorageJSON(STORAGE_GESTION_KEY, {});
-
-    clavesABorrar.forEach((clave) => {
-      delete historial[clave];
-      delete gestionMap[clave];
+    await solicitarJSON(`${API_CLIENTES}/${encodeURIComponent(leadId)}`, {
+      method: "DELETE"
     });
 
+    const historial = leerStorageJSON(STORAGE_ACTIVIDAD_KEY, {});
+    const gestionMap = leerStorageJSON(STORAGE_GESTION_KEY, {});
+    const registrosEliminados = [
+      registro,
+      ...registrosActuales.filter((item) => String(item.leadId ?? item.id) === String(leadId))
+    ];
+    registrosEliminados.forEach((item) => {
+      const procesoId = item.procesoId ?? item.processInstanceId;
+      if (procesoId) fechasSeguimientoFicha.delete(procesoId);
+      [item._clave, `lead:${leadId}`].filter(Boolean).forEach((clave) => {
+        delete historial[clave];
+        delete gestionMap[clave];
+      });
+    });
     guardarStorageJSON(STORAGE_ACTIVIDAD_KEY, historial);
     guardarStorageJSON(STORAGE_GESTION_KEY, gestionMap);
 
-    panelDetalleCliente.hidden = true;
-    seccionClientes.hidden = false;
-    registroSeleccionado = null;
+    const seleccionado = registroSeleccionado?.leadId ?? registroSeleccionado?.id;
+    if (seleccionado != null && String(seleccionado) === String(leadId)) {
+      panelDetalleCliente.hidden = true;
+      seccionClientes.hidden = false;
+      registroSeleccionado = null;
+    }
 
-    mostrarMensaje(
-      `El registro de "${nombre}" y sus tareas asociadas fueron eliminados.`
-    );
-
+    mostrarMensaje(`El registro de "${nombre}" y sus procesos pendientes fueron eliminados.`);
     await Promise.all([cargarClientes(), cargarTareas()]);
   } catch (error) {
     console.error("Error al eliminar cliente:", error);
-    alert(
-      "No se pudo eliminar el registro en el servidor. Revisa la conexión con Java."
-    );
+    alert(error.mensajeServidor || "No se pudo eliminar el registro. Revisa Java y Flowable.");
   } finally {
     botonEliminarCliente.disabled = false;
   }
