@@ -1,0 +1,41 @@
+{
+  "nuevaConsulta": {
+    "camposObligatorios": true,
+    "telefonoConLetrasBloqueado": true,
+    "correoInvalidoBloqueado": true,
+    "mismoContactoConYSinPrefijo56": true
+  },
+  "editarFicha": {
+    "camposGuardados": [
+      "nombre",
+      "teléfono",
+      "correo",
+      "canal",
+      "consulta"
+    ],
+    "recuperadosEnOtraSesion": true,
+    "otraConsultaIntacta": true,
+    "resultadoSoloLectura": true,
+    "resultadoCompróDespuesDeCompletarBPMN": true,
+    "telefonoInvalidoBloqueado": true,
+    "correoInvalidoBloqueado": true
+  },
+  "tareaBpmn": {
+    "clasificacionResponsableRespuestaYDecisionObligatorias": true,
+    "fichaActualizadaVisibleEnBandejaYFormulario": true,
+    "revisionDeContactoObligatoria": true
+  },
+  "recompra": {
+    "requeridosBloqueanEnvio": true,
+    "oportunidadCreada": true,
+    "contextoDesdeFlowableConservado": true
+  },
+  "correo": {
+    "destinatarioInvalidoBloqueado": true,
+    "cuerpoObligatorio": true,
+    "rechazoDeArchivoQueNoEsImagen": true,
+    "rechazoSuperiorA3MiB": true,
+    "sinSMTPConservaAdjuntoYBorrador": true,
+    "estadoHttp503": true
+  }
+}

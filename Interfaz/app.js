@@ -306,7 +306,20 @@ function obtenerContextoCliente(valores) {
   };
 }
 
-async function obtenerTareaConCliente(tarea) {
+async function obtenerTareaConCliente(tarea, consultasPorProceso) {
+  const procesoId = tarea.rootProcessInstanceId ?? tarea.processInstanceId;
+  const ficha = consultasPorProceso.get(procesoId);
+  if (ficha) {
+    return {
+      ...tarea,
+      nombreCliente: ficha.nombreCliente,
+      consultaCliente: ficha.consulta,
+      canalCliente: ficha.canalOrigen,
+      idCliente: ficha.leadId,
+      contextoDesdeFicha: true
+    };
+  }
+
   try {
     const variables = await solicitarJSON(
       `${API_TAREAS}/${encodeURIComponent(tarea.id)}/variables`
@@ -773,13 +786,14 @@ async function abrirDetalleRegistro(registro) {
   editConsulta.value =
     registro.consulta ?? "";
 
-  editResultado.value =
-    registro.resultado ||
-    (
-      registro.estado === "CONVERTIDO"
-        ? "CONVERTIDO"
-        : ""
-    );
+  const resultadosFicha = {
+    PENDIENTE: "Pendiente",
+    COMPRO: "Compró",
+    NO_COMPRO: "No compró",
+    CONVERTIDO: "Compró"
+  };
+  editResultado.value = resultadosFicha[registro.resultado || registro.estado] ||
+    "Sin resultado registrado";
 
   // Prellenar correo de destino.
   correoDestinatario.value =
@@ -1609,11 +1623,14 @@ async function cargarTareas() {
       tareas.push(...pagina.data);
     } while (tareas.length < pagina.total);
 
-    // NUEVO:
-    // Consultar las variables de cada tarea para
-    // identificar el cliente y su consulta.
+    const consultas = tareas.length
+      ? await solicitarJSON(API_CONSULTAS).catch(() => [])
+      : [];
+    const consultasPorProceso = new Map(
+      (Array.isArray(consultas) ? consultas : []).map((ficha) => [ficha.procesoId, ficha])
+    );
     const tareasConCliente = await Promise.all(
-      tareas.map(obtenerTareaConCliente)
+      tareas.map((tarea) => obtenerTareaConCliente(tarea, consultasPorProceso))
     );
 
     // Guardar las tareas enriquecidas en memoria.
@@ -1882,6 +1899,13 @@ function agregarCampo(
   input.id = `campo_${nombre}`;
   input.name = nombre;
 
+  if (nombre === "telefono") {
+    const contacto = document.getElementById("contacto");
+    input.type = "tel";
+    input.pattern = contacto.pattern;
+    input.title = contacto.title;
+  }
+
   if (nombre === "correo") {
     input.maxLength = 254;
     input.pattern =
@@ -1981,8 +2005,9 @@ async function seleccionarTarea(tarea) {
     const valores =
       convertirVariablesAMapa(variables);
 
-    const contexto =
-      obtenerContextoCliente(valores);
+    const contexto = tarea.contextoDesdeFicha
+      ? tarea
+      : obtenerContextoCliente(valores);
 
     const nombreCliente =
       contexto.nombreCliente !== "No identificado"

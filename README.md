@@ -48,6 +48,8 @@ También corregimos la eliminación de clientes. Flowable cancela las tareas, lo
 
 - **26 de noviembre.** Corregimos el registro con muchas tareas pendientes y separamos los datos de gestión y el historial por consulta. Probamos dos consultas de un mismo contacto, dos contactos con el mismo nombre y distintos teléfonos, y repetimos los recorridos principales en el paquete de Windows. [Acta de avance](Actas/Acta-2026-11-26.md) · [Resultados de la revisión](Pruebas/Recorridos/verificacion-paquete-2026-11-26.json).
 
+En la revisión de formularios, validamos los teléfonos y comprobamos que un número chileno con o sin `+56` identifica al mismo contacto. Las tareas muestran la última descripción guardada en la ficha de esa consulta. [Pruebas de formularios](Pruebas/Recorridos/formularios-verificados.json).
+
 ## Abrir el paquete para Windows
 
 Descarga y extrae el repositorio en un computador Windows de 64 bits. Abre [PeluditosPetChile_APP](PeluditosPetChile_APP/) y ejecuta [Iniciar_Peluditos.bat](PeluditosPetChile_APP/Iniciar_Peluditos.bat). El paquete incluye Java 21, Flowable OSS 8.0.0, el dashboard y el worker.

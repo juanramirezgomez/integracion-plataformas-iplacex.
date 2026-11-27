@@ -34,9 +34,21 @@ function Invoke-Java([string]$Path,[string]$Method='GET',[object]$Body=$null){
     Invoke-RestMethod @params
 }
 function To-Variable([string]$Name,[string]$Type,[object]$Value){@{name=$Name;type=$Type;value=$Value}}
+function ConvertTo-ComparablePhone([string]$Phone){
+    $phoneText=$Phone.Trim()
+    if($phoneText -notmatch '^\+?[0-9](?:[ -]?[0-9]){7,14}$'){return $phoneText}
+    $digits=$phoneText -replace '[^0-9]',''
+    if($digits -match '^56[0-9]{9}$'){return $digits.Substring(2)}
+    return $digits
+}
 function Find-Lead([hashtable]$Values){
     $leads=Invoke-Java '/api/leads'
-    $matches=@($leads|Where-Object{ $_.telefono -and $_.telefono -eq $Values.telefono })
+    $phone=[string]$Values.telefono
+    if(!$phone.Trim()){return $null}
+    $wanted=ConvertTo-ComparablePhone $phone
+    $exact=@($leads|Where-Object{ $_.telefono -and $_.telefono -eq $phone })
+    if($exact.Count -gt 0){return $exact[0]}
+    $matches=@($leads|Where-Object{ $_.telefono -and (ConvertTo-ComparablePhone $_.telefono) -eq $wanted })
     if($matches.Count -gt 0){return $matches[0]}
     return $null
 }

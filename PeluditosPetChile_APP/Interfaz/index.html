@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="dashboard.css">
 
   <!-- Funcionalidades JavaScript -->
-  <script src="app.js?v=20261126-1" defer></script>
+  <script src="app.js?v=20261126-2" defer></script>
 </head>
 
 <body>
@@ -523,6 +523,8 @@
                     id="contacto"
                     name="contacto"
                     type="tel"
+                    pattern="\+?[0-9](?:[ \-]?[0-9]){7,14}"
+                    title="Ingresa un teléfono válido. Ej.: 912345678 o +56 9 1234 5678."
                     placeholder="Ej.: 912345678"
                     required
                   >
@@ -779,6 +781,9 @@
 
                   <input
                     id="editTelefono"
+                    type="tel"
+                    pattern="\+?[0-9](?:[ \-]?[0-9]){7,14}"
+                    title="Ingresa un teléfono válido. Ej.: 912345678 o +56 9 1234 5678."
                     required
                   >
 
@@ -843,29 +848,8 @@
                     Resultado
                   </label>
 
-                  <select id="editResultado">
-
-                    <option value="">
-                      Sin resultado
-                    </option>
-
-                    <option value="PENDIENTE">
-                      Pendiente
-                    </option>
-
-                    <option value="COMPRO">
-                      Compró
-                    </option>
-
-                    <option value="NO_COMPRO">
-                      No compró
-                    </option>
-
-                    <option value="CONVERTIDO">
-                      Convertido
-                    </option>
-
-                  </select>
+                  <input id="editResultado" readonly aria-describedby="ayudaResultado">
+                  <p id="ayudaResultado" class="texto-ayuda">El resultado se registra en Tareas BPMN.</p>
 
 
                   <button type="submit">
