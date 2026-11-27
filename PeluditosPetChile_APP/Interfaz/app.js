@@ -218,7 +218,7 @@ function obtenerClaveRegistro(item) {
   return `tel:${item?.telefono ?? ""}_${item?.nombreCliente ?? ""}`;
 }
 
-function registrarActividadLocal(clave, accion, detalle) {
+function registrarActividadLocal(clave, accion, detalle, procesoId = null) {
   if (!clave) return;
 
   const historial = leerStorageJSON(STORAGE_ACTIVIDAD_KEY, {});
@@ -229,7 +229,8 @@ function registrarActividadLocal(clave, accion, detalle) {
   eventos.unshift({
     fecha: new Date().toISOString(),
     accion,
-    detalle
+    detalle,
+    procesoId
   });
 
   historial[clave] = eventos.slice(0, 50);
@@ -586,9 +587,14 @@ function guardarGestionLocal(clavesLista, nuevosCampos) {
   guardarStorageJSON(STORAGE_GESTION_KEY, mapa);
 }
 
+function obtenerClavesGestion(registro) {
+  const procesoId = registro?.procesoId ?? registro?.processInstanceId;
+  return procesoId ? [`gestion-proc:${procesoId}`] : obtenerClavesRegistroCompletas(registro);
+}
+
 function obtenerGestionLocal(registro) {
   const mapa = leerStorageJSON(STORAGE_GESTION_KEY, {});
-  const claves = obtenerClavesRegistroCompletas(registro);
+  const claves = obtenerClavesGestion(registro);
 
   const gestion = claves.reduce(
     (acumulado, clave) => ({
@@ -831,25 +837,7 @@ async function abrirDetalleRegistro(registro) {
         });
 
         if (Object.keys(extraidos).length > 0) {
-          const leadId =
-            registro.leadId ??
-            registro.id;
-
-          guardarGestionLocal(
-            [
-              registro._clave,
-              procIdRegistro
-                ? `proc:${procIdRegistro}`
-                : null,
-              tareaDelProceso.processInstanceId
-                ? `proc:${tareaDelProceso.processInstanceId}`
-                : null,
-              leadId != null
-                ? `lead:${leadId}`
-                : null
-            ],
-            extraidos
-          );
+          guardarGestionLocal(obtenerClavesGestion(registro), extraidos);
 
           if (
             registroSeleccionado?._clave ===
@@ -1026,7 +1014,10 @@ botonEliminarCliente.addEventListener("click", async () => {
     ];
     registrosEliminados.forEach((item) => {
       const procesoId = item.procesoId ?? item.processInstanceId;
-      if (procesoId) fechasSeguimientoFicha.delete(procesoId);
+      if (procesoId) {
+        fechasSeguimientoFicha.delete(procesoId);
+        delete gestionMap[`gestion-proc:${procesoId}`];
+      }
       [item._clave, `lead:${leadId}`].filter(Boolean).forEach((clave) => {
         delete historial[clave];
         delete gestionMap[clave];
@@ -1250,9 +1241,7 @@ async function renderizarActividad(registro) {
 
   if (procesoId) {
     params.set("procesoId", procesoId);
-  }
-
-  if (leadId != null) {
+  } else if (leadId != null) {
     params.set("leadId", String(leadId));
   }
 
@@ -1291,6 +1280,12 @@ async function renderizarActividad(registro) {
   const localesSinCopias = [];
 
   for (const evento of eventosLocales) {
+    // Antes se copiaban tareas del mismo cliente en varias fichas.
+    if (procesoId && evento.accion?.startsWith("Tarea completada:") &&
+        evento.procesoId !== procesoId) {
+      continue;
+    }
+
     if (
       evento.accion?.startsWith(
         "Tarea completada:"
@@ -1348,7 +1343,7 @@ async function renderizarActividad(registro) {
 
   if (faltantes.length > 0) {
     const nuevos = Object.fromEntries(faltantes);
-    guardarGestionLocal(obtenerClavesRegistroCompletas(registro), nuevos);
+    guardarGestionLocal(obtenerClavesGestion(registro), nuevos);
   }
   
   eventos.sort(
@@ -1512,28 +1507,15 @@ formulario.addEventListener(
         `Consulta: "${datos.consulta}"`
       );
 
-      // Completar automáticamente la tarea inicial.
+      let requiereTareaInicial = false;
       if (instanciaId) {
         try {
-          const respTareas =
-            await solicitarJSON(API_TAREAS);
-
-          const listaTareas =
-            respTareas?.data ?? [];
-
-          const tareaInicial = listaTareas.find(
-            (t) =>
-              t.processInstanceId === instanciaId &&
-              (
-                t.taskDefinitionKey ===
-                  "ExpandedSubProcess_4" ||
-                (
-                  t.name &&
-                  t.name
-                    .toLowerCase()
-                    .includes("registrar consulta")
-                )
-              )
+          const respuesta = await solicitarJSON(
+            `${API_TAREAS}?procesoId=${encodeURIComponent(instanciaId)}`
+          );
+          const tareaInicial = respuesta?.data?.find(
+            (t) => t.processInstanceId === instanciaId &&
+              t.taskDefinitionKey === "ExpandedSubProcess_4"
           );
 
           if (tareaInicial) {
@@ -1541,33 +1523,17 @@ formulario.addEventListener(
               `${API_TAREAS}/${encodeURIComponent(tareaInicial.id)}/completar`,
               {
                 method: "POST",
-                headers: {
-                  "Content-Type":
-                    "application/json; charset=utf-8"
-                },
+                headers: {"Content-Type": "application/json; charset=utf-8"},
                 body: JSON.stringify({
                   action: "complete",
-                  variables: crearVariables({
-                    nombreCliente:
-                      datos.nombreCliente,
-                    telefono:
-                      datos.telefono,
-                    correo:
-                      datos.correo,
-                    canalOrigen:
-                      datos.canalOrigen,
-                    consulta:
-                      datos.consulta
-                  })
+                  variables: crearVariables(datos)
                 })
               }
             );
           }
-        } catch (errAuto) {
-          console.warn(
-            "No se pudo autocompletar la tarea inicial:",
-            errAuto
-          );
+        } catch (error) {
+          requiereTareaInicial = true;
+          console.warn("No se pudo autocompletar la tarea inicial:", error);
         }
       }
 
@@ -1590,7 +1556,8 @@ formulario.addEventListener(
 
       mostrarMensaje(
         `Consulta registrada correctamente ` +
-        `(Instancia: ${instanciaId ?? "creada"}).`
+        `(Instancia: ${instanciaId ?? "creada"}).` +
+        (requiereTareaInicial ? " Revisa «Registrar consulta» en Tareas BPMN." : "")
       );
     } catch (error) {
       console.error(
@@ -2172,62 +2139,11 @@ formTarea.addEventListener(
             : "leadId"
         );
 
-      const correoVar =
-        mapaVars.get("correo");
-
-      const nombreVar = 
-        mapaVars.get("nombreCliente");
-
-      const telVar =
-        mapaVars.get("telefono");
-
-      const procesoIdTarea =
-        tarea.processInstanceId ?? null;
-
-      const rootProcesoIdTarea =
-        tarea.rootProcessInstanceId ?? null;
-
-      // 2. Buscar el registro correspondiente.
-      const registroCoincidente =
-        registrosActuales.find((r) => {
-          const procR = r.procesoId ?? r.processInstanceId;
-
-          if (
-            procR &&
-            (procR === procesoIdTarea || procR === rootProcesoIdTarea)
-          ) {
-            return true;
-          }
-
-          if (
-            leadIdVar != null &&
-            String(r.leadId ?? r.id) === String(leadIdVar)
-          ) {
-            return true;
-          }
-
-          return false;
-        }) ??
-        registrosActuales.find((r) => {
-          if (
-            nombreVar &&
-            r.nombreCliente &&
-            r.nombreCliente.trim().toLowerCase() ===
-              String(nombreVar).trim().toLowerCase()
-          ) {
-            return true;
-          }
-
-          if (
-            telVar &&
-            r.telefono &&
-            String(r.telefono) === String(telVar)
-          ) {
-            return true;
-          }
-
-          return false;
-        });
+      const procesoIdTarea = tarea.rootProcessInstanceId ?? tarea.processInstanceId;
+      const registroCoincidente = procesoIdTarea
+        ? registrosActuales.find((registro) =>
+            (registro.procesoId ?? registro.processInstanceId) === procesoIdTarea)
+        : null;
 
       // 3. Completar la tarea en Flowable.
       const cuerpo = {
@@ -2247,19 +2163,8 @@ formTarea.addEventListener(
         }
       );
 
-// 4. Guardar datos de gestión y actividad.
-      const clavesDestino = [
-        ...new Set(
-          [
-            procesoIdTarea ? `proc:${procesoIdTarea}` : null,
-            rootProcesoIdTarea ? `proc:${rootProcesoIdTarea}` : null,
-            leadIdVar != null ? `lead:${leadIdVar}` : null,
-            ...obtenerClavesRegistroCompletas(registroCoincidente)
-          ].filter(Boolean)
-        )
-      ];
-
-      if (clavesDestino.length > 0) {
+      if (procesoIdTarea) {
+        const claveActividad = `proc:${procesoIdTarea}`;
         const camposGuardables = {};
         const resumenVars = [];
 
@@ -2289,10 +2194,7 @@ formTarea.addEventListener(
             camposGuardables
           ).length > 0
         ) {
-          guardarGestionLocal(
-            clavesDestino,
-            camposGuardables
-          );
+          guardarGestionLocal([`gestion-proc:${procesoIdTarea}`], camposGuardables);
         }
 
         const detalleActividad =
@@ -2322,9 +2224,7 @@ formTarea.addEventListener(
                   registroCoincidente?.leadId ??
                   registroCoincidente?.id ??
                   null,
-                procesoId:
-                  rootProcesoIdTarea ??
-                  procesoIdTarea,
+                procesoId: procesoIdTarea,
                 accion,
                 detalle:
                   detalleActividad
@@ -2337,22 +2237,13 @@ formTarea.addEventListener(
             error
           );
 
-          clavesDestino.forEach(
-            (clave) =>
-              registrarActividadLocal(
-                clave,
-                accion,
-                detalleActividad
-              )
-          );
+          registrarActividadLocal(claveActividad, accion, detalleActividad, procesoIdTarea);
         }
 
         // Refrescar la ficha abierta.
         if (
           registroSeleccionado &&
-          clavesDestino.includes(
-            registroSeleccionado._clave
-          )
+          registroSeleccionado._clave === claveActividad
         ) {
           renderizarGrillaGestion(
             obtenerGestionLocal(

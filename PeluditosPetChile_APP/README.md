@@ -13,7 +13,7 @@ El paquete reúne el dashboard, el servicio Java con Jakarta REST, Flowable OSS 
 1. Descarga el repositorio como ZIP, extráelo y abre `PeluditosPetChile_APP`. Mantén juntos los archivos y carpetas del paquete.
 2. Ejecuta [Iniciar_Peluditos.bat](Iniciar_Peluditos.bat). El script prepara las credenciales y las bases, inicia Flowable y Java, despliega los BPMN y levanta el worker y la interfaz.
 3. Espera a que abra el navegador. La dirección predeterminada es `http://localhost:5173`. Si el navegador queda cerrado, abre la dirección que imprime el iniciador.
-4. En **Estado de integración**, comprueba que Java y Flowable indiquen **Disponible**. Registra una consulta con datos ficticios y actualiza **Tareas BPMN** hasta que aparezca «Clasificar consulta». Eso verifica que el proceso arrancó y que el worker hizo la búsqueda y el registro en Java.
+4. En **Estado de integración**, comprueba que Java y Flowable indiquen **Disponible**. Registra una consulta con un teléfono ficticio que no esté en el listado y actualiza **Tareas BPMN** hasta que aparezca «Clasificar consulta». Si vuelves a consultar con ese teléfono, la primera tarea será «Revisar datos del contacto». Eso verifica que el proceso arrancó y que el worker hizo la búsqueda en Java.
 
 Consulta la [guía de uso](../Interfaz/GUIA-DE-USO.md) para seguir el recorrido hasta su resultado.
 
@@ -38,6 +38,6 @@ Si un puerto está ocupado, el iniciador avisa y puedes elegir otro en la config
 - Para respaldar los datos, detén el paquete y copia la carpeta `.local` a un lugar privado. Conserva esta carpeta al actualizar la aplicación. Incluye las credenciales generadas para esa instalación.
 - Si el arranque falla, revisa `.local/motor-err.log`, `.local/java-err.log`, `.local/web-err.log` o `.local/worker-err.log`. Las operaciones del worker quedan en `.local/worker-ejecucion.jsonl`.
 
-El envío de correos requiere configurar un servidor SMTP y probar la cuenta autorizada. Mantén las credenciales fuera del repositorio. El registro de WhatsApp o Instagram identifica el canal de origen. La comunicación se realiza desde el canal que utilice el negocio.
+El envío de correos requiere configurar un servidor SMTP y probar la cuenta autorizada. Si vas a habilitarlo, configura `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT`, `SPRING_MAIL_USERNAME` y `SPRING_MAIL_PASSWORD` en el entorno que inicia el paquete. Mantén las credenciales fuera del repositorio. El registro de WhatsApp o Instagram identifica el canal de origen. La comunicación se realiza desde el canal que utilice el negocio.
 
 En las consultas nuevas sin compra, Flowable habilita el seguimiento a partir de la fecha y hora elegidas en el dashboard. Las consultas que ya estaban en curso conservan la versión del proceso con la que se iniciaron. La recompra se crea manualmente desde el dashboard.

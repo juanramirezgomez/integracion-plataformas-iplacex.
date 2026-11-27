@@ -228,11 +228,19 @@ public class FlowableController {
 
     @GET
     @Path("/tareas")
-    public Response obtenerTareas(@QueryParam("start") @DefaultValue("0") int inicio) {
+    public Response obtenerTareas(@QueryParam("start") @DefaultValue("0") int inicio,
+                                  @QueryParam("procesoId") String procesoId) {
         if (inicio < 0) {
             throw new BadRequestException("La posición inicial no es válida.");
         }
-        return solicitar("GET", "/runtime/tasks?start=" + inicio + "&size=50&sort=id&order=asc", null);
+        String ruta = "/runtime/tasks?start=" + inicio + "&size=50&sort=id&order=asc";
+        if (procesoId != null) {
+            if (!procesoId.matches("[a-zA-Z0-9-]{1,100}")) {
+                throw new BadRequestException("ID de proceso no válido.");
+            }
+            ruta += "&processInstanceId=" + procesoId;
+        }
+        return solicitar("GET", ruta, null);
     }
 
     @GET

@@ -46,6 +46,8 @@ La pantalla se comunica con Java para iniciar el proceso y completar tareas. Flo
 
 También corregimos la eliminación de clientes. Flowable cancela las tareas, los seguimientos agendados y las recompras pendientes del cliente eliminado. Probamos que las consultas y tareas del otro cliente siguieran disponibles. [Registro de la prueba](Pruebas/Recorridos/eliminar-clientes-verificado.json).
 
+- **26 de noviembre.** Corregimos el registro con muchas tareas pendientes y separamos los datos de gestión y el historial por consulta. Probamos dos consultas de un mismo contacto, dos contactos con el mismo nombre y distintos teléfonos, y repetimos los recorridos principales en el paquete de Windows. [Acta de avance](Actas/Acta-2026-11-26.md) · [Resultados de la revisión](Pruebas/Recorridos/verificacion-paquete-2026-11-26.json).
+
 ## Abrir el paquete para Windows
 
 Descarga y extrae el repositorio en un computador Windows de 64 bits. Abre [PeluditosPetChile_APP](PeluditosPetChile_APP/) y ejecuta [Iniciar_Peluditos.bat](PeluditosPetChile_APP/Iniciar_Peluditos.bat). El paquete incluye Java 21, Flowable OSS 8.0.0, el dashboard y el worker.
@@ -105,7 +107,7 @@ En otra ventana de PowerShell, desde la raíz del repo, ejecuta:
 npx.cmd --yes http-server .\Interfaz -p 5173 -a 127.0.0.1
 ```
 
-Para el modo de desarrollo, [config.js](Interfaz/config.js) define la URL de la API que usa la pantalla. Abre [Peluditos en local](http://127.0.0.1:5173/). Registra una consulta con datos de prueba y completa su primera tarea desde la bandeja. Usa **Actualizar tareas** para ver el siguiente paso cuando avance el proceso.
+Para el modo de desarrollo, [config.js](Interfaz/config.js) define la URL de la API que usa la pantalla. Abre [Peluditos en local](http://127.0.0.1:5173/). Registra una consulta con datos de prueba y abre **Tareas BPMN**. La pantalla completa el registro inicial. Usa **Actualizar tareas** para ver el siguiente paso. Si el contacto es nuevo aparecerá **Clasificar consulta**. Si el teléfono ya está registrado, primero aparecerá **Revisar datos del contacto**.
 
 ## Conclusión
 

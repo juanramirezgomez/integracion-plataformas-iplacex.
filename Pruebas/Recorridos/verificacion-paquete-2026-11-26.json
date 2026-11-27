@@ -1,0 +1,48 @@
+{
+  "entorno": "Paquete Windows limpio, datos ficticios",
+  "navegador": "Edge",
+  "tareasPendientesAntesDeRegistrar": 52,
+  "registroCompletoDesdePantalla": true,
+  "nuevoContacto": "Clasificar consulta",
+  "contactoExistente": "Revisar datos del contacto",
+  "mismoNombreConTelefonosDistintos": true,
+  "mismoContactoConDosConsultas": true,
+  "formulariosClasificacionVerificados": 3,
+  "historialYDatosPorConsultaDesdeOtraSesion": true,
+  "versionFlowable": "8.0.0",
+  "compra": "EndNoneEvent_102",
+  "seguimiento": {
+    "fechaInvalidaRechazada": true,
+    "fechaPasadaRechazada": true,
+    "tareaCreadaDesdeHoraProgramada": true,
+    "cierre": "EndNoneEvent_105",
+    "resultado": "NO_COMPRO"
+  },
+  "recompra": [
+    "oportunidadAtendida",
+    "oportunidadCerrada"
+  ],
+  "reinicio": {
+    "contactos": true,
+    "consultas": true,
+    "actividad": true,
+    "fechaSeguimiento": true,
+    "historial": true
+  },
+  "eliminacion": {
+    "instanciasCanceladas": 2,
+    "temporizadoresRestantes": 0,
+    "otrosClientesConservados": true
+  },
+  "comprobacionesDeAislamientoTrasReinicio": 50,
+  "correoSinConfiguracion": {
+    "correoInvalido": 400,
+    "servidorSinConfigurar": 503,
+    "envioReal": false
+  },
+  "correoConfigurado": {
+    "prueba": "Servidor SMTP ficticio en 127.0.0.1",
+    "envioYAdjuntoRecibidos": true,
+    "proveedorExterno": false
+  }
+}

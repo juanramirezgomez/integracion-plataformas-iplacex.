@@ -5,7 +5,7 @@ Abre Peluditos con **Iniciar_Peluditos.bat**. En el navegador aparecerá el resu
 ## Registrar y atender una consulta
 
 1. En **Nueva consulta**, completa nombre, teléfono, correo, canal de origen y lo que pidió la persona. Pulsa **Registrar consulta** y espera el mensaje de confirmación.
-2. En **Tareas BPMN**, pulsa **Actualizar tareas** si hace falta. Busca la consulta y pulsa **Gestionar**. Completa la clasificación, anota el responsable y registra la respuesta que diste.
+2. En **Tareas BPMN**, pulsa **Actualizar tareas** si hace falta. Busca tu consulta por su descripción y pulsa **Gestionar**. Si el teléfono ya estaba registrado, primero aparece **Revisar datos del contacto**. Para un teléfono nuevo, la primera tarea después del registro automático es **Clasificar consulta**. Completa la clasificación, anota el responsable y registra la respuesta.
 3. En **Indicar si hubo compra**, elige **Sí** o **No**. Si eliges **No**, abre **Programar seguimiento (fecha)** y elige una fecha y hora futuras. A partir de esa hora, pulsa **Actualizar tareas**, abre **Contactar cliente de seguimiento** y completa **Registrar resultado del seguimiento**.
 4. En **Clientes**, puedes actualizar el listado, ver si la consulta está pendiente o si el resultado fue **Compró** o **No compró**. Pulsa **Ver detalle** para revisar la ficha, editar los datos de contacto o consultar la actividad.
 

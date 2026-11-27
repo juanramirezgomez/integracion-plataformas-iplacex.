@@ -92,6 +92,10 @@ Ante un fallo simulado al guardar, el formulario mantuvo los datos escritos y la
 
 Completamos «Clasificar consulta» una vez. El historial de Flowable mostró una tarea terminada, Java guardó un evento y la ficha mostró una línea tanto en la sesión original como en otra nueva. Repetimos la revisión con copias de la bitácora anterior guardadas en el navegador y la ficha mostró una sola línea de esa tarea. Ante un fallo simulado al guardar en Java, quedó una entrada local al recargar la ficha. [Captura de la bitácora](actividad-sin-duplicados.png).
 
+## Revisión de consultas simultáneas del 26 de noviembre
+
+Probamos el registro con 52 tareas pendientes y verificamos las primeras tareas de tres consultas. Dos consultas correspondían al mismo contacto y la tercera tenía el mismo nombre con otro teléfono. Desde una sesión nueva comprobamos que las fichas conservaron sus clasificaciones e historiales por separado. También repetimos los recorridos de compra, seguimiento sin compra, recompra, reinicio y eliminación. [Resultados de la revisión](verificacion-paquete-2026-11-26.json).
+
 ## Paquete final para Windows
 
 Probamos una copia limpia del paquete en una carpeta con espacios. Iniciamos la interfaz en el puerto 15273, Java en 18096 y Flowable OSS 8.0.0 en 18098.
