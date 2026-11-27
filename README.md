@@ -10,7 +10,7 @@
 
 ## Objetivo
 
-Registrar las consultas de Peluditos Pet Chile, identificar por qué canal llegaron y darles seguimiento. Si un prospecto compra, el proceso registra su cambio a cliente. Las [oportunidades de recompra](BPMN/Oportunidades-Recompra.bpmn) se gestionan en un proceso aparte. La encargada las crea desde el dashboard para un cliente con una compra previa.
+Registrar y dar seguimiento a las consultas por tortas para mascotas de Peluditos Pet Chile, dejando anotado por qué canal llegó cada una. Si un prospecto compra, el proceso registra su cambio a cliente. Las [oportunidades de recompra](BPMN/Oportunidades-Recompra.bpmn) se gestionan en un proceso aparte. La encargada las crea desde el dashboard para un cliente con una compra previa.
 
 ## Componentes y arquitectura
 
